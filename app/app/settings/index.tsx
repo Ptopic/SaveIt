@@ -1,14 +1,15 @@
 import { goBack } from '@/utils/navigation';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 export default function SettingsScreen() {
 	return (
-		<View style={styles.container}>
+		<SafeAreaView style={styles.container}>
 			<Text style={styles.title}>Tab One</Text>
 			<TouchableOpacity onPress={goBack}>
 				<Text>Back</Text>
 			</TouchableOpacity>
-		</View>
+		</SafeAreaView>
 	);
 }
 

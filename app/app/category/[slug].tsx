@@ -1,7 +1,7 @@
 import { goBack } from '@/utils/navigation';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 type CategoryRouteProp = RouteProp<{ params: { slug: string } }, 'params'>;
 
@@ -9,12 +9,12 @@ const CategoryScreen = () => {
 	const route = useRoute<CategoryRouteProp>();
 	const { slug } = route.params;
 	return (
-		<View style={styles.container}>
+		<SafeAreaView style={styles.container}>
 			<Text>Category {slug}</Text>
 			<TouchableOpacity onPress={goBack}>
 				<Text>Back</Text>
 			</TouchableOpacity>
-		</View>
+		</SafeAreaView>
 	);
 };
 

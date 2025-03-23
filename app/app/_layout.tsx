@@ -1,6 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -44,6 +45,23 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+	const [accessToken, setAccessToken] = React.useState<string | null>(null);
+
+	useEffect(() => {
+		const getToken = async () => {
+			const token = await AsyncStorage.getItem('accessToken');
+			setAccessToken(token);
+		};
+
+		getToken();
+	}, []);
+
+	useEffect(() => {
+		if (!accessToken) {
+			router.push('/login' as any);
+		}
+	}, [accessToken]);
+
 	return (
 		<GestureHandlerRootView>
 			<Stack>
@@ -68,6 +86,18 @@ function RootLayoutNav() {
 				/>
 				<Stack.Screen
 					name="category/[slug]"
+					options={{
+						headerShown: false,
+					}}
+				/>
+				<Stack.Screen
+					name="login/index"
+					options={{
+						headerShown: false,
+					}}
+				/>
+				<Stack.Screen
+					name="register/index"
 					options={{
 						headerShown: false,
 					}}
