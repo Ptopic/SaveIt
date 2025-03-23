@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Import" ALTER COLUMN "duration" SET DATA TYPE DOUBLE PRECISION;
