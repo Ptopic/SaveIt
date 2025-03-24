@@ -9,16 +9,18 @@ const getCollections = async (
 ) => {
 	const accessToken = await AsyncStorage.getItem('accessToken');
 
-	const response = await fetch(
-		`${config.apiUrl}/collections?page=${page}&searchQuery=${searchQuery}&pageSize=${pageSize}`,
-		{
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${accessToken}`,
-			},
-		}
-	);
+	const url = new URL(`${config.apiUrl}/collections`);
+	url.searchParams.set('page', page);
+	url.searchParams.set('searchQuery', searchQuery);
+	url.searchParams.set('pageSize', pageSize);
+
+	const response = await fetch(url, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${accessToken}`,
+		},
+	});
 	return response.json();
 };
 

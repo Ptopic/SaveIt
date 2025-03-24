@@ -1,5 +1,8 @@
+import useCreateCollection from '@/api/collection/hooks/useCreateCollection';
+import { COLLECTIONS } from '@/api/constants';
 import Input from '@/components/Input';
 import ModalComponent from '@/components/ModalComponent';
+import { useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
@@ -13,12 +16,29 @@ const userSchema = Yup.object({
 });
 
 const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
+	const queryClient = useQueryClient();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [image, setImage] = useState<string | null>(null);
 	const [imageBase64, setImageBase64] = useState<string | null>(null);
+
 	const initialValues = { name: '', description: '' };
+
+	const { mutate: createCollection } = useCreateCollection({
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
+			closeModal();
+		},
+		onError: (error: Error) => {
+			console.log(error);
+		},
+	});
+
 	const handleSubmit = (values: any, { setSubmitting }: any) => {
-		console.log(values);
+		createCollection({
+			name: values.name,
+			description: values.description,
+		});
+		setSubmitting(false);
 	};
 
 	const pickImage = async () => {
@@ -50,6 +70,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 				handleSubmit,
 				errors,
 				resetForm,
+				isSubmitting,
 			}) => (
 				<View style={styles.createCollectionModalContainer}>
 					<TouchableOpacity
@@ -104,8 +125,10 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 							/>
 						)}
 						<TouchableOpacity
-							onPress={() => handleSubmit()}
-							disabled={!values.name || !values.description}
+							onPress={() => {
+								handleSubmit();
+							}}
+							disabled={!values.name || !values.description || isSubmitting}
 							style={styles.submitButton}
 						>
 							<Text style={styles.submitButtonText}>Create</Text>

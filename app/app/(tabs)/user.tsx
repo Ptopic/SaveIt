@@ -1,5 +1,5 @@
 import useGetAllCollections from '@/api/collection/hooks/useGetAllCollections';
-import { DEFAULT_PAGE } from '@/api/constants';
+import { COLLECTIONS, DEFAULT_PAGE } from '@/api/constants';
 import CollectionCard from '@/components/CollectionCard';
 import DrawerModal from '@/components/DrawerModal';
 import ExtractCard from '@/components/ExtractCard';
@@ -7,9 +7,12 @@ import Subtitle from '@/components/Subtitle';
 import Title from '@/components/Title';
 import CreateCollectionForm from '@/feature/user/CreateCollectionForm';
 import BottomSheet from '@gorhom/bottom-sheet';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'expo-router';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
+	ActivityIndicator,
+	RefreshControl,
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
@@ -23,22 +26,42 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import OctiIcon from 'react-native-vector-icons/Octicons';
 
 export default function TabUserScreen() {
-	const COLLECTIONS_PAGE_SIZE = 6;
+	const queryClient = useQueryClient();
+
+	const COLLECTIONS_PAGE_SIZE = '6';
+
+	const [refreshing, setRefreshing] = useState(false);
 
 	const bottomSheetRef = useRef<BottomSheet>(null);
 
-	const { data: collections, isLoading: isCollectionsLoading } =
-		useGetAllCollections({
-			page: DEFAULT_PAGE,
-			searchQuery: '',
-			pageSize: COLLECTIONS_PAGE_SIZE.toString(),
-		});
+	const {
+		data: collections,
+		isLoading: isCollectionsLoading,
+		isFetching: isCollectionsFetching,
+	} = useGetAllCollections({
+		page: DEFAULT_PAGE,
+		searchQuery: '',
+		pageSize: COLLECTIONS_PAGE_SIZE,
+	});
 
-	console.log(collections);
+	const onRefresh = async () => {
+		setRefreshing(true);
+		await queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
+		setRefreshing(false);
+	};
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
-			<View style={styles.container}>
+			<ScrollView
+				style={styles.container}
+				refreshControl={
+					<RefreshControl
+						refreshing={refreshing}
+						onRefresh={onRefresh}
+						colors={['black']}
+					/>
+				}
+			>
 				<View style={styles.header}>
 					<View style={styles.titleContainer}>
 						<Title>Petar Topic</Title>
@@ -81,9 +104,20 @@ export default function TabUserScreen() {
 						showsHorizontalScrollIndicator={false}
 						contentContainerStyle={styles.collectionsCardsContainer}
 					>
-						{collections?.data.map((collection: any, index: number) => (
-							<CollectionCard key={index} id={collection.id} />
-						))}
+						{isCollectionsLoading || isCollectionsFetching ? (
+							<ActivityIndicator color="black" />
+						) : (
+							collections?.data &&
+							collections?.data.length > 0 &&
+							collections?.data.map((collection: any, index: number) => (
+								<CollectionCard
+									key={index}
+									id={collection.id}
+									name={collection.name}
+									image={collection.image}
+								/>
+							))
+						)}
 					</ScrollView>
 					<View>
 						<Subtitle>Extracts</Subtitle>
@@ -164,7 +198,7 @@ export default function TabUserScreen() {
 						/>
 					</ScrollView>
 				</View>
-			</View>
+			</ScrollView>
 			<DrawerModal ref={bottomSheetRef} snapPoints={['80%']}>
 				<CreateCollectionForm
 					closeModal={() => bottomSheetRef.current?.close()}

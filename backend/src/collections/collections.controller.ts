@@ -25,8 +25,8 @@ export class CollectionsController {
 	async getCollections(
 		@Req() req: Request,
 		@Query('page') page: string,
-		@Query('searchQuery') searchQuery: string,
-		@Query('pageSize') pageSize: string
+		@Query('pageSize') pageSize: string,
+		@Query('searchQuery') searchQuery?: string
 	) {
 		const userId = req.user.sub;
 
@@ -34,8 +34,8 @@ export class CollectionsController {
 			await this.collectionsService.getCollections(
 				userId,
 				page,
-				searchQuery,
-				pageSize
+				pageSize,
+				searchQuery
 			);
 
 		return { data: collections, totalCollections };

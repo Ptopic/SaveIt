@@ -3,12 +3,14 @@ import { StyleSheet, Text } from 'react-native';
 
 interface IProps {
 	id: number;
+	name: string;
+	image: string;
 }
 
-const CollectionCard = ({ id }: IProps) => {
+const CollectionCard = ({ id, name, image }: IProps) => {
 	return (
 		<Link href={`/collection/${id}`} style={styles.container}>
-			<Text>Test</Text>
+			<Text>{name}</Text>
 		</Link>
 	);
 };

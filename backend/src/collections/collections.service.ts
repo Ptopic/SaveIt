@@ -8,17 +8,26 @@ export class CollectionsService {
 	async getCollections(
 		userId: string,
 		page: string,
-		searchQuery: string,
-		pageSize: string
+		pageSize: string,
+		searchQuery: string
 	) {
 		const collections = await this.prisma.collection.findMany({
-			where: { userId, name: { contains: searchQuery, mode: 'insensitive' } },
+			where: {
+				userId,
+				name: { contains: searchQuery, mode: 'insensitive' },
+			},
 			skip: parseInt(page) * parseInt(pageSize),
 			take: parseInt(pageSize),
+			orderBy: {
+				createdAt: 'desc',
+			},
 		});
 
 		const totalCollections = await this.prisma.collection.count({
-			where: { userId, name: { contains: searchQuery, mode: 'insensitive' } },
+			where: {
+				userId,
+				name: { contains: searchQuery, mode: 'insensitive' },
+			},
 		});
 
 		return { collections, totalCollections };
