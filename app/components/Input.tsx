@@ -20,6 +20,7 @@ const Input = ({
 	onChangeText,
 	onBlur,
 	error,
+	type = 'text',
 }: {
 	name: string;
 	placeholder: string;
@@ -27,6 +28,7 @@ const Input = ({
 	onChangeText: (text: string) => void;
 	onBlur: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
 	error?: string;
+	type?: 'text' | 'password';
 }) => {
 	const [isFocused, setIsFocused] = useState(false);
 	const placeholderPosition = useSharedValue(value ? -32 : 0);
@@ -74,11 +76,13 @@ const Input = ({
 			<TextInput
 				testID={name}
 				autoComplete="off"
+				secureTextEntry={type === 'password'}
 				value={value}
 				onChangeText={handleChangeText}
 				onBlur={handleBlur}
 				placeholder={placeholder}
 				placeholderTextColor="gray"
+				autoCapitalize="none"
 				style={styles.input}
 			/>
 			{error && <ErrorText error={error} />}
@@ -92,6 +96,7 @@ const styles = StyleSheet.create({
 	inputContainer: {
 		gap: 5,
 		position: 'relative',
+		width: '100%',
 	},
 	input: {
 		borderWidth: 1,

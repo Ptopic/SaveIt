@@ -21,7 +21,7 @@ export class ImportsController {
 		private readonly prisma: PrismaService
 	) {}
 
-	@Get('/all')
+	@Get('/')
 	@JwtAuth()
 	async getImports(@Req() req: Request) {
 		const userId = req.user.sub;

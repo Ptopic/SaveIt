@@ -11,7 +11,7 @@ export class AuthService {
 		private jwtService: JwtService
 	) {}
 
-	async signup(payload: AuthPayloadDto) {
+	async register(payload: AuthPayloadDto) {
 		const newUser = await this.prisma.user.create({
 			data: {
 				email: payload.email,

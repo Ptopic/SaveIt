@@ -27,29 +27,24 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 	overlayStyle,
 	modalStyle,
 }) => {
-	// Animation values
 	const overlayOpacity = useSharedValue(0);
 	const modalTranslateY = useSharedValue(300);
-	// This state tracks the "real" visibility (including during animations)
+
 	const [internalVisible, setInternalVisible] = React.useState(false);
 
-	// Handle modal opening and closing animations
 	useEffect(() => {
 		if (modalVisible) {
-			// When opening, show modal immediately and animate in
 			setInternalVisible(true);
-			overlayOpacity.value = withTiming(1, { duration: 300 });
-			modalTranslateY.value = withTiming(0, { duration: 300 });
+			overlayOpacity.value = withTiming(1, { duration: 150 });
+			modalTranslateY.value = withTiming(0, { duration: 150 });
 		} else if (internalVisible) {
-			// When closing, animate out then hide modal
-			overlayOpacity.value = withTiming(0, { duration: 300 });
-			modalTranslateY.value = withTiming(300, { duration: 300 }, () => {
+			overlayOpacity.value = withTiming(0, { duration: 150 });
+			modalTranslateY.value = withTiming(150, { duration: 150 }, () => {
 				runOnJS(setInternalVisible)(false);
 			});
 		}
 	}, [modalVisible]);
 
-	// Animated styles
 	const animatedOverlayStyle = useAnimatedStyle(() => ({
 		opacity: overlayOpacity.value,
 	}));
@@ -58,7 +53,6 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 		transform: [{ translateY: modalTranslateY.value }],
 	}));
 
-	// Close modal with animation
 	const handleClose = () => {
 		setModalVisible(false);
 	};

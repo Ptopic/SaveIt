@@ -1,5 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -45,11 +46,15 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+	const queryClient = new QueryClient();
 	const [accessToken, setAccessToken] = React.useState<string | null>(null);
+	const [isLoading, setIsLoading] = React.useState(true);
 
 	useEffect(() => {
 		const getToken = async () => {
 			const token = await AsyncStorage.getItem('accessToken');
+
+			setIsLoading(false);
 			setAccessToken(token);
 		};
 
@@ -57,52 +62,64 @@ function RootLayoutNav() {
 	}, []);
 
 	useEffect(() => {
+		if (isLoading) return;
+
 		if (!accessToken) {
-			router.push('/login' as any);
+			router.navigate('/getStarted' as any);
+		} else {
+			router.navigate('/' as any);
 		}
-	}, [accessToken]);
+	}, [accessToken, isLoading]);
 
 	return (
-		<GestureHandlerRootView>
-			<Stack>
-				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-				<Stack.Screen
-					name="settings/index"
-					options={{
-						headerShown: false,
-					}}
-				/>
-				<Stack.Screen
-					name="profile/index"
-					options={{
-						headerShown: false,
-					}}
-				/>
-				<Stack.Screen
-					name="collection/[id]"
-					options={{
-						headerShown: false,
-					}}
-				/>
-				<Stack.Screen
-					name="category/[slug]"
-					options={{
-						headerShown: false,
-					}}
-				/>
-				<Stack.Screen
-					name="login/index"
-					options={{
-						headerShown: false,
-					}}
-				/>
-				<Stack.Screen
-					name="register/index"
-					options={{
-						headerShown: false,
-					}}
-				/>
-			</Stack>
-		</GestureHandlerRootView>
+		<QueryClientProvider client={queryClient}>
+			<GestureHandlerRootView>
+				<Stack>
+					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+					<Stack.Screen
+						name="settings/index"
+						options={{
+							headerShown: false,
+						}}
+					/>
+					<Stack.Screen
+						name="profile/index"
+						options={{
+							headerShown: false,
+						}}
+					/>
+					<Stack.Screen
+						name="collection/[id]"
+						options={{
+							headerShown: false,
+						}}
+					/>
+					<Stack.Screen
+						name="category/[slug]"
+						options={{
+							headerShown: false,
+						}}
+					/>
+					<Stack.Screen
+						name="getStarted/index"
+						options={{
+							headerShown: false,
+						}}
+					/>
+					<Stack.Screen
+						name="login/index"
+						options={{
+							headerShown: false,
+						}}
+					/>
+					<Stack.Screen
+						name="register/index"
+						options={{
+							headerShown: false,
+						}}
+					/>
+				</Stack>
+			</GestureHandlerRootView>
+		</QueryClientProvider>
 	);
 }

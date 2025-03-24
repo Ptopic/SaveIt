@@ -5,8 +5,23 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class CollectionsService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async getAllCollections(userId: string) {
-		return await this.prisma.collection.findMany({ where: { userId } });
+	async getCollections(
+		userId: string,
+		page: string,
+		searchQuery: string,
+		pageSize: string
+	) {
+		const collections = await this.prisma.collection.findMany({
+			where: { userId, name: { contains: searchQuery, mode: 'insensitive' } },
+			skip: parseInt(page) * parseInt(pageSize),
+			take: parseInt(pageSize),
+		});
+
+		const totalCollections = await this.prisma.collection.count({
+			where: { userId, name: { contains: searchQuery, mode: 'insensitive' } },
+		});
+
+		return { collections, totalCollections };
 	}
 
 	async getCollection(id: string, userId: string) {

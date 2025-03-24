@@ -1,6 +1,10 @@
+import useGetAllCollections from '@/api/collection/hooks/useGetAllCollections';
+import { DEFAULT_PAGE } from '@/api/constants';
 import CollectionCard from '@/components/CollectionCard';
 import DrawerModal from '@/components/DrawerModal';
 import ExtractCard from '@/components/ExtractCard';
+import Subtitle from '@/components/Subtitle';
+import Title from '@/components/Title';
 import CreateCollectionForm from '@/feature/user/CreateCollectionForm';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { Link } from 'expo-router';
@@ -19,14 +23,25 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import OctiIcon from 'react-native-vector-icons/Octicons';
 
 export default function TabUserScreen() {
+	const COLLECTIONS_PAGE_SIZE = 6;
+
 	const bottomSheetRef = useRef<BottomSheet>(null);
+
+	const { data: collections, isLoading: isCollectionsLoading } =
+		useGetAllCollections({
+			page: DEFAULT_PAGE,
+			searchQuery: '',
+			pageSize: COLLECTIONS_PAGE_SIZE.toString(),
+		});
+
+	console.log(collections);
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<View style={styles.container}>
 				<View style={styles.header}>
 					<View style={styles.titleContainer}>
-						<Text style={styles.title}>Petar Topic</Text>
+						<Title>Petar Topic</Title>
 						<Link href={'/settings' as any}>
 							<Icon name="settings" size={20} color="black" />
 						</Link>
@@ -51,7 +66,7 @@ export default function TabUserScreen() {
 
 					<View style={styles.myCollectionsContainer}>
 						<TouchableOpacity style={styles.myCollectionsHeader}>
-							<Text style={styles.subtitle}>My Collections</Text>
+							<Subtitle>My Collections</Subtitle>
 							<Icon name="arrow-forward-ios" size={14} color="lightgray" />
 						</TouchableOpacity>
 						<TouchableOpacity
@@ -66,13 +81,12 @@ export default function TabUserScreen() {
 						showsHorizontalScrollIndicator={false}
 						contentContainerStyle={styles.collectionsCardsContainer}
 					>
-						<CollectionCard id={1} />
-						<CollectionCard id={2} />
-						<CollectionCard id={3} />
-						<CollectionCard id={4} />
+						{collections?.data.map((collection: any, index: number) => (
+							<CollectionCard key={index} id={collection.id} />
+						))}
 					</ScrollView>
 					<View>
-						<Text style={styles.subtitle}>Extracts</Text>
+						<Subtitle>Extracts</Subtitle>
 					</View>
 					<ScrollView
 						horizontal
@@ -168,14 +182,6 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-	},
-	title: {
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-	subtitle: {
-		fontSize: 16,
-		fontWeight: 'bold',
 	},
 	circle: {
 		width: 85,

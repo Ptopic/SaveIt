@@ -8,9 +8,9 @@ import { AuthPayloadDto } from './dtos/auth.dto';
 export class AuthController {
 	constructor(private authService: AuthService) {}
 
-	@Post('signup')
-	signup(@Body() payload: AuthPayloadDto) {
-		return this.authService.signup(payload);
+	@Post('register')
+	register(@Body() payload: AuthPayloadDto) {
+		return this.authService.register(payload);
 	}
 
 	@Post('login')
