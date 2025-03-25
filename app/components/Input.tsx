@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
 	NativeSyntheticEvent,
-	StyleSheet,
 	Text,
 	TextInput,
 	TextInputFocusEventData,
@@ -68,15 +67,16 @@ const Input = ({
 
 	return (
 		<View
-			style={[
-				styles.inputContainer,
-				{ marginTop: isFocused || value ? 20 : 0 },
-			]}
+			className="gap-[5] relative w-full"
+			style={{ marginTop: isFocused || value ? 20 : 0 }}
 		>
-			<Animated.Text style={[styles.placeholder, animatedPlaceholderStyle]}>
+			<Animated.Text
+				className="absolute left-[2] top-[10] text-black"
+				style={animatedPlaceholderStyle}
+			>
 				{placeholder}
 			</Animated.Text>
-			<View style={styles.inputBox}>
+			<View className="border border-black rounded-lg p-[10]">
 				<TextInput
 					testID={name}
 					autoComplete="off"
@@ -90,7 +90,7 @@ const Input = ({
 					style={maxLength ? { width: '85%' } : {}}
 				/>
 				{maxLength && (
-					<Text style={styles.maxLength}>
+					<Text className="absolute right-[10] bottom-[10] text-gray-500">
 						{value.length}/{maxLength}
 					</Text>
 				)}
@@ -101,29 +101,3 @@ const Input = ({
 };
 
 export default Input;
-
-const styles = StyleSheet.create({
-	inputContainer: {
-		gap: 5,
-		position: 'relative',
-		width: '100%',
-	},
-	inputBox: {
-		borderWidth: 1,
-		borderColor: 'black',
-		borderRadius: 5,
-		padding: 10,
-	},
-	maxLength: {
-		position: 'absolute',
-		right: 10,
-		bottom: 10,
-		color: 'gray',
-	},
-	placeholder: {
-		position: 'absolute',
-		left: 2,
-		top: 10,
-		color: 'black',
-	},
-});

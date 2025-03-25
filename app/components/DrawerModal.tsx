@@ -3,7 +3,6 @@ import BottomSheet, {
 	BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
 
 interface IProps {
 	children: React.ReactNode;
@@ -40,7 +39,7 @@ const DrawerModal = forwardRef<Ref, IProps>((props, ref) => {
 			enableContentPanningGesture={false}
 			handleComponent={() => null}
 		>
-			<BottomSheetView style={styles.addCollectionContentContainer}>
+			<BottomSheetView className="p-[10] bg-white">
 				{props.children}
 			</BottomSheetView>
 		</BottomSheet>
@@ -48,10 +47,3 @@ const DrawerModal = forwardRef<Ref, IProps>((props, ref) => {
 });
 
 export default DrawerModal;
-
-const styles = StyleSheet.create({
-	addCollectionContentContainer: {
-		padding: 10,
-		backgroundColor: 'white',
-	},
-});

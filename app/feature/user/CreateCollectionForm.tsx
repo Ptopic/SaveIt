@@ -5,7 +5,7 @@ import ModalComponent from '@/components/ModalComponent';
 import { useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as Yup from 'yup';
@@ -74,9 +74,9 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 				resetForm,
 				isSubmitting,
 			}) => (
-				<View style={styles.createCollectionModalContainer}>
+				<View className="gap-[20]">
 					<TouchableOpacity
-						style={styles.closeButton}
+						className="bg-lightgray rounded-full w-[30] h-[30] justify-center items-center"
 						onPress={() => {
 							closeModal();
 							resetForm();
@@ -87,20 +87,20 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 						<Icon name="close" size={20} color="white" />
 					</TouchableOpacity>
 
-					<View style={styles.addCollectionImagePlaceholderContainer}>
+					<View className="items-center justify-center">
 						{image ? (
 							<TouchableOpacity
-								style={styles.addCollectionImagePlaceholder}
+								className="rounded-lg bg-lightgray w-[150] h-[180] justify-center items-center"
 								onPress={() => setModalVisible(true)}
 							>
 								<Image
 									source={{ uri: image }}
-									style={styles.addCollectionImage}
+									className="rounded-lg w-[150] h-[180]"
 								/>
 							</TouchableOpacity>
 						) : (
 							<TouchableOpacity
-								style={styles.addCollectionImagePlaceholder}
+								className="rounded-lg bg-lightgray w-[150] h-[180] justify-center items-center"
 								onPress={pickImage}
 							>
 								<Icon name="image" size={34} color="white" />
@@ -108,7 +108,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 						)}
 					</View>
 
-					<View style={styles.formContainer}>
+					<View className="gap-[10]">
 						<Input
 							name="name"
 							placeholder="Name"
@@ -133,9 +133,9 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 								handleSubmit();
 							}}
 							disabled={!values.name || !values.description || isSubmitting}
-							style={styles.submitButton}
+							className="bg-lightgray rounded-lg p-[10] justify-center items-center"
 						>
-							<Text style={styles.submitButtonText}>Create</Text>
+							<Text className="text-white text-lg font-bold">Create</Text>
 						</TouchableOpacity>
 					</View>
 
@@ -146,32 +146,34 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 						modalStyle={styles.modalContainer}
 					>
 						<View>
-							<View style={styles.modalButtonsContainer}>
+							<View className="flex-col mb-[10] rounded-lg bg-gray500">
 								<TouchableOpacity
-									style={styles.modalButton}
+									className="p-[10] justify-center items-center"
 									onPress={() => {
 										pickImage();
 									}}
 								>
-									<Text style={styles.modalButtonText}>Chose new</Text>
+									<Text className="text-black text-lg font-bold">
+										Chose new image
+									</Text>
 								</TouchableOpacity>
-								<View style={styles.divider}></View>
+								<View className="h-[1] bg-gray600"></View>
 								<TouchableOpacity
-									style={styles.modalButton}
+									className="p-[10] justify-center items-center"
 									onPress={() => {
 										setImage(null);
 										setImageBase64(null);
 										setModalVisible(false);
 									}}
 								>
-									<Text style={styles.modalButtonRemoveText}>Remove</Text>
+									<Text className="text-red-500 text-lg font-bold">Remove</Text>
 								</TouchableOpacity>
 							</View>
 							<TouchableOpacity
 								onPress={() => setModalVisible(false)}
-								style={styles.modalCancelButton}
+								className="bg-white rounded-lg p-[10] justify-center items-center"
 							>
-								<Text style={styles.modalCancelButtonText}>Cancel</Text>
+								<Text className="text-red-500 text-lg font-bold">Cancel</Text>
 							</TouchableOpacity>
 						</View>
 					</ModalComponent>
@@ -184,55 +186,6 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 export default CreateCollectionForm;
 
 const styles = StyleSheet.create({
-	closeButton: {
-		backgroundColor: 'lightgray',
-		width: 30,
-		height: 30,
-		borderRadius: 15,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	createCollectionModalContainer: {
-		gap: 20,
-	},
-	addCollectionImagePlaceholderContainer: {
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	addCollectionImagePlaceholder: {
-		width: 150,
-		height: 180,
-		backgroundColor: 'lightgray',
-		borderRadius: 10,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	addCollectionImage: {
-		width: 150,
-		height: 180,
-		borderRadius: 10,
-	},
-	formContainer: {
-		gap: 10,
-	},
-	errorText: {
-		color: 'red',
-	},
-	submitButton: {
-		backgroundColor: 'lightgray',
-		borderRadius: 5,
-		padding: 10,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	divider: {
-		height: 0.5,
-		backgroundColor: '#B2B3B3',
-	},
-	submitButtonText: {
-		color: 'white',
-		fontSize: 16,
-	},
 	modalOverlay: {
 		justifyContent: 'flex-end',
 	},
@@ -241,35 +194,5 @@ const styles = StyleSheet.create({
 		paddingBottom: 40,
 		paddingHorizontal: 10,
 		backgroundColor: 'transparent',
-	},
-	modalButtonsContainer: {
-		flexDirection: 'column',
-		marginBottom: 10,
-		borderRadius: 5,
-		backgroundColor: '#D6D6D6FF',
-	},
-	modalButton: {
-		padding: 10,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	modalButtonText: {
-		color: 'black',
-		fontSize: 16,
-	},
-	modalButtonRemoveText: {
-		color: 'red',
-		fontSize: 16,
-	},
-	modalCancelButton: {
-		backgroundColor: '#FFFEFE',
-		padding: 10,
-		borderRadius: 5,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	modalCancelButtonText: {
-		color: 'red',
-		fontSize: 16,
 	},
 });

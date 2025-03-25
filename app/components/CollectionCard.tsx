@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text } from 'react-native';
+import { Image, Text } from 'react-native';
 
 interface IProps {
 	id: number;
@@ -9,14 +9,21 @@ interface IProps {
 }
 
 const CollectionCard = ({ id, name, image }: IProps) => {
+	console.log(image);
 	return (
 		<>
 			{image ? (
-				<Link href={`/collection/${id}`} style={styles.imageContainer}>
-					<Image source={{ uri: image }} style={styles.image} />
+				<Link
+					href={`/collection/${id}`}
+					className="w-[100] h-[130] rounded-lg bg-white"
+				>
+					<Image source={{ uri: image }} className="w-full h-full rounded-lg" />
 				</Link>
 			) : (
-				<Link href={`/collection/${id}`} style={styles.container}>
+				<Link
+					href={`/collection/${id}`}
+					className="w-[100] h-[130] rounded-lg bg-white p-[10]"
+				>
 					<Text>{name}</Text>
 				</Link>
 			)}
@@ -25,27 +32,3 @@ const CollectionCard = ({ id, name, image }: IProps) => {
 };
 
 export default CollectionCard;
-
-const styles = StyleSheet.create({
-	imageContainer: {
-		backgroundColor: 'white',
-		width: 100,
-		height: 130,
-		borderRadius: 10,
-		shadowColor: '#000',
-		elevation: 5,
-	},
-	image: {
-		width: '100%',
-		height: '100%',
-		borderRadius: 10,
-	},
-	container: {
-		backgroundColor: 'white',
-		padding: 10,
-		width: 100,
-		height: 130,
-		shadowColor: '#000',
-		elevation: 5,
-	},
-});

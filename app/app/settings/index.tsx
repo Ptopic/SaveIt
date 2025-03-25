@@ -3,7 +3,7 @@ import { goBack } from '@/utils/navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, Text, TouchableOpacity } from 'react-native';
 
 export default function SettingsScreen() {
 	const handleLogout = async () => {
@@ -11,7 +11,7 @@ export default function SettingsScreen() {
 		router.push('/getStarted');
 	};
 	return (
-		<SafeAreaView style={styles.container}>
+		<SafeAreaView className="flex-1 items-center justify-center">
 			<Title>Tab One</Title>
 			<TouchableOpacity onPress={handleLogout}>
 				<Text>Logout</Text>
@@ -22,11 +22,3 @@ export default function SettingsScreen() {
 		</SafeAreaView>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-});

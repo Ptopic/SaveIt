@@ -1,11 +1,11 @@
 import { goBack } from '@/utils/navigation';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ProfileScreen = () => {
 	return (
-		<SafeAreaView style={styles.container}>
+		<SafeAreaView className="flex-1 items-center justify-center">
 			<Text>Profile</Text>
 			<TouchableOpacity onPress={goBack}>
 				<Text>Back</Text>
@@ -15,11 +15,3 @@ const ProfileScreen = () => {
 };
 
 export default ProfileScreen;
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-});

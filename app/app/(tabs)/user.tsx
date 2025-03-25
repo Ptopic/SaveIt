@@ -9,14 +9,12 @@ import CreateCollectionForm from '@/feature/user/CreateCollectionForm';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
 	ActivityIndicator,
-	Image,
 	RefreshControl,
 	SafeAreaView,
 	ScrollView,
-	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
@@ -32,7 +30,6 @@ export default function TabUserScreen() {
 	const COLLECTIONS_PAGE_SIZE = '6';
 
 	const [refreshing, setRefreshing] = useState(false);
-	const [isImagesLoaded, setIsImagesLoaded] = useState(false);
 
 	const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -52,28 +49,10 @@ export default function TabUserScreen() {
 		setRefreshing(false);
 	};
 
-	useEffect(() => {
-		if (collections?.data?.length) {
-			const validImages = collections.data
-				.filter(
-					(collection: any) =>
-						collection.image && typeof collection.image === 'string'
-				)
-				.map((collection: any) => collection.image);
-
-			// Prefetch i spremi u cache
-			const preloadImages = validImages.map(async (image: any) => {
-				await Image.prefetch(image);
-			});
-
-			Promise.all(preloadImages).then(() => setIsImagesLoaded(true));
-		}
-	}, [collections]);
-
 	return (
-		<SafeAreaView style={{ flex: 1 }}>
+		<SafeAreaView className="flex-1">
 			<ScrollView
-				style={styles.container}
+				className="p-[15]"
 				refreshControl={
 					<RefreshControl
 						refreshing={refreshing}
@@ -82,38 +61,41 @@ export default function TabUserScreen() {
 					/>
 				}
 			>
-				<View style={styles.header}>
-					<View style={styles.titleContainer}>
+				<View className="flex-col gap-5">
+					<View className="flex-row justify-between items-center">
 						<Title>Petar Topic</Title>
 						<Link href={'/settings' as any}>
 							<Icon name="settings" size={20} color="black" />
 						</Link>
 					</View>
 
-					<View style={styles.userInfoContainer}>
-						<View style={styles.circle}></View>
+					<View className="flex-row gap-5 items-center">
+						<View className="w-[85] h-[85] rounded-full bg-lightgray"></View>
 						<View>
 							<Text>7</Text>
 							<Text>Media Saved</Text>
 						</View>
 					</View>
 
-					<View style={styles.locationContainer}>
+					<View className="flex-row gap-2 items-center">
 						<Text>📍</Text>
 						<Text>Location</Text>
 					</View>
 
-					<Link href={'/profile' as any} style={styles.editButton}>
-						<Text style={styles.editButtonText}>Edit Profile</Text>
+					<Link
+						href={'/profile' as any}
+						className="bg-lightgray p-2 rounded-md"
+					>
+						<Text className="text-white text-center">Edit Profile</Text>
 					</Link>
 
-					<View style={styles.myCollectionsContainer}>
-						<TouchableOpacity style={styles.myCollectionsHeader}>
+					<View className="flex-row justify-between items-center">
+						<TouchableOpacity className="flex-row gap-2 items-center">
 							<Subtitle>My Collections</Subtitle>
 							<Icon name="arrow-forward-ios" size={14} color="lightgray" />
 						</TouchableOpacity>
 						<TouchableOpacity
-							style={styles.addCollectionButton}
+							className="bg-lightgray rounded-full w-[30] h-[30] justify-center items-center"
 							onPress={() => bottomSheetRef.current?.expand()}
 						>
 							<OctiIcon name="plus" size={14} color="white" />
@@ -122,11 +104,9 @@ export default function TabUserScreen() {
 					<ScrollView
 						horizontal
 						showsHorizontalScrollIndicator={false}
-						contentContainerStyle={styles.collectionsCardsContainer}
+						contentContainerStyle={{ gap: 10 }}
 					>
-						{isCollectionsLoading ||
-						isCollectionsFetching ||
-						!isImagesLoaded ? (
+						{isCollectionsLoading || isCollectionsFetching ? (
 							<ActivityIndicator color="black" />
 						) : (
 							collections?.data &&
@@ -147,7 +127,7 @@ export default function TabUserScreen() {
 					<ScrollView
 						horizontal
 						showsHorizontalScrollIndicator={false}
-						contentContainerStyle={styles.extractsCardsContainer}
+						contentContainerStyle={{ gap: 10 }}
 					>
 						<ExtractCard
 							title="Restaurants"
@@ -229,70 +209,3 @@ export default function TabUserScreen() {
 		</SafeAreaView>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		padding: 15,
-	},
-	titleContainer: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-	},
-	circle: {
-		width: 85,
-		height: 85,
-		borderRadius: 65,
-		backgroundColor: 'lightgray',
-	},
-	header: {
-		flexDirection: 'column',
-		justifyContent: 'center',
-		gap: 15,
-	},
-	userInfoContainer: {
-		flexDirection: 'row',
-		gap: 20,
-		alignItems: 'center',
-	},
-	editButton: {
-		backgroundColor: 'lightgray',
-		padding: 10,
-		borderRadius: 5,
-	},
-	editButtonText: {
-		color: 'white',
-		textAlign: 'center',
-	},
-	locationContainer: {
-		flexDirection: 'row',
-		gap: 5,
-	},
-	myCollectionsContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-	},
-	myCollectionsHeader: {
-		flexDirection: 'row',
-		gap: 5,
-		alignItems: 'center',
-	},
-	addCollectionButton: {
-		backgroundColor: 'lightgray',
-		borderRadius: 75,
-		width: 30,
-		height: 30,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	collectionsCardsContainer: {
-		gap: 10,
-	},
-	extractsCardsContainer: {
-		gap: 10,
-	},
-	addCollectionContainer: {
-		flex: 1,
-	},
-});

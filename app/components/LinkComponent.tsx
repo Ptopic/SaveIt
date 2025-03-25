@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 const LinkComponent = ({
 	href,
@@ -15,11 +15,11 @@ const LinkComponent = ({
 		<>
 			{onPress ? (
 				<TouchableOpacity onPress={onPress}>
-					<Text style={styles.link}>{children}</Text>
+					<Text className="text-black underline">{children}</Text>
 				</TouchableOpacity>
 			) : (
 				<Link href={href as any}>
-					<Text style={styles.link}>{children}</Text>
+					<Text className="text-black underline">{children}</Text>
 				</Link>
 			)}
 		</>
@@ -27,10 +27,3 @@ const LinkComponent = ({
 };
 
 export default LinkComponent;
-
-const styles = StyleSheet.create({
-	link: {
-		color: 'black',
-		textDecorationLine: 'underline',
-	},
-});

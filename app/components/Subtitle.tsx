@@ -1,14 +1,7 @@
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 
 const Subtitle = ({ children }: { children: React.ReactNode }) => {
-	return <Text style={styles.subtitle}>{children}</Text>;
+	return <Text className="text-lg font-bold">{children}</Text>;
 };
 
 export default Subtitle;
-
-const styles = StyleSheet.create({
-	subtitle: {
-		fontSize: 16,
-		fontWeight: 'bold',
-	},
-});

@@ -1,10 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-	Modal,
-	StyleSheet,
-	TouchableWithoutFeedback,
-	ViewStyle,
-} from 'react-native';
+import { Modal, TouchableWithoutFeedback, ViewStyle } from 'react-native';
 import Animated, {
 	runOnJS,
 	useAnimatedStyle,
@@ -66,11 +61,13 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 		>
 			<TouchableWithoutFeedback onPress={handleClose}>
 				<Animated.View
-					style={[styles.overlay, overlayStyle, animatedOverlayStyle]}
+					className="flex-1 justify-center items-center bg-black/50"
+					style={[overlayStyle, animatedOverlayStyle]}
 				>
 					<TouchableWithoutFeedback>
 						<Animated.View
-							style={[styles.modalContainer, modalStyle, animatedModalStyle]}
+							className="bg-white rounded-lg p-[20] w-[80%] max-h-[80%]"
+							style={[modalStyle, animatedModalStyle]}
 						>
 							{children}
 						</Animated.View>
@@ -80,21 +77,5 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 		</Modal>
 	);
 };
-
-const styles = StyleSheet.create({
-	overlay: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-	},
-	modalContainer: {
-		backgroundColor: 'white',
-		borderRadius: 10,
-		padding: 20,
-		width: '80%',
-		maxHeight: '80%',
-	},
-});
 
 export default ModalComponent;

@@ -10,6 +10,8 @@ import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
+import '../global.css';
+
 export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {

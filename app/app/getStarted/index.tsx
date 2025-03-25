@@ -59,16 +59,16 @@ const index = () => {
 	};
 
 	return (
-		<SafeAreaView style={styles.container}>
-			<View style={styles.videoContainer}>
-				<Text style={styles.videoText}>Video</Text>
+		<SafeAreaView className="flex-1 gap-[20]">
+			<View className="flex-1 bg-lightgray items-center justify-center">
+				<Text className="text-2xl font-bold">Video</Text>
 			</View>
-			<View style={styles.buttonContainer}>
+			<View className="items-center justify-center px-[15]">
 				<TouchableOpacity
-					style={styles.button}
+					className="w-full h-[50] bg-black rounded-lg items-center justify-center"
 					onPress={() => setModalVisible(true)}
 				>
-					<Text style={styles.buttonText}>Get Started</Text>
+					<Text className="text-white text-lg font-bold">Get Started</Text>
 				</TouchableOpacity>
 			</View>
 
@@ -91,11 +91,11 @@ const index = () => {
 						errors,
 						resetForm,
 					}) => (
-						<View style={styles.modalContent}>
+						<View className="gap-[20]">
 							<Title>
 								{authMode === 'signin' ? 'Sign in' : 'Sign up'} to continue
 							</Title>
-							<View style={styles.inputContainer}>
+							<View className="gap-[10]">
 								<Input
 									name="email"
 									placeholder="Email"
@@ -114,10 +114,10 @@ const index = () => {
 								/>
 							</View>
 							<TouchableOpacity
-								style={styles.button}
+								className="w-full h-[50] bg-black rounded-lg items-center justify-center"
 								onPress={() => handleSubmit()}
 							>
-								<Text style={styles.buttonText}>
+								<Text className="text-white text-lg font-bold">
 									{authMode === 'signin' ? 'Sign in' : 'Sign up'}
 								</Text>
 							</TouchableOpacity>
@@ -141,38 +141,6 @@ const index = () => {
 export default index;
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		gap: 20,
-	},
-	videoContainer: {
-		flex: 1,
-		backgroundColor: 'lightgray',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	videoText: {
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-	buttonContainer: {
-		justifyContent: 'center',
-		alignItems: 'center',
-		paddingHorizontal: 15,
-	},
-	button: {
-		width: '100%',
-		height: 50,
-		backgroundColor: 'black',
-		borderRadius: 10,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	buttonText: {
-		color: 'white',
-		fontSize: 16,
-		fontWeight: 'bold',
-	},
 	modalOverlay: {
 		justifyContent: 'flex-end',
 	},
@@ -181,15 +149,5 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		height: '100%',
 		padding: 20,
-	},
-	modalContent: {
-		alignItems: 'flex-start',
-		gap: 20,
-		width: '100%',
-		paddingBottom: 40,
-	},
-	inputContainer: {
-		gap: 10,
-		width: '100%',
 	},
 });
