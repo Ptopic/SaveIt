@@ -11,8 +11,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as Yup from 'yup';
 
 const userSchema = Yup.object({
-	name: Yup.string().required('Name is required').max(20),
-	description: Yup.string().required('Description is required').max(100),
+	name: Yup.string().required('Name is required').max(50),
+	description: Yup.string().required('Description is required').max(200),
 });
 
 const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
@@ -113,6 +113,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 							value={values.name}
 							onChangeText={handleChange('name')}
 							onBlur={handleBlur('name')}
+							maxLength={50}
 						/>
 						{values.name && (
 							<Input
@@ -122,6 +123,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 								onChangeText={handleChange('description')}
 								onBlur={handleBlur('description')}
 								error={errors.description}
+								maxLength={200}
 							/>
 						)}
 						<TouchableOpacity

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
 	NativeSyntheticEvent,
 	StyleSheet,
+	Text,
 	TextInput,
 	TextInputFocusEventData,
 	View,
@@ -21,6 +22,7 @@ const Input = ({
 	onBlur,
 	error,
 	type = 'text',
+	maxLength,
 }: {
 	name: string;
 	placeholder: string;
@@ -29,6 +31,7 @@ const Input = ({
 	onBlur: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
 	error?: string;
 	type?: 'text' | 'password';
+	maxLength?: number;
 }) => {
 	const [isFocused, setIsFocused] = useState(false);
 	const placeholderPosition = useSharedValue(value ? -32 : 0);
@@ -73,18 +76,25 @@ const Input = ({
 			<Animated.Text style={[styles.placeholder, animatedPlaceholderStyle]}>
 				{placeholder}
 			</Animated.Text>
-			<TextInput
-				testID={name}
-				autoComplete="off"
-				secureTextEntry={type === 'password'}
-				value={value}
-				onChangeText={handleChangeText}
-				onBlur={handleBlur}
-				placeholder={placeholder}
-				placeholderTextColor="gray"
-				autoCapitalize="none"
-				style={styles.input}
-			/>
+			<View style={styles.inputBox}>
+				<TextInput
+					testID={name}
+					autoComplete="off"
+					secureTextEntry={type === 'password'}
+					value={value}
+					onChangeText={handleChangeText}
+					onBlur={handleBlur}
+					placeholder={placeholder}
+					placeholderTextColor="gray"
+					autoCapitalize="none"
+					style={maxLength ? { width: '85%' } : {}}
+				/>
+				{maxLength && (
+					<Text style={styles.maxLength}>
+						{value.length}/{maxLength}
+					</Text>
+				)}
+			</View>
 			{error && <ErrorText error={error} />}
 		</View>
 	);
@@ -98,11 +108,17 @@ const styles = StyleSheet.create({
 		position: 'relative',
 		width: '100%',
 	},
-	input: {
+	inputBox: {
 		borderWidth: 1,
 		borderColor: 'black',
 		borderRadius: 5,
 		padding: 10,
+	},
+	maxLength: {
+		position: 'absolute',
+		right: 10,
+		bottom: 10,
+		color: 'gray',
 	},
 	placeholder: {
 		position: 'absolute',
