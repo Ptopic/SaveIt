@@ -25,7 +25,6 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 
 	const { mutate: createCollection } = useCreateCollection({
 		onSuccess: async () => {
-			console.log('success');
 			await queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
 			closeModal();
 		},

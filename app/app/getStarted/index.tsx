@@ -1,68 +1,74 @@
-import useSignIn from '@/api/auth/hooks/useSignIn';
-import useSignUp from '@/api/auth/hooks/useSignUp';
-import Input from '@/components/Input';
-import LinkComponent from '@/components/LinkComponent';
 import ModalComponent from '@/components/ModalComponent';
 import Title from '@/components/Title';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { makeRedirectUri } from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
-import { Formik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+	ActivityIndicator,
+	Alert,
 	SafeAreaView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import * as Yup from 'yup';
 
-const userSchema = Yup.object({
-	email: Yup.string().email('Invalid email'),
-	password: Yup.string(),
-});
+const googleClientId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
+const androidClientId = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
+const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.16:3002';
 
 const index = () => {
-	const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
 	const [modalVisible, setModalVisible] = useState(false);
-	const initialValues = { email: '', password: '' };
-	const { mutate: signin, isPending: isSigningIn } = useSignIn({
-		onSuccess: async (data: any) => {
-			await AsyncStorage.setItem('accessToken', data.token);
-			setModalVisible(false);
-			router.push('/');
-		},
-		onError: (error: Error) => {
-			console.log(error);
-		},
+	const [isLoading, setIsLoading] = useState(false);
+	const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+		clientId: googleClientId,
+		iosClientId: iosClientId,
+		androidClientId: androidClientId,
+		redirectUri: makeRedirectUri({
+			native: 'com.petartopic.saveit:/oauth2redirect/google',
+			scheme: 'saveit',
+		}),
 	});
-	const { mutate: signup, isPending: isSigningUp } = useSignUp({
-		onSuccess: async (data: any) => {
-			await AsyncStorage.setItem('accessToken', data.token);
-			setModalVisible(false);
-			router.push('/');
-		},
-		onError: (error: Error) => {
-			console.log(error);
-		},
-	});
-	const handleSubmit = (values: any, { setSubmitting }: any) => {
-		try {
-			if (authMode === 'signin') {
-				signin(values);
-			} else {
-				signup(values);
+
+	useEffect(() => {
+		const handleAuthResponse = async () => {
+			if (response?.type === 'success') {
+				const { access_token } = response.params;
+
+				try {
+					const apiResponse = await fetch(`${apiUrl}/auth/google`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ token: access_token }),
+					});
+
+					const data = await apiResponse.json();
+					if (data.token) {
+						await AsyncStorage.setItem('accessToken', data.token);
+						setModalVisible(false);
+						router.push('/');
+					} else {
+						Alert.alert('Error', 'Authentication failed.');
+					}
+				} catch (error) {
+					Alert.alert('Error', 'An error occurred while exchanging the code.');
+				}
 			}
-		} catch (error) {
-			console.log(error);
-		}
-	};
+		};
+		handleAuthResponse();
+	}, [response]);
 
 	return (
 		<SafeAreaView className="flex-1 gap-[20]">
 			<View className="flex-1 bg-lightgray items-center justify-center">
 				<Text className="text-2xl font-bold">Video</Text>
 			</View>
+
 			<View className="items-center justify-center px-[15]">
 				<TouchableOpacity
 					className="w-full h-[50] bg-black rounded-lg items-center justify-center"
@@ -78,61 +84,22 @@ const index = () => {
 				overlayStyle={styles.modalOverlay}
 				modalStyle={styles.modalContainer}
 			>
-				<Formik
-					initialValues={initialValues}
-					validationSchema={userSchema}
-					onSubmit={handleSubmit}
-				>
-					{({
-						values,
-						handleChange,
-						handleBlur,
-						handleSubmit,
-						errors,
-						resetForm,
-					}) => (
-						<View className="gap-[20]">
-							<Title>
-								{authMode === 'signin' ? 'Sign in' : 'Sign up'} to continue
-							</Title>
-							<View className="gap-[10]">
-								<Input
-									name="email"
-									placeholder="Email"
-									value={values.email}
-									onChangeText={handleChange('email')}
-									onBlur={handleBlur('email')}
-									error={errors.email}
-								/>
-								<Input
-									name="password"
-									placeholder="Password"
-									type="password"
-									value={values.password}
-									onChangeText={handleChange('password')}
-									onBlur={handleBlur('password')}
-								/>
-							</View>
-							<TouchableOpacity
-								className="w-full h-[50] bg-black rounded-lg items-center justify-center"
-								onPress={() => handleSubmit()}
-							>
-								<Text className="text-white text-lg font-bold">
-									{authMode === 'signin' ? 'Sign in' : 'Sign up'}
-								</Text>
-							</TouchableOpacity>
-							{authMode === 'signin' ? (
-								<LinkComponent onPress={() => setAuthMode('signup')}>
-									Dont have an account? Sign up
-								</LinkComponent>
-							) : (
-								<LinkComponent onPress={() => setAuthMode('signin')}>
-									Already have an account? Sign in
-								</LinkComponent>
-							)}
-						</View>
-					)}
-				</Formik>
+				<View className="gap-[10]">
+					<Title>Sign in with Google</Title>
+					<TouchableOpacity
+						className="w-full h-[50] bg-black rounded-lg items-center justify-center"
+						onPress={() => promptAsync()}
+						disabled={!request || isLoading}
+					>
+						{isLoading ? (
+							<ActivityIndicator color="white" />
+						) : (
+							<Text className="text-white text-lg font-bold">
+								Sign in with Google
+							</Text>
+						)}
+					</TouchableOpacity>
+				</View>
 			</ModalComponent>
 		</SafeAreaView>
 	);
@@ -141,13 +108,44 @@ const index = () => {
 export default index;
 
 const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		gap: 20,
+	},
+	content: {
+		flex: 1,
+		backgroundColor: 'lightgray',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	title: {
+		fontSize: 24,
+		fontWeight: 'bold',
+	},
+	button: {
+		width: '80%',
+		height: 50,
+		backgroundColor: 'black',
+		borderRadius: 10,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	buttonText: {
+		color: 'white',
+		fontSize: 18,
+		fontWeight: 'bold',
+	},
 	modalOverlay: {
 		justifyContent: 'flex-end',
 	},
 	modalContainer: {
 		width: '100%',
 		borderRadius: 10,
-		height: '100%',
-		padding: 20,
+		paddingHorizontal: 20,
+		paddingTop: 20,
+		paddingBottom: 40,
+	},
+	modalContent: {
+		gap: 20,
 	},
 });

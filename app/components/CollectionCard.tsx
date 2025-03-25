@@ -9,7 +9,6 @@ interface IProps {
 }
 
 const CollectionCard = ({ id, name, image }: IProps) => {
-	console.log(image);
 	return (
 		<>
 			{image ? (

@@ -25,7 +25,7 @@ export class CollectionsController {
 		@Query('pageSize') pageSize: string,
 		@Query('searchQuery') searchQuery?: string
 	) {
-		const userId = req.user.sub;
+		const userId = req.user.userId;
 
 		const { collections, totalCollections } =
 			await this.collectionsService.getCollections(
@@ -53,7 +53,7 @@ export class CollectionsController {
 		@Body() body: CreateCollectionDto
 	) {
 		const { name, description, image } = body;
-		const userId = req.user.sub;
+		const userId = req.user.userId;
 
 		return await this.collectionsService.createCollection(userId, {
 			name,

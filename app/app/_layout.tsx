@@ -6,7 +6,7 @@ import { useFonts } from 'expo-font';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { Alert, Linking, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
@@ -68,6 +68,22 @@ function RootLayoutNav() {
 			router.navigate('/' as any);
 		}
 	}, [accessToken, isLoading]);
+
+	useEffect(() => {
+		const handleDeepLink = (event: any) => {
+			const { url } = event;
+
+			if (url && url.startsWith('saveit://')) {
+				Alert.alert('App Opened with custom URL', url);
+			}
+		};
+
+		Linking.addEventListener('url', handleDeepLink);
+
+		return () => {
+			Linking.removeAllListeners('url');
+		};
+	}, []);
 
 	return (
 		<QueryClientProvider client={queryClient}>

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCollectionDto {
 	@IsString()
@@ -10,6 +10,6 @@ export class CreateCollectionDto {
 	description: string;
 
 	@IsString()
-	@IsNotEmpty()
+	@IsOptional()
 	image: string;
 }
