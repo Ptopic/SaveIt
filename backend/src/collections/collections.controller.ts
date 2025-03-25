@@ -10,15 +10,12 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { CollectionsService } from './collections.service';
+import { CreateCollectionDto } from './dtos/createCollection.dto';
 
 @Controller('collections')
 export class CollectionsController {
-	constructor(
-		private readonly collectionsService: CollectionsService,
-		private readonly prisma: PrismaService
-	) {}
+	constructor(private readonly collectionsService: CollectionsService) {}
 
 	@Get('/')
 	@JwtAuth()
@@ -53,14 +50,15 @@ export class CollectionsController {
 	@JwtAuth()
 	async createCollection(
 		@Req() req: Request,
-		@Body() body: { name: string; description: string }
+		@Body() body: CreateCollectionDto
 	) {
-		const { name, description } = body;
+		const { name, description, base64Image } = body;
 		const userId = req.user.sub;
 
 		return await this.collectionsService.createCollection(userId, {
 			name,
 			description,
+			base64Image,
 		});
 	}
 

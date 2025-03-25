@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CollectionsService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly cloudinaryService: CloudinaryService
+	) {}
 
 	async getCollections(
 		userId: string,
@@ -38,8 +42,12 @@ export class CollectionsService {
 	}
 
 	async createCollection(userId: string, data: any) {
+		const { name, description, base64Image } = data;
+
+		const image = await this.cloudinaryService.uploadImage(base64Image);
+
 		return await this.prisma.collection.create({
-			data: { userId, ...data },
+			data: { userId, name, description, image: image.url },
 		});
 	}
 

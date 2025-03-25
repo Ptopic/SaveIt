@@ -9,17 +9,13 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { ImportsService } from './imports.service';
 import { detectPostType, getSlideshowImages } from './utils/detectType.js';
 import { cleanDescription, getMetaData } from './utils/video.js';
 
 @Controller('imports')
 export class ImportsController {
-	constructor(
-		private readonly importsService: ImportsService,
-		private readonly prisma: PrismaService
-	) {}
+	constructor(private readonly importsService: ImportsService) {}
 
 	@Get('/')
 	@JwtAuth()
