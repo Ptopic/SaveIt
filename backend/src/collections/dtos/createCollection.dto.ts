@@ -11,5 +11,5 @@ export class CreateCollectionDto {
 
 	@IsString()
 	@IsNotEmpty()
-	base64Image: string;
+	image: string;
 }

@@ -9,9 +9,10 @@ import CreateCollectionForm from '@/feature/user/CreateCollectionForm';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
+	Image,
 	RefreshControl,
 	SafeAreaView,
 	ScrollView,
@@ -31,6 +32,7 @@ export default function TabUserScreen() {
 	const COLLECTIONS_PAGE_SIZE = '6';
 
 	const [refreshing, setRefreshing] = useState(false);
+	const [isImagesLoaded, setIsImagesLoaded] = useState(false);
 
 	const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -49,6 +51,24 @@ export default function TabUserScreen() {
 		await queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
 		setRefreshing(false);
 	};
+
+	useEffect(() => {
+		if (collections?.data?.length) {
+			const validImages = collections.data
+				.filter(
+					(collection: any) =>
+						collection.image && typeof collection.image === 'string'
+				)
+				.map((collection: any) => collection.image);
+
+			// Prefetch i spremi u cache
+			const preloadImages = validImages.map(async (image: any) => {
+				await Image.prefetch(image);
+			});
+
+			Promise.all(preloadImages).then(() => setIsImagesLoaded(true));
+		}
+	}, [collections]);
 
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
@@ -104,7 +124,9 @@ export default function TabUserScreen() {
 						showsHorizontalScrollIndicator={false}
 						contentContainerStyle={styles.collectionsCardsContainer}
 					>
-						{isCollectionsLoading || isCollectionsFetching ? (
+						{isCollectionsLoading ||
+						isCollectionsFetching ||
+						!isImagesLoaded ? (
 							<ActivityIndicator color="black" />
 						) : (
 							collections?.data &&

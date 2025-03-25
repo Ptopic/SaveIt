@@ -42,12 +42,21 @@ export class CollectionsService {
 	}
 
 	async createCollection(userId: string, data: any) {
-		const { name, description, base64Image } = data;
+		const { name, description, image } = data;
 
-		const image = await this.cloudinaryService.uploadImage(base64Image);
+		const sizeInBytes = Buffer.from(image.split(',')[1], 'base64').length;
+		const maxSizeInBytes = 20 * 1024 * 1024;
+
+		if (sizeInBytes > maxSizeInBytes) {
+			throw new Error('Image size exceeds 20MB limit');
+		}
+
+		const uploadedImage = await this.cloudinaryService.uploadImage(image);
+
+		console.log(uploadedImage);
 
 		return await this.prisma.collection.create({
-			data: { userId, name, description, image: image.url },
+			data: { userId, name, description, image: uploadedImage.url },
 		});
 	}
 

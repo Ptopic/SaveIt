@@ -7,10 +7,12 @@ const useCreateCollection = (
 		mutationFn: ({
 			name,
 			description,
+			image,
 		}: {
 			name: string;
-			description: string;
-		}) => collectionRequests.createCollection(name, description),
+			description?: string;
+			image?: string;
+		}) => collectionRequests.createCollection(name, description, image),
 		...options,
 	});
 };

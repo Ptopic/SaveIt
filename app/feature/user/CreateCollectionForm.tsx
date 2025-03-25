@@ -25,6 +25,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 
 	const { mutate: createCollection } = useCreateCollection({
 		onSuccess: async () => {
+			console.log('success');
 			await queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
 			closeModal();
 		},
@@ -36,7 +37,8 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 	const handleSubmit = (values: any, { setSubmitting }: any) => {
 		createCollection({
 			name: values.name,
-			description: values.description,
+			description: values.description || undefined,
+			image: imageBase64 || undefined,
 		});
 		setSubmitting(false);
 	};
@@ -52,7 +54,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 
 		if (!result.canceled && result.assets?.[0]) {
 			setImage(result.assets[0].uri ?? null);
-			setImageBase64(result.assets[0].base64 ?? null);
+			setImageBase64(`data:image/jpeg;base64,${result.assets[0].base64}`);
 			setModalVisible(false);
 		}
 	};

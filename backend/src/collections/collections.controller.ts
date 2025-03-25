@@ -52,13 +52,13 @@ export class CollectionsController {
 		@Req() req: Request,
 		@Body() body: CreateCollectionDto
 	) {
-		const { name, description, base64Image } = body;
+		const { name, description, image } = body;
 		const userId = req.user.sub;
 
 		return await this.collectionsService.createCollection(userId, {
 			name,
 			description,
-			base64Image,
+			image,
 		});
 	}
 

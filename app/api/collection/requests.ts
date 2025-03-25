@@ -23,10 +23,14 @@ const getCollection = async (id: string) => {
 	});
 };
 
-const createCollection = async (name: string, description: string) => {
+const createCollection = async (
+	name: string,
+	description?: string,
+	image?: string
+) => {
 	return await fetchWithMiddleware(`${config.apiUrl}/collections`, {
 		method: 'POST',
-		body: JSON.stringify({ name, description }),
+		body: JSON.stringify({ name, description, image }),
 	});
 };
 

@@ -1,12 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { json } from 'express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 
 	app.enableCors();
+	app.use(json({ limit: '20mb' }));
 	app.useGlobalPipes(new ValidationPipe());
 
 	const config = new DocumentBuilder()
