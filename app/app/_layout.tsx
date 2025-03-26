@@ -10,6 +10,9 @@ import { Alert, Linking, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
+import authRequests from '@/api/auth/requests';
+import collectionRequests from '@/api/collection/requests';
+import { COLLECTIONS, USER_INFO } from '@/api/constants';
 import '../global.css';
 
 export { ErrorBoundary } from 'expo-router';
@@ -47,6 +50,26 @@ function RootLayoutNav() {
 	const queryClient = getQueryClient();
 	const [accessToken, setAccessToken] = React.useState<string | null>(null);
 	const [isLoading, setIsLoading] = React.useState(true);
+
+	const prefetchCommonQueries = React.useCallback(async () => {
+		// Example prefetch queries - adjust these based on your actual API endpoints
+		await Promise.all([
+			queryClient.prefetchQuery({
+				queryKey: [COLLECTIONS],
+				queryFn: () => collectionRequests.getCollections(),
+			}),
+			queryClient.prefetchQuery({
+				queryKey: [USER_INFO],
+				queryFn: () => authRequests.me(),
+			}),
+		]);
+	}, [queryClient]);
+
+	useEffect(() => {
+		if (accessToken && !isLoading) {
+			prefetchCommonQueries();
+		}
+	}, [accessToken, isLoading, prefetchCommonQueries]);
 
 	useEffect(() => {
 		const getToken = async () => {
