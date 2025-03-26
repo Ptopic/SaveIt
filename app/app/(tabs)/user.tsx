@@ -1,6 +1,6 @@
 import useGetUserInfo from '@/api/auth/hooks/useGetUserInfo';
 import useGetAllCollections from '@/api/collection/hooks/useGetAllCollections';
-import { COLLECTIONS, DEFAULT_PAGE } from '@/api/constants';
+import { COLLECTIONS, DEFAULT_PAGE, USER_INFO } from '@/api/constants';
 import CollectionCard from '@/components/CollectionCard';
 import DrawerModal from '@/components/DrawerModal';
 import ExtractCard from '@/components/ExtractCard';
@@ -34,7 +34,11 @@ export default function TabUserScreen() {
 
 	const bottomSheetRef = useRef<BottomSheet>(null);
 
-	const { data: userInfo, isLoading: isUserInfoLoading } = useGetUserInfo();
+	const {
+		data: userInfo,
+		isLoading: isUserInfoLoading,
+		isFetching: isUserInfoFetching,
+	} = useGetUserInfo();
 
 	const {
 		data: collections,
@@ -48,7 +52,10 @@ export default function TabUserScreen() {
 
 	const onRefresh = async () => {
 		setRefreshing(true);
-		await queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
+		await Promise.all([
+			queryClient.invalidateQueries({ queryKey: [USER_INFO] }),
+			queryClient.invalidateQueries({ queryKey: [COLLECTIONS] }),
+		]);
 		setRefreshing(false);
 	};
 
@@ -64,19 +71,19 @@ export default function TabUserScreen() {
 					/>
 				}
 			>
-				{isUserInfoLoading ? (
+				{isUserInfoLoading || isUserInfoFetching ? (
 					<ActivityIndicator />
 				) : (
 					<View className="flex-col gap-5">
 						<View className="flex-row justify-between items-center">
-							<Title>{userInfo?.name}</Title>
+							<Title>{userInfo.name}</Title>
 							<Link href={'/settings' as any}>
 								<SettingsIcon width={20} height={20} color="black" />
 							</Link>
 						</View>
 
 						<View className="flex-row gap-5 items-center">
-							{userInfo?.picture ? (
+							{userInfo.picture ? (
 								<Image
 									source={{ uri: userInfo.picture }}
 									className="w-[85] h-[85] rounded-full bg-gray400"

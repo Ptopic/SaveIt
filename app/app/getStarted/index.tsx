@@ -1,6 +1,7 @@
 import ModalComponent from '@/components/ModalComponent';
 import Title from '@/components/Title';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useQueryClient } from '@tanstack/react-query';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
@@ -21,6 +22,7 @@ const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
 const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.16:3002';
 
 const index = () => {
+	const queryClient = useQueryClient();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
@@ -28,8 +30,8 @@ const index = () => {
 		iosClientId: iosClientId,
 		androidClientId: androidClientId,
 		redirectUri: makeRedirectUri({
-			native: 'com.petartopic.saveit:/oauth2redirect/google',
-			scheme: 'saveit',
+			native: 'com.petartopic.Saveit:/oauth2redirect/google',
+			scheme: 'Saveit',
 		}),
 	});
 
@@ -50,6 +52,10 @@ const index = () => {
 					const data = await apiResponse.json();
 					if (data.token) {
 						await AsyncStorage.setItem('accessToken', data.token);
+						// await Promise.all([
+						// 	queryClient.invalidateQueries({ queryKey: [USER_INFO] }),
+						// 	queryClient.invalidateQueries({ queryKey: [COLLECTIONS] }),
+						// ]);
 						setModalVisible(false);
 						router.push('/');
 					} else {

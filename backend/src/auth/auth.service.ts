@@ -35,6 +35,8 @@ export class AuthService {
 
 			const { name, picture } = userInfoResponse.data;
 
+			let userId;
+
 			const existingUser = await this.prisma.user.findUnique({
 				where: {
 					email,
@@ -42,19 +44,21 @@ export class AuthService {
 			});
 
 			if (!existingUser) {
-				await this.prisma.user.create({
+				const newUser = await this.prisma.user.create({
 					data: {
-						id: sub,
 						email,
 						name,
-						password: '',
 						picture,
 					},
 				});
+
+				userId = newUser.id;
+			} else {
+				userId = existingUser.id;
 			}
 
 			const jwtToken = this.jwtService.sign({
-				sub,
+				sub: userId,
 				email,
 			});
 

@@ -5,7 +5,7 @@ import authRequests from '../requests';
 const useGetUserInfo = () => {
 	return useQuery({
 		queryKey: [USER_INFO],
-		queryFn: authRequests.me,
+		queryFn: () => authRequests.me(),
 	});
 };
 
