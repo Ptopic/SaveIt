@@ -88,23 +88,23 @@ function RootLayoutNav() {
 		if (!accessToken) {
 			router.navigate('/getStarted' as any);
 		} else {
-			router.navigate('/' as any);
+			// PROD: router.navigate('/' as any);
+			router.navigate('/settings' as any);
 		}
 	}, [accessToken, isLoading]);
 
 	useEffect(() => {
 		const handleDeepLink = (event: any) => {
 			const { url } = event;
-
 			if (url && url.startsWith('saveit://')) {
 				Alert.alert('App Opened with custom URL', url);
 			}
 		};
 
-		Linking.addEventListener('url', handleDeepLink);
+		const subscription = Linking.addEventListener('url', handleDeepLink);
 
 		return () => {
-			Linking.removeAllListeners('url');
+			subscription.remove();
 		};
 	}, []);
 

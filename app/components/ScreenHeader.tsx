@@ -12,19 +12,16 @@ interface IProps {
 const ScreenHeader = ({ allowBack = true, title }: IProps) => {
 	return (
 		<View className="flex-row gap-[10] items-center">
-			{allowBack ? (
-				<View className="w-6">
+			{allowBack && (
+				<View className="bg-white p-2 rounded-md border-gray100 border-[1px]">
 					<TouchableOpacity onPress={() => router.back()}>
-						<Icon name="arrow-back" size={24} color="black" />
+						<Icon name="arrow-back" size={22} color="black" />
 					</TouchableOpacity>
 				</View>
-			) : (
-				<View className="w-6" />
 			)}
-			<View className="flex-1 flex-row justify-center">
+			<View className="flex-1 flex-row justify-start">
 				<Title>{title}</Title>
 			</View>
-			<View className="w-6" />
 		</View>
 	);
 };
