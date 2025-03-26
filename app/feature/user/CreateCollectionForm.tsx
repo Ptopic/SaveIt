@@ -165,14 +165,14 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 										setModalVisible(false);
 									}}
 								>
-									<Text className="text-red-500 text-lg font-bold">Remove</Text>
+									<Text className="text-red600 text-lg font-bold">Remove</Text>
 								</TouchableOpacity>
 							</View>
 							<TouchableOpacity
 								onPress={() => setModalVisible(false)}
 								className="bg-white rounded-lg p-[10] justify-center items-center"
 							>
-								<Text className="text-red-500 text-lg font-bold">Cancel</Text>
+								<Text className="text-red600 text-lg font-bold">Cancel</Text>
 							</TouchableOpacity>
 						</View>
 					</ModalComponent>

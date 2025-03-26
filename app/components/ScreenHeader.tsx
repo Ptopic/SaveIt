@@ -13,7 +13,7 @@ const ScreenHeader = ({ allowBack = true, title }: IProps) => {
 	return (
 		<View className="flex-row gap-[10] items-center">
 			{allowBack && (
-				<View className="bg-white p-2 rounded-md border-gray100 border-[1px]">
+				<View className="bg-white p-2 rounded-md border-gray300 border-[1px]">
 					<TouchableOpacity onPress={() => router.back()}>
 						<Icon name="arrow-back" size={22} color="black" />
 					</TouchableOpacity>

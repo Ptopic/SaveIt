@@ -4,7 +4,8 @@
 		"strict": true,
 		"paths": {
 			"@/*": ["./*"]
-		}
+		},
+		"types": ["nativewind/types"]
 	},
 	"include": [
 		"**/*.ts",
@@ -12,6 +13,7 @@
 		".expo/types/**/*.ts",
 		"expo-env.d.ts",
 		"babel.config.js",
-		"nativewind-env.d.ts"
+		"nativewind-env.d.ts",
+		"declarations.d.ts"
 	]
 }
