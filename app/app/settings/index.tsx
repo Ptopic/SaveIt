@@ -47,12 +47,12 @@ export default function SettingsScreen() {
 									onPress={() => router.push('/profile' as any)}
 								>
 									<View className="flex-row gap-3 items-center">
-										<UserCircleIcon width={16} height={16} color="#737373" />
-										<Text className="body-small-regular">
+										<UserCircleIcon width={18} height={18} color="#737373" />
+										<Text className="body-medium-regular">
 											Personal Information
 										</Text>
 									</View>
-									<ChevronRightIcon width={16} height={16} color="#000000" />
+									<ChevronRightIcon width={18} height={18} color="#000000" />
 								</TouchableOpacity>
 
 								<TouchableOpacity
@@ -60,12 +60,12 @@ export default function SettingsScreen() {
 									onPress={() => setIsDeleteAccountModalVisible(true)}
 								>
 									<View className="flex-row gap-3 items-center">
-										<TrashIcon width={16} height={16} color="#b00000" />
-										<Text className="body-small-regular text-red600">
+										<TrashIcon width={18} height={18} color="#b00000" />
+										<Text className="body-medium-regular text-red600">
 											Delete Account
 										</Text>
 									</View>
-									<ChevronRightIcon width={16} height={16} color="#000000" />
+									<ChevronRightIcon width={18} height={18} color="#000000" />
 								</TouchableOpacity>
 							</View>
 						</View>
@@ -79,12 +79,12 @@ export default function SettingsScreen() {
 									onPress={handleLogout}
 								>
 									<View className="flex-row gap-3 items-center">
-										<LogoutIcon width={16} height={16} color="#b00000" />
-										<Text className="body-small-regular text-red600">
+										<LogoutIcon width={18} height={18} color="#b00000" />
+										<Text className="body-medium-regular text-red600">
 											Logout
 										</Text>
 									</View>
-									<ChevronRightIcon width={16} height={16} color="#000000" />
+									<ChevronRightIcon width={18} height={18} color="#000000" />
 								</TouchableOpacity>
 							</View>
 						</View>
