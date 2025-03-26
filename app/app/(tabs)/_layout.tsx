@@ -19,6 +19,11 @@ export default function TabLayout() {
 				// to prevent a hydration error in React Navigation v6.
 				headerShown: false,
 				tabBarShowLabel: false,
+				tabBarStyle: {
+					backgroundColor: 'white',
+					// borderTopColor: 'white',
+					paddingTop: 10,
+				},
 			}}
 		>
 			<Tabs.Screen
