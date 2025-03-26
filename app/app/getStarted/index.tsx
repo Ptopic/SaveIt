@@ -65,7 +65,7 @@ const index = () => {
 
 	return (
 		<SafeAreaView className="flex-1 gap-[20]">
-			<View className="flex-1 bg-lightgray items-center justify-center">
+			<View className="flex-1 bg-gray400 items-center justify-center">
 				<Text className="text-2xl font-bold">Video</Text>
 			</View>
 
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flex: 1,
-		backgroundColor: 'lightgray',
+		backgroundColor: 'gray400',
 		alignItems: 'center',
 		justifyContent: 'center',
 	},

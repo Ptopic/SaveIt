@@ -2,7 +2,12 @@ import useGetUserInfo from '@/api/auth/hooks/useGetUserInfo';
 import DeleteModalContent from '@/components/DeleteModalContent';
 import ModalComponent from '@/components/ModalComponent';
 import ScreenHeader from '@/components/ScreenHeader';
-import Icon from '@expo/vector-icons/MaterialCommunityIcons';
+import {
+	ChevronRightIcon,
+	LogoutIcon,
+	TrashIcon,
+	UserCircleIcon,
+} from '@/shared/svgs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -13,8 +18,6 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import IonIcons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function SettingsScreen() {
 	const [isDeleteAccountModalVisible, setIsDeleteAccountModalVisible] =
@@ -44,16 +47,12 @@ export default function SettingsScreen() {
 									onPress={() => router.push('/profile' as any)}
 								>
 									<View className="flex-row gap-3 items-center">
-										<Icon
-											name="clipboard-text-outline"
-											size={16}
-											color="#737373"
-										/>
+										<UserCircleIcon width={16} height={16} color="#737373" />
 										<Text className="body-small-regular">
 											Personal Information
 										</Text>
 									</View>
-									<MaterialIcons name="arrow-forward-ios" size={14} />
+									<ChevronRightIcon width={16} height={16} color="#000000" />
 								</TouchableOpacity>
 
 								<TouchableOpacity
@@ -61,12 +60,12 @@ export default function SettingsScreen() {
 									onPress={() => setIsDeleteAccountModalVisible(true)}
 								>
 									<View className="flex-row gap-3 items-center">
-										<IonIcons name="trash-outline" size={16} color="#b00000" />
+										<TrashIcon width={16} height={16} color="#b00000" />
 										<Text className="body-small-regular text-red600">
 											Delete Account
 										</Text>
 									</View>
-									<MaterialIcons name="arrow-forward-ios" size={14} />
+									<ChevronRightIcon width={16} height={16} color="#000000" />
 								</TouchableOpacity>
 							</View>
 						</View>
@@ -80,12 +79,12 @@ export default function SettingsScreen() {
 									onPress={handleLogout}
 								>
 									<View className="flex-row gap-3 items-center">
-										<MaterialIcons name="logout" size={16} color="#b00000" />
+										<LogoutIcon width={16} height={16} color="#b00000" />
 										<Text className="body-small-regular text-red600">
 											Logout
 										</Text>
 									</View>
-									<MaterialIcons name="arrow-forward-ios" size={14} />
+									<ChevronRightIcon width={16} height={16} color="#000000" />
 								</TouchableOpacity>
 							</View>
 						</View>

@@ -7,6 +7,7 @@ import ExtractCard from '@/components/ExtractCard';
 import Subtitle from '@/components/Subtitle';
 import Title from '@/components/Title';
 import CreateCollectionForm from '@/feature/user/CreateCollectionForm';
+import { ChevronRightIcon, PlusIcon, SettingsIcon } from '@/shared/svgs';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'expo-router';
@@ -23,8 +24,6 @@ import {
 } from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome6';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import OctiIcon from 'react-native-vector-icons/Octicons';
 
 export default function TabUserScreen() {
 	const queryClient = useQueryClient();
@@ -72,7 +71,7 @@ export default function TabUserScreen() {
 						<View className="flex-row justify-between items-center">
 							<Title>{userInfo?.name}</Title>
 							<Link href={'/settings' as any}>
-								<Icon name="settings" size={20} color="black" />
+								<SettingsIcon width={20} height={20} color="black" />
 							</Link>
 						</View>
 
@@ -80,10 +79,10 @@ export default function TabUserScreen() {
 							{userInfo?.picture ? (
 								<Image
 									source={{ uri: userInfo.picture }}
-									className="w-[85] h-[85] rounded-full bg-lightgray"
+									className="w-[85] h-[85] rounded-full bg-gray400"
 								/>
 							) : (
-								<View className="w-[85] h-[85] rounded-full bg-lightgray"></View>
+								<View className="w-[85] h-[85] rounded-full bg-gray400"></View>
 							)}
 							<View>
 								<Text>7</Text>
@@ -98,7 +97,7 @@ export default function TabUserScreen() {
 
 						<Link
 							href={'/profile' as any}
-							className="bg-lightgray p-2 rounded-md"
+							className="bg-gray400 p-2 rounded-md"
 						>
 							<Text className="text-white text-center">Edit Profile</Text>
 						</Link>
@@ -106,13 +105,13 @@ export default function TabUserScreen() {
 						<View className="flex-row justify-between items-center">
 							<TouchableOpacity className="flex-row gap-2 items-center">
 								<Subtitle>My Collections</Subtitle>
-								<Icon name="arrow-forward-ios" size={14} color="lightgray" />
+								<ChevronRightIcon width={14} height={14} color="#a3a3a3" />
 							</TouchableOpacity>
 							<TouchableOpacity
-								className="bg-lightgray rounded-full w-[30] h-[30] justify-center items-center"
+								className="bg-gray400 rounded-full w-[30] h-[30] justify-center items-center"
 								onPress={() => bottomSheetRef.current?.expand()}
 							>
-								<OctiIcon name="plus" size={14} color="white" />
+								<PlusIcon width={14} height={14} color="white" />
 							</TouchableOpacity>
 						</View>
 						<ScrollView
@@ -146,7 +145,7 @@ export default function TabUserScreen() {
 							<ExtractCard
 								title="Restaurants"
 								iconName="local-restaurant"
-								bgColor="lightgray"
+								bgColor="gray400"
 								textColor="white"
 								url="/category/restaurants"
 							/>
@@ -159,28 +158,28 @@ export default function TabUserScreen() {
 										color="white"
 									/>
 								}
-								bgColor="lightgray"
+								bgColor="gray400"
 								textColor="white"
 								url="/category/places"
 							/>
 							<ExtractCard
 								title="Recipes"
 								icon={<FontAwesomeIcon name="book" size={16} color="white" />}
-								bgColor="lightgray"
+								bgColor="gray400"
 								textColor="white"
 								url="/category/recipes"
 							/>
 							<ExtractCard
 								title="Products"
 								iconName="shopping-cart"
-								bgColor="lightgray"
+								bgColor="gray400"
 								textColor="white"
 								url="/category/products"
 							/>
 							<ExtractCard
 								title="Events"
 								iconName="event"
-								bgColor="lightgray"
+								bgColor="gray400"
 								textColor="white"
 								url="/category/events"
 							/>
@@ -189,28 +188,28 @@ export default function TabUserScreen() {
 								icon={
 									<FontAwesomeIcon name="dumbbell" size={16} color="white" />
 								}
-								bgColor="lightgray"
+								bgColor="gray400"
 								textColor="white"
 								url="/category/workout-routines"
 							/>
 							<ExtractCard
 								title="Books"
 								icon={<Ionicons name="book" size={20} color="white" />}
-								bgColor="lightgray"
+								bgColor="gray400"
 								textColor="white"
 								url="/category/books"
 							/>
 							<ExtractCard
 								title="Films and shows"
 								iconName="movie"
-								bgColor="lightgray"
+								bgColor="gray400"
 								textColor="white"
 								url="/category/films-and-shows"
 							/>
 							<ExtractCard
 								title="Software"
 								iconName="code"
-								bgColor="lightgray"
+								bgColor="gray400"
 								textColor="white"
 								url="/category/software"
 							/>

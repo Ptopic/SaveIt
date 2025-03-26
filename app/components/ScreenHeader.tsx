@@ -1,8 +1,8 @@
 import { router } from 'expo-router';
 import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Title from './Title';
+import { ArrowLeftIcon } from '@/shared/svgs';
 
 interface IProps {
 	allowBack?: boolean;
@@ -15,7 +15,7 @@ const ScreenHeader = ({ allowBack = true, title }: IProps) => {
 			{allowBack && (
 				<View className="bg-white p-2 rounded-md border-gray300 border-[1px]">
 					<TouchableOpacity onPress={() => router.back()}>
-						<Icon name="arrow-back" size={22} color="black" />
+						<ArrowLeftIcon width={22} height={22} color="black" />
 					</TouchableOpacity>
 				</View>
 			)}

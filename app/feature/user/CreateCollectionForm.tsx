@@ -2,12 +2,12 @@ import useCreateCollection from '@/api/collection/hooks/useCreateCollection';
 import { COLLECTIONS } from '@/api/constants';
 import Input from '@/components/Input';
 import ModalComponent from '@/components/ModalComponent';
+import { CloseIcon, ImageIcon } from '@/shared/svgs';
 import { useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as Yup from 'yup';
 
 const userSchema = Yup.object({
@@ -75,7 +75,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 			}) => (
 				<View className="gap-[20]">
 					<TouchableOpacity
-						className="bg-lightgray rounded-full w-[30] h-[30] justify-center items-center"
+						className="bg-gray400 rounded-full w-[30] h-[30] justify-center items-center"
 						onPress={() => {
 							closeModal();
 							resetForm();
@@ -83,13 +83,13 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 							setImageBase64(null);
 						}}
 					>
-						<Icon name="close" size={20} color="white" />
+						<CloseIcon width={20} height={20} color="white" />
 					</TouchableOpacity>
 
 					<View className="items-center justify-center">
 						{image ? (
 							<TouchableOpacity
-								className="rounded-lg bg-lightgray w-[150] h-[180] justify-center items-center"
+								className="rounded-lg bg-gray400 w-[150] h-[180] justify-center items-center"
 								onPress={() => setModalVisible(true)}
 							>
 								<Image
@@ -99,10 +99,10 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 							</TouchableOpacity>
 						) : (
 							<TouchableOpacity
-								className="rounded-lg bg-lightgray w-[150] h-[180] justify-center items-center"
+								className="rounded-lg bg-gray400 w-[150] h-[180] justify-center items-center"
 								onPress={pickImage}
 							>
-								<Icon name="image" size={34} color="white" />
+								<ImageIcon width={34} height={34} color="white" />
 							</TouchableOpacity>
 						)}
 					</View>
@@ -132,7 +132,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 								handleSubmit();
 							}}
 							disabled={!values.name || !values.description || isSubmitting}
-							className="bg-lightgray rounded-lg p-[10] justify-center items-center"
+							className="bg-gray400 rounded-lg p-[10] justify-center items-center"
 						>
 							<Text className="text-white text-lg font-bold">Create</Text>
 						</TouchableOpacity>
