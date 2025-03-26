@@ -86,7 +86,6 @@ const Input = ({
 					onBlur={handleBlur}
 					placeholder={placeholder}
 					placeholderTextColor="gray"
-					autoCapitalize="none"
 					style={maxLength ? { width: '85%' } : {}}
 				/>
 				{maxLength && (
