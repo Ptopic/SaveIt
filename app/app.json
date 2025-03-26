@@ -1,11 +1,12 @@
 {
 	"expo": {
-		"name": "saveit",
-		"slug": "saveit",
+		"name": "Saveit",
+		"slug": "Saveit",
+		"owner": "ghosty09",
 		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/images/icon.png",
-		"scheme": "saveit",
+		"scheme": "Saveit",
 		"userInterfaceStyle": "automatic",
 		"newArchEnabled": true,
 		"splash": {
@@ -15,7 +16,12 @@
 		},
 		"ios": {
 			"supportsTablet": true,
-			"bundleIdentifier": "com.petartopic.saveit"
+			"bundleIdentifier": "com.petartopic.Saveit",
+			"infoPlist": {
+				"NSAppTransportSecurity": {
+					"NSAllowsArbitraryLoads": true
+				}
+			}
 		},
 		"android": {
 			"adaptiveIcon": {
@@ -27,7 +33,8 @@
 				"android.permission.ACCESS_FINE_LOCATION",
 				"android.permission.RECORD_AUDIO"
 			],
-			"package": "com.petartopic.saveit"
+			"package": "com.petartopic.Saveit",
+			"usesCleartextTraffic": true
 		},
 		"web": {
 			"bundler": "metro",
@@ -39,7 +46,7 @@
 			[
 				"expo-location",
 				{
-					"locationAlwaysAndWhenInUsePermission": "Allow saveit to use your location."
+					"locationAlwaysAndWhenInUsePermission": "Allow Saveit to use your location."
 				}
 			],
 			[
