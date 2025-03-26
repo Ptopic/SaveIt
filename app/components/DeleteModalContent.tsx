@@ -1,4 +1,4 @@
-import { AlertTriangle } from '@/assets/icons';
+import { AlertTriangleIcon } from '@/shared/svgs';
 import React, { Dispatch, SetStateAction } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -15,7 +15,7 @@ const DeleteModalContent = ({ setIsModalVisible }: IProps) => {
 	return (
 		<View className="gap-3 flex-col items-center">
 			<View className="p-2 bg-red50 rounded-full">
-				<AlertTriangle color="#b00000" width={22} height={22} />
+				<AlertTriangleIcon color="#b00000" width={22} height={22} />
 			</View>
 			<Text className="heading-xxsmall">Are you sure?</Text>
 			<View className="w-full px-6">

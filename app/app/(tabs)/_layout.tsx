@@ -1,3 +1,9 @@
+import {
+	BookmarkIcon,
+	MapPinFullIcon,
+	MapPinIcon,
+	UserIcon,
+} from '@/shared/svgs';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,9 +36,11 @@ export default function TabLayout() {
 				name="index"
 				options={{
 					tabBarIcon: ({ color, focused }) => (
-						<TabBarIcon
-							name={focused ? 'bookmark' : 'bookmark-outline'}
+						<BookmarkIcon
 							color={color}
+							width={26}
+							height={26}
+							fill={focused ? 'black' : 'none'}
 						/>
 					),
 				}}
@@ -40,21 +48,23 @@ export default function TabLayout() {
 			<Tabs.Screen
 				name="map"
 				options={{
-					tabBarIcon: ({ color, focused }) => (
-						<TabBarIcon
-							name={focused ? 'map-marker' : 'map-marker-outline'}
-							color={color}
-						/>
-					),
+					tabBarIcon: ({ color, focused }) =>
+						focused ? (
+							<MapPinFullIcon color={color} width={26} height={26} />
+						) : (
+							<MapPinIcon color={color} width={26} height={26} />
+						),
 				}}
 			/>
 			<Tabs.Screen
 				name="user"
 				options={{
 					tabBarIcon: ({ color, focused }) => (
-						<TabBarIcon
-							name={focused ? 'account' : 'account-outline'}
+						<UserIcon
 							color={color}
+							width={26}
+							height={26}
+							fill={focused ? 'black' : 'none'}
 						/>
 					),
 				}}
