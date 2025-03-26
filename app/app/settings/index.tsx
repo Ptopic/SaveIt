@@ -1,4 +1,3 @@
-import useGetUserInfo from '@/api/auth/hooks/useGetUserInfo';
 import DeleteModalContent from '@/components/DeleteModalContent';
 import ModalComponent from '@/components/ModalComponent';
 import ScreenHeader from '@/components/ScreenHeader';
@@ -9,21 +8,15 @@ import {
 	UserCircleIcon,
 } from '@/shared/svgs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import {
-	ActivityIndicator,
-	SafeAreaView,
-	Text,
-	TouchableOpacity,
-	View,
-} from 'react-native';
+import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function SettingsScreen() {
+	const queryClient = useQueryClient();
 	const [isDeleteAccountModalVisible, setIsDeleteAccountModalVisible] =
 		useState(false);
-
-	const { data: user, isLoading: isUserInfoLoading } = useGetUserInfo();
 
 	const handleLogout = async () => {
 		await AsyncStorage.removeItem('accessToken');

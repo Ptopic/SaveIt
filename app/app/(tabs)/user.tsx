@@ -38,12 +38,14 @@ export default function TabUserScreen() {
 		data: userInfo,
 		isLoading: isUserInfoLoading,
 		isFetching: isUserInfoFetching,
+		isRefetching: isUserInfoRefetching,
 	} = useGetUserInfo();
 
 	const {
 		data: collections,
 		isLoading: isCollectionsLoading,
 		isFetching: isCollectionsFetching,
+		isRefetching: isCollectionsRefetching,
 	} = useGetAllCollections({
 		page: DEFAULT_PAGE,
 		searchQuery: '',
@@ -71,19 +73,19 @@ export default function TabUserScreen() {
 					/>
 				}
 			>
-				{isUserInfoLoading || isUserInfoFetching ? (
+				{isUserInfoLoading || isUserInfoFetching || isUserInfoRefetching ? (
 					<ActivityIndicator />
 				) : (
 					<View className="flex-col gap-5">
 						<View className="flex-row justify-between items-center">
-							<Title>{userInfo.name}</Title>
+							<Title>{userInfo?.name}</Title>
 							<Link href={'/settings' as any}>
 								<SettingsIcon width={20} height={20} color="black" />
 							</Link>
 						</View>
 
 						<View className="flex-row gap-5 items-center">
-							{userInfo.picture ? (
+							{userInfo?.picture ? (
 								<Image
 									source={{ uri: userInfo.picture }}
 									className="w-[85] h-[85] rounded-full bg-gray400"
@@ -126,7 +128,9 @@ export default function TabUserScreen() {
 							showsHorizontalScrollIndicator={false}
 							contentContainerStyle={{ gap: 10 }}
 						>
-							{isCollectionsLoading || isCollectionsFetching ? (
+							{isCollectionsLoading ||
+							isCollectionsFetching ||
+							isCollectionsRefetching ? (
 								<ActivityIndicator color="black" />
 							) : (
 								collections?.data &&

@@ -1,11 +1,7 @@
 import { getQueryClient } from '@/shared/queryClient';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-	dehydrate,
-	HydrationBoundary,
-	QueryClientProvider,
-} from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -47,8 +43,9 @@ export default function RootLayout() {
 	return <RootLayoutNav />;
 }
 
+const queryClient = getQueryClient();
+
 function RootLayoutNav() {
-	const queryClient = getQueryClient();
 	const [accessToken, setAccessToken] = React.useState<string | null>(null);
 	const [isLoading, setIsLoading] = React.useState(true);
 
@@ -56,7 +53,6 @@ function RootLayoutNav() {
 		const getToken = async () => {
 			const token = await AsyncStorage.getItem('accessToken');
 
-			await queryClient.clear();
 			setIsLoading(false);
 			setAccessToken(token);
 		};
@@ -90,28 +86,24 @@ function RootLayoutNav() {
 		};
 	}, []);
 
-	const dehydratedState = dehydrate(queryClient);
-
 	return (
 		<QueryClientProvider client={queryClient}>
-			<HydrationBoundary state={dehydratedState}>
-				<StatusBar barStyle="dark-content" backgroundColor="white" />
-				<GestureHandlerRootView>
-					<Stack
-						screenOptions={{
-							headerShown: false,
-							contentStyle: { backgroundColor: 'white' },
-						}}
-					>
-						<Stack.Screen name="(tabs)" />
-						<Stack.Screen name="settings/index" />
-						<Stack.Screen name="profile/index" />
-						<Stack.Screen name="collection/[id]" />
-						<Stack.Screen name="category/[slug]" />
-						<Stack.Screen name="getStarted/index" />
-					</Stack>
-				</GestureHandlerRootView>
-			</HydrationBoundary>
+			<StatusBar barStyle="dark-content" backgroundColor="white" />
+			<GestureHandlerRootView>
+				<Stack
+					screenOptions={{
+						headerShown: false,
+						contentStyle: { backgroundColor: 'white' },
+					}}
+				>
+					<Stack.Screen name="(tabs)" />
+					<Stack.Screen name="settings/index" />
+					<Stack.Screen name="profile/index" />
+					<Stack.Screen name="collection/[id]" />
+					<Stack.Screen name="category/[slug]" />
+					<Stack.Screen name="getStarted/index" />
+				</Stack>
+			</GestureHandlerRootView>
 		</QueryClientProvider>
 	);
 }

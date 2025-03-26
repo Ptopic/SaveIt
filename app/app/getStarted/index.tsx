@@ -51,11 +51,8 @@ const index = () => {
 
 					const data = await apiResponse.json();
 					if (data.token) {
+						await queryClient.clear();
 						await AsyncStorage.setItem('accessToken', data.token);
-						// await Promise.all([
-						// 	queryClient.invalidateQueries({ queryKey: [USER_INFO] }),
-						// 	queryClient.invalidateQueries({ queryKey: [COLLECTIONS] }),
-						// ]);
 						setModalVisible(false);
 						router.push('/');
 					} else {
