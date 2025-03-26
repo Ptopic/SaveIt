@@ -23,12 +23,17 @@ export class AuthService {
 				`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`
 			);
 
-			const { email, given_name, family_name, picture, sub } =
-				tokenInfoResponse.data;
+			const userInfoResponse = await axios.get(
+				`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`
+			);
+
+			const { email, sub } = tokenInfoResponse.data;
 
 			if (!email || !sub) {
 				throw new UnauthorizedException('Invalid token payload');
 			}
+
+			const { name, picture } = userInfoResponse.data;
 
 			const existingUser = await this.prisma.user.findUnique({
 				where: {
@@ -41,7 +46,7 @@ export class AuthService {
 					data: {
 						id: sub,
 						email,
-						name: `${given_name} ${family_name}`,
+						name,
 						password: '',
 						picture,
 					},
@@ -60,6 +65,16 @@ export class AuthService {
 			console.error('Google token verification failed:', error);
 			throw new UnauthorizedException('Invalid Google access token');
 		}
+	}
+
+	async me(userId: string) {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+		});
+
+		return user;
 	}
 
 	// async register(payload: AuthPayloadDto) {

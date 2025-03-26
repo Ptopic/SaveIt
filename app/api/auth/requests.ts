@@ -1,4 +1,5 @@
 import { config } from '@/shared/config';
+import fetchWithMiddleware from '../fetchWithMiddleware';
 
 const signin = async (email: string, password: string) => {
 	const response = await fetch(`${config.apiUrl}/auth/login`, {
@@ -22,4 +23,10 @@ const signup = async (email: string, password: string) => {
 	return response.json();
 };
 
-export default { signin, signup };
+const me = async () => {
+	return await fetchWithMiddleware(`${config.apiUrl}/auth/me`, {
+		method: 'GET',
+	});
+};
+
+export default { signin, signup, me };

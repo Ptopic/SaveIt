@@ -28,6 +28,6 @@ export class AuthController {
 	@Get('me')
 	@JwtAuth()
 	me(@Req() req: Request) {
-		return req.user;
+		return this.authService.me(req.user.userId);
 	}
 }
