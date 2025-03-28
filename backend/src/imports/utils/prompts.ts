@@ -37,22 +37,21 @@ export const getAnalyzePrompt = (transcript: string) => {
    4. INFORMATION EXTRACTION:
       - Extract ONLY information explicitly stated in the transcript/description OR that you can verify through web search
       - For any information you add through web search, include "[Verified]" at the beginning
-      - For any field where information is missing and cannot be verified, use "Not available" or "Not mentioned"
+      - For any field where information is missing and cannot be verified, use null (NOT "Not available" or "Not mentioned")
       - NEVER invent or assume information not present in the source or verifiable through search
+      - Any field that is not explicitly mentioned in the transcript or cannot be verified should be set to null
    
    5. STRUCTURED SUMMARY FORMAT (ADD APPROPRIATE EMOJIS BEFORE ALL ITEMS):
    
       - Recipe:
-        * Summary: [Brief bullet-point overview of what the recipe is about:
-          - Main description: 1-2 sentences about what this dish is
-          - Type: "Main course", "Dessert", "Breakfast", etc.
-          - Origin: Cuisine origin with appropriate flag emoji (🇮🇹 Italian, 🇲🇽 Mexican, 🇨🇳 Chinese, etc.)
-          - Time: Total preparation and cooking time
-          - Difficulty: Easy, Medium, or Hard
-          - Spice level: If applicable
-          - Diet: Vegetarian, Vegan, Gluten-free, etc. if applicable
-          - Highlights: 2-3 key selling points or special features of this recipe
-        ]
+        * Main description: 1-2 sentences about what this dish is
+        * Type: "Main course", "Dessert", "Breakfast", etc.
+        * Origin: Cuisine origin with appropriate flag emoji (🇮🇹 Italian, 🇲🇽 Mexican, 🇨🇳 Chinese, etc.)
+        * Time: Total preparation and cooking time
+        * Difficulty: Easy, Medium, or Hard
+        * Spice level: If applicable
+        * Diet: Vegetarian, Vegan, Gluten-free, etc. if applicable
+        * Highlights: 2-3 key selling points or special features of this recipe
         * Quick Tips: [3-5 bullet points of practical tips mentioned in the video:
           - 💡 Preparation tips
           - 💡 Cooking technique tips
@@ -208,6 +207,7 @@ export const getAnalyzePrompt = (transcript: string) => {
       - Double-check that any content about a physical location is categorized as "Place"
       - Ensure all place-related videos (travel, tourism, landmarks, attractions) are categorized as "Place"
       - Confirm that all information is either from the transcript or verified through search
+      - Verify that NULL is used for missing information (NOT text like "Not available")
    
    7. ADDRESS SEARCH INSTRUCTIONS - YOUR MOST IMPORTANT TASK:
       - For Place and Restaurant types, finding the EXACT ADDRESS is your PRIMARY RESPONSIBILITY
@@ -272,22 +272,21 @@ export const getSlideshowAnalyzePrompt = (imagesText: string) => {
    4. INFORMATION EXTRACTION:
       - Extract ONLY information explicitly stated in the transcript/description OR that you can verify through web search
       - For any information you add through web search, include "[Verified]" at the beginning
-      - For any field where information is missing and cannot be verified, use "Not available" or "Not mentioned"
+      - For any field where information is missing and cannot be verified, use null (NOT "Not available" or "Not mentioned")
       - NEVER invent or assume information not present in the source or verifiable through search
+      - Any field that is not explicitly mentioned in the images text or cannot be verified should be set to null
    
    5. STRUCTURED SUMMARY FORMAT (ADD APPROPRIATE EMOJIS BEFORE ALL ITEMS):
    
       - Recipe:
-        * Summary: [Brief bullet-point overview of what the recipe is about:
-          - Main description: 1-2 sentences about what this dish is
-          - Type: "Main course", "Dessert", "Breakfast", etc.
-          - Origin: Cuisine origin with appropriate flag emoji (🇮🇹 Italian, 🇲🇽 Mexican, 🇨🇳 Chinese, etc.)
-          - Time: Total preparation and cooking time
-          - Difficulty: Easy, Medium, or Hard
-          - Spice level: If applicable
-          - Diet: Vegetarian, Vegan, Gluten-free, etc. if applicable
-          - Highlights: 2-3 key selling points or special features of this recipe
-        ]
+        * Main description: 1-2 sentences about what this dish is
+        * Type: "Main course", "Dessert", "Breakfast", etc.
+        * Origin: Cuisine origin with appropriate flag emoji (🇮🇹 Italian, 🇲🇽 Mexican, 🇨🇳 Chinese, etc.)
+        * Time: Total preparation and cooking time
+        * Difficulty: Easy, Medium, or Hard
+        * Spice level: If applicable
+        * Diet: Vegetarian, Vegan, Gluten-free, etc. if applicable
+        * Highlights: 2-3 key selling points or special features of this recipe
         * Quick Tips: [3-5 bullet points of practical tips mentioned in the video:
           - 💡 Preparation tips
           - 💡 Cooking technique tips
@@ -453,6 +452,7 @@ export const getSlideshowAnalyzePrompt = (imagesText: string) => {
       - Confirm that all information is either from the transcript or verified through search
       - VERIFY that the Location field contains ONLY the primary location name (region/island/major city)
       - VERIFY your detected content type appears correctly in the summary (e.g., if type is "Place", summary should have "Place": [...])
+      - Verify that NULL is used for missing information (NOT text like "Not available")
    
    8. ADDRESS SEARCH INSTRUCTIONS - YOUR MOST IMPORTANT TASK:
       - For Place and Restaurant types, finding the EXACT ADDRESS is your PRIMARY RESPONSIBILITY

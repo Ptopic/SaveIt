@@ -3,7 +3,9 @@ import { OpenAI } from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-export async function analyzeContent(prompt) {
+const API_KEY = process.env.OPENROUTER_API_KEY; // Store your OpenRouter API key in .env
+
+export async function analyzeContentChatGPT(prompt) {
 	const response = await openai.chat.completions.create({
 		model: 'gpt-4o-mini',
 		messages: [{ role: 'system', content: prompt }],
@@ -27,6 +29,51 @@ export async function analyzeContent(prompt) {
 			outputTokens,
 		};
 	} catch (error) {
+		throw error;
+	}
+}
+
+export async function analyzeContentDeepSeek(prompt: string) {
+	try {
+		const response = await axios.post(
+			'https://openrouter.ai/api/v1/chat/completions',
+			{
+				model: 'deepseek/deepseek-chat-v3-0324:free', // Test with a potentially valid model ID
+				messages: [{ role: 'system', content: prompt }],
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${API_KEY}`,
+					'Content-Type': 'application/json',
+				},
+			}
+		);
+
+		const responseContent = response.data.choices[0].message.content;
+		const inputTokens = response.data.usage?.prompt_tokens || 0;
+		const outputTokens = response.data.usage?.completion_tokens || 0;
+
+		const cleanedContent = responseContent
+			.replace(/```(?:json)?\n?|\n?```|`/g, '')
+			.trim();
+
+		try {
+			const parsedResponse = JSON.parse(cleanedContent);
+			return {
+				json: parsedResponse,
+				inputTokens,
+				outputTokens,
+			};
+		} catch (error) {
+			// If response is not JSON, return as plain text
+			return {
+				text: cleanedContent,
+				inputTokens,
+				outputTokens,
+			};
+		}
+	} catch (error) {
+		console.error('Error fetching AI response:', error);
 		throw error;
 	}
 }

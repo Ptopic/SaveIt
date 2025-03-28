@@ -41,7 +41,7 @@ export class CollectionsController {
 	@Get('/:id')
 	@JwtAuth()
 	async getCollection(@Param('id') id: string, @Req() req: Request) {
-		const userId = req.user.sub;
+		const userId = req.user.userId;
 
 		return await this.collectionsService.getCollection(id, userId);
 	}
@@ -65,7 +65,7 @@ export class CollectionsController {
 	@Delete('/:id')
 	@JwtAuth()
 	async deleteCollection(@Param('id') id: string, @Req() req: Request) {
-		const userId = req.user.sub;
+		const userId = req.user.userId;
 
 		return await this.collectionsService.deleteCollection(id, userId);
 	}

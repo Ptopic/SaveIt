@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
-	analyzeContent,
+	analyzeContentDeepSeek,
 	searchForCoordinatesAndAddress,
 } from './utils/analyze';
 import { downloadAudio, transcribeAudioWithDeepgram } from './utils/audio';
@@ -21,7 +21,7 @@ export class ImportsService {
 		const prompt = getAnalyzePrompt(
 			transcript.text + '\n' + urlMetadata.description
 		);
-		const analysis = await analyzeContent(prompt);
+		const analysis = await analyzeContentDeepSeek(prompt);
 
 		const address = analysis.json.locationData?.address || null;
 
@@ -62,15 +62,15 @@ export class ImportsService {
 		fs.unlinkSync(audioPath as fs.PathLike);
 
 		return {
-			title: analysis.json.title,
+			title: analysis.json?.title,
 			description: urlMetadata.description,
 			thumbnail: urlMetadata.thumbnail,
 			text: transcript.text,
 			duration: transcript.duration,
-			type: analysis.json.type,
+			type: analysis.json?.type,
 			summary: analysis.json.summary,
-			name: analysis.json.locationData?.name || null,
-			location: analysis.json.locationData?.location || null,
+			name: analysis.json?.locationData?.name || null,
+			location: analysis.json?.locationData?.location || null,
 			address: address,
 			inputTokens: analysis.inputTokens,
 			outputTokens: analysis.outputTokens,
@@ -89,7 +89,7 @@ export class ImportsService {
 			imagesText.join('\n') + '\n' + urlMetadata.description
 		);
 
-		const analysis = await analyzeContent(prompt);
+		const analysis = await analyzeContentDeepSeek(prompt);
 
 		if (
 			(analysis.json.type === 'Place' || analysis.json.type === 'Restaurant') &&
@@ -150,7 +150,7 @@ export class ImportsService {
 				thumbnail: data?.thumbnail,
 				duration: data?.duration,
 				type: data?.type,
-				summary: data?.summary[type],
+				summary: data?.summary,
 				location: data?.location,
 				address: data?.address,
 			},

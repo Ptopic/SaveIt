@@ -20,7 +20,7 @@ export class ImportsController {
 	@Get('/')
 	@JwtAuth()
 	async getImports(@Req() req: Request) {
-		const userId = req.user.sub;
+		const userId = req.user.userId;
 
 		return await this.importsService.getAllImports(userId);
 	}
@@ -28,7 +28,7 @@ export class ImportsController {
 	@Get('/:id')
 	@JwtAuth()
 	async getImport(@Param('id') id: string, @Req() req: Request) {
-		const userId = req.user.sub;
+		const userId = req.user.userId;
 
 		return await this.importsService.getImport(id, userId);
 	}
@@ -38,7 +38,7 @@ export class ImportsController {
 	async transcribe(@Body() body: { url: string }, @Req() req: Request) {
 		const { url } = body;
 
-		const userId = req.user.sub;
+		const userId = req.user.userId;
 
 		let result;
 
@@ -78,7 +78,7 @@ export class ImportsController {
 	@Delete('/:id')
 	@JwtAuth()
 	async deleteImport(@Param('id') id: string, @Req() req: Request) {
-		const userId = req.user.sub;
+		const userId = req.user.userId;
 
 		return await this.importsService.deleteImport(id, userId);
 	}
