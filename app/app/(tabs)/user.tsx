@@ -96,7 +96,7 @@ export default function TabUserScreen() {
 									transition={500}
 								/>
 							) : (
-								<View className="w-[85] h-[85] rounded-full bg-gray400"></View>
+								<View className="w-[85] h-[85] rounded-full bg-gray200"></View>
 							)}
 							<View>
 								<Text>7</Text>

@@ -15,7 +15,7 @@ const CollectionCard = ({ id, name, image }: IProps) => {
 			{image ? (
 				<Link
 					href={`/collection/${id}`}
-					className="w-[100] h-[130] rounded-lg bg-white"
+					className="w-[100] h-[130] rounded-lg bg-gray200"
 				>
 					<Image
 						source={{ uri: image }}
