@@ -7,17 +7,19 @@ import ExtractCard from '@/components/ExtractCard';
 import Subtitle from '@/components/Subtitle';
 import Title from '@/components/Title';
 import CreateCollectionForm from '@/feature/user/CreateCollectionForm';
+import { blurhash } from '@/shared/contants';
 import { ChevronRightIcon, PlusIcon, SettingsIcon } from '@/shared/svgs';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useQueryClient } from '@tanstack/react-query';
+import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
 	ActivityIndicator,
-	Image,
 	RefreshControl,
 	SafeAreaView,
 	ScrollView,
+	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
@@ -88,7 +90,10 @@ export default function TabUserScreen() {
 							{userInfo?.picture ? (
 								<Image
 									source={{ uri: userInfo.picture }}
-									className="w-[85] h-[85] rounded-full bg-gray400"
+									style={styles.image}
+									contentFit="cover"
+									placeholder={blurhash}
+									transition={500}
 								/>
 							) : (
 								<View className="w-[85] h-[85] rounded-full bg-gray400"></View>
@@ -236,3 +241,11 @@ export default function TabUserScreen() {
 		</SafeAreaView>
 	);
 }
+
+const styles = StyleSheet.create({
+	image: {
+		width: 85,
+		height: 85,
+		borderRadius: 42.5,
+	},
+});
