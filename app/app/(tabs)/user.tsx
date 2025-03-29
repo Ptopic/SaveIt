@@ -5,6 +5,7 @@ import CollectionCard from '@/components/CollectionCard';
 import DrawerModal from '@/components/DrawerModal';
 import ExtractCard from '@/components/ExtractCard';
 import Subtitle from '@/components/Subtitle';
+import Text from '@/components/Text';
 import Title from '@/components/Title';
 import CreateCollectionForm from '@/feature/user/CreateCollectionForm';
 import { blurhash } from '@/shared/contants';
@@ -21,7 +22,6 @@ import {
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
-	Text,
 	TouchableOpacity,
 	View,
 } from 'react-native';
@@ -87,7 +87,7 @@ export default function TabUserScreen() {
 							</Link>
 						</View>
 
-						<View className="flex-row gap-5 items-center">
+						<View className="flex-row gap-6 items-center">
 							{userInfo?.picture ? (
 								<Image
 									source={{ uri: userInfo.picture }}
@@ -100,15 +100,15 @@ export default function TabUserScreen() {
 								<View className="w-[85] h-[85] rounded-full bg-gray200"></View>
 							)}
 							<View>
-								<Text className="heading-xsmall">7</Text>
-								<Text className="body-medium-regular">Media Saved</Text>
+								<Text className="heading-xxsmall">7</Text>
+								<Text className="body-small-regular">Media Saved</Text>
 							</View>
 						</View>
 
 						{userInfo?.location && (
 							<View className="flex-row gap-2 items-center">
 								<Text>📍</Text>
-								<Text className="body-medium-regular">Location</Text>
+								<Text className="body-small-regular">Location</Text>
 							</View>
 						)}
 

@@ -1,6 +1,7 @@
+import Text from '@/components/Text';
 import { AlertTriangleIcon } from '@/shared/svgs';
 import React, { Dispatch, SetStateAction } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 
 interface IProps {
 	setIsModalVisible: Dispatch<SetStateAction<boolean>>;

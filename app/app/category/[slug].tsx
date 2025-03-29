@@ -1,7 +1,8 @@
+import Text from '@/components/Text';
 import { goBack } from '@/utils/navigation';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { SafeAreaView, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, TouchableOpacity } from 'react-native';
 
 type CategoryRouteProp = RouteProp<{ params: { slug: string } }, 'params'>;
 

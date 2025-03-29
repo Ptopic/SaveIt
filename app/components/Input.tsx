@@ -1,7 +1,7 @@
+import Text from '@/components/Text';
 import React, { useState } from 'react';
 import {
 	NativeSyntheticEvent,
-	Text,
 	TextInput,
 	TextInputFocusEventData,
 	View,

@@ -1,6 +1,7 @@
+import Text from '@/components/Text';
 import { Link } from 'expo-router';
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 const LinkComponent = ({
 	href,

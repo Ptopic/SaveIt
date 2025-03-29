@@ -1,8 +1,9 @@
+import Text from '@/components/Text';
 import { LinkIcon } from '@/shared/svgs';
 import { BlurView } from 'expo-blur';
 import * as Clipboard from 'expo-clipboard';
 import React, { useEffect } from 'react';
-import { Alert, Text, TouchableOpacity } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,

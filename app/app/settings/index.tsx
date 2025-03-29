@@ -1,6 +1,7 @@
 import DeleteModalContent from '@/components/DeleteModalContent';
 import ModalComponent from '@/components/ModalComponent';
 import ScreenHeader from '@/components/ScreenHeader';
+import Text from '@/components/Text';
 import {
 	ChevronRightIcon,
 	LogoutIcon,
@@ -8,13 +9,11 @@ import {
 	UserCircleIcon,
 } from '@/shared/svgs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, TouchableOpacity, View } from 'react-native';
 
 export default function SettingsScreen() {
-	const queryClient = useQueryClient();
 	const [isDeleteAccountModalVisible, setIsDeleteAccountModalVisible] =
 		useState(false);
 

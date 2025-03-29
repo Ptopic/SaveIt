@@ -1,4 +1,5 @@
 import ModalComponent from '@/components/ModalComponent';
+import Text from '@/components/Text';
 import Title from '@/components/Title';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
@@ -11,7 +12,6 @@ import {
 	Alert,
 	SafeAreaView,
 	StyleSheet,
-	Text,
 	TouchableOpacity,
 	View,
 } from 'react-native';

@@ -2,13 +2,14 @@ import useCreateCollection from '@/api/collection/hooks/useCreateCollection';
 import { COLLECTIONS } from '@/api/constants';
 import Input from '@/components/Input';
 import ModalComponent from '@/components/ModalComponent';
+import Text from '@/components/Text';
 import { CloseIcon, ImageIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import { useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import * as Yup from 'yup';
 
 const userSchema = Yup.object({
