@@ -1,16 +1,15 @@
+import AddNewImportModal from '@/feature/AddNewImportModal';
 import {
 	BookmarkIcon,
-	LinkIcon,
 	MapPinFullIcon,
 	MapPinIcon,
 	PlusIcon,
 	SearchIcon,
 	UserIcon,
 } from '@/shared/svgs';
-import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Pressable, Text, TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -20,39 +19,18 @@ import Animated, {
 export default function TabLayout() {
 	const [modalVisible, setModalVisible] = useState(false);
 
-	const modalOpacity = useSharedValue(0);
-	const modalTranslateY = useSharedValue(150);
-	const textOpacity = useSharedValue(0);
-
 	const addButtonRotation = useSharedValue(0);
 	const addButtonScale = useSharedValue(1);
+
 	useEffect(() => {
 		if (modalVisible) {
-			textOpacity.value = withTiming(1, { duration: 200 });
-			modalOpacity.value = withTiming(1, { duration: 200 });
-			modalTranslateY.value = withTiming(0, { duration: 200 });
 			addButtonRotation.value = withTiming(45, { duration: 200 });
 			addButtonScale.value = withTiming(1.2, { duration: 200 });
 		} else {
-			textOpacity.value = withTiming(0, { duration: 200 });
-			modalOpacity.value = withTiming(0, { duration: 200 });
-			modalTranslateY.value = withTiming(150, { duration: 200 });
 			addButtonRotation.value = withTiming(0, { duration: 200 });
 			addButtonScale.value = withTiming(1, { duration: 200 });
 		}
 	}, [modalVisible]);
-
-	const animatedModalOpacity = useAnimatedStyle(() => ({
-		opacity: modalOpacity.value,
-	}));
-
-	const animatedModalTranslateY = useAnimatedStyle(() => ({
-		transform: [{ translateY: modalTranslateY.value }],
-	}));
-
-	const animatedTextOpacity = useAnimatedStyle(() => ({
-		opacity: textOpacity.value,
-	}));
 
 	const animatedButtonStyle = useAnimatedStyle(() => ({
 		transform: [
@@ -144,27 +122,11 @@ export default function TabLayout() {
 					}}
 				/>
 			</Tabs>
-			<Animated.View
-				className="absolute z-20 -top-[85px] left-0 right-0 bottom-0 w-full h-full"
-				style={[animatedModalOpacity, animatedModalTranslateY]}
-			>
-				<BlurView intensity={50} className="w-full h-full">
-					<TouchableOpacity
-						className="absolute z-20 pb-2 left-0 right-0 bottom-0 w-full h-full flex justify-end items-center"
-						onPress={() => setModalVisible(false)}
-					>
-						<Animated.View
-							style={[animatedTextOpacity]}
-							className="bg-white border border-gray-200 rounded-lg p-4 flex flex-row items-center gap-2"
-						>
-							<LinkIcon color="red" width={24} height={24} />
-							<Text className="body-medium-regular">
-								Paste link from clipboard
-							</Text>
-						</Animated.View>
-					</TouchableOpacity>
-				</BlurView>
-			</Animated.View>
+
+			<AddNewImportModal
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
+			/>
 		</>
 	);
 }
