@@ -25,7 +25,7 @@ module.exports = {
 				gray950: '#0a0a0a',
 
 				red50: '#FCE8EC',
-				red100: '#F7BAC4',
+				red100: '#FFE9E9',
 				red200: '#F28D9E',
 				red300: '#ED5E76',
 				red400: '#E8314F',
@@ -34,6 +34,27 @@ module.exports = {
 				red700: '#5C0A18',
 				red800: '#450812',
 				red900: '#2E050C',
+
+				yellow100: '#FDF6E9',
+				yellow400: '#E8A830',
+
+				blue100: '#E9F5FF',
+				blue400: '#007AFF',
+
+				orange100: '#FFEEDC',
+				orange400: '#FF9500',
+
+				purple100: '#F5F0FF',
+				purple400: '#8053D2',
+
+				green100: '#E9FFE9',
+				green400: '#30E84F',
+
+				brown100: '#F5F0E9',
+				brown400: '#AA7614FF',
+
+				sky100: '#E9F5FF',
+				sky400: '#007AFF',
 			},
 		},
 	},

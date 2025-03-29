@@ -100,27 +100,35 @@ export default function TabUserScreen() {
 								<View className="w-[85] h-[85] rounded-full bg-gray200"></View>
 							)}
 							<View>
-								<Text>7</Text>
-								<Text>Media Saved</Text>
+								<Text className="heading-xsmall">7</Text>
+								<Text className="body-medium-regular">Media Saved</Text>
 							</View>
 						</View>
 
-						<View className="flex-row gap-2 items-center">
-							<Text>📍</Text>
-							<Text className="body-medium-regular">Location</Text>
-						</View>
+						{userInfo?.location && (
+							<View className="flex-row gap-2 items-center">
+								<Text>📍</Text>
+								<Text className="body-medium-regular">Location</Text>
+							</View>
+						)}
 
 						<Link
 							href={'/profile' as any}
 							className="bg-gray400 p-2 rounded-md"
 						>
-							<Text className="text-white text-center">Edit Profile</Text>
+							<Text className="text-white text-center body-medium-regular">
+								Edit Profile
+							</Text>
 						</Link>
 
 						<View className="flex-row justify-between items-center">
 							<TouchableOpacity className="flex-row gap-2 items-center">
 								<Subtitle>My Collections</Subtitle>
-								<ChevronRightIcon width={16} height={16} color="#a3a3a3" />
+								<ChevronRightIcon
+									width={16}
+									height={16}
+									color={getTailwindHexColor('gray600')}
+								/>
 							</TouchableOpacity>
 							<TouchableOpacity
 								className="bg-gray400 rounded-full w-[30] h-[30] justify-center items-center"
@@ -162,8 +170,8 @@ export default function TabUserScreen() {
 							<ExtractCard
 								title="Restaurants"
 								iconName="local-restaurant"
-								bgColor="gray400"
-								textColor="white"
+								bgColor="yellow100"
+								textColor="yellow400"
 								url="/category/restaurants"
 							/>
 							<ExtractCard
@@ -172,11 +180,11 @@ export default function TabUserScreen() {
 									<FontAwesomeIcon
 										name="location-arrow"
 										size={16}
-										color={getTailwindHexColor('white')}
+										color={getTailwindHexColor('blue400')}
 									/>
 								}
-								bgColor="gray400"
-								textColor="white"
+								bgColor="blue100"
+								textColor="blue400"
 								url="/category/places"
 							/>
 							<ExtractCard
@@ -185,25 +193,25 @@ export default function TabUserScreen() {
 									<FontAwesomeIcon
 										name="book"
 										size={16}
-										color={getTailwindHexColor('white')}
+										color={getTailwindHexColor('orange400')}
 									/>
 								}
-								bgColor="gray400"
-								textColor="white"
+								bgColor="orange100"
+								textColor="orange400"
 								url="/category/recipes"
 							/>
 							<ExtractCard
 								title="Products"
 								iconName="shopping-cart"
-								bgColor="gray400"
-								textColor="white"
+								bgColor="red100"
+								textColor="red400"
 								url="/category/products"
 							/>
 							<ExtractCard
 								title="Events"
 								iconName="event"
-								bgColor="gray400"
-								textColor="white"
+								bgColor="purple100"
+								textColor="purple400"
 								url="/category/events"
 							/>
 							<ExtractCard
@@ -212,11 +220,11 @@ export default function TabUserScreen() {
 									<FontAwesomeIcon
 										name="dumbbell"
 										size={16}
-										color={getTailwindHexColor('white')}
+										color={getTailwindHexColor('green400')}
 									/>
 								}
-								bgColor="gray400"
-								textColor="white"
+								bgColor="green100"
+								textColor="green400"
 								url="/category/workout-routines"
 							/>
 							<ExtractCard
@@ -225,25 +233,25 @@ export default function TabUserScreen() {
 									<Ionicons
 										name="book"
 										size={20}
-										color={getTailwindHexColor('white')}
+										color={getTailwindHexColor('brown400')}
 									/>
 								}
-								bgColor="gray400"
-								textColor="white"
+								bgColor="brown100"
+								textColor="brown400"
 								url="/category/books"
 							/>
 							<ExtractCard
 								title="Films and shows"
 								iconName="movie"
-								bgColor="gray400"
-								textColor="white"
+								bgColor="purple100"
+								textColor="purple400"
 								url="/category/films-and-shows"
 							/>
 							<ExtractCard
 								title="Software"
 								iconName="code"
-								bgColor="gray400"
-								textColor="white"
+								bgColor="sky100"
+								textColor="sky400"
 								url="/category/software"
 							/>
 						</ScrollView>
