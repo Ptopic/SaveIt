@@ -79,9 +79,9 @@ export default function TabLayout() {
 					options={{
 						tabBarIcon: ({ color, focused }) =>
 							focused ? (
-								<MapPinFullIcon color={color} width={26} height={26} />
+								<MapPinFullIcon color={color} width={28} height={28} />
 							) : (
-								<MapPinIcon color={color} width={26} height={26} />
+								<MapPinIcon color={color} width={28} height={28} />
 							),
 					}}
 				/>
