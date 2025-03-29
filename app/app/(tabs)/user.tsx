@@ -9,6 +9,7 @@ import Title from '@/components/Title';
 import CreateCollectionForm from '@/feature/user/CreateCollectionForm';
 import { blurhash } from '@/shared/contants';
 import { ChevronRightIcon, PlusIcon, SettingsIcon } from '@/shared/svgs';
+import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
@@ -171,7 +172,7 @@ export default function TabUserScreen() {
 									<FontAwesomeIcon
 										name="location-arrow"
 										size={16}
-										color="white"
+										color={getTailwindHexColor('white')}
 									/>
 								}
 								bgColor="gray400"
@@ -180,7 +181,13 @@ export default function TabUserScreen() {
 							/>
 							<ExtractCard
 								title="Recipes"
-								icon={<FontAwesomeIcon name="book" size={16} color="white" />}
+								icon={
+									<FontAwesomeIcon
+										name="book"
+										size={16}
+										color={getTailwindHexColor('white')}
+									/>
+								}
 								bgColor="gray400"
 								textColor="white"
 								url="/category/recipes"
@@ -202,7 +209,11 @@ export default function TabUserScreen() {
 							<ExtractCard
 								title="Workout routines"
 								icon={
-									<FontAwesomeIcon name="dumbbell" size={16} color="white" />
+									<FontAwesomeIcon
+										name="dumbbell"
+										size={16}
+										color={getTailwindHexColor('white')}
+									/>
 								}
 								bgColor="gray400"
 								textColor="white"
@@ -210,7 +221,13 @@ export default function TabUserScreen() {
 							/>
 							<ExtractCard
 								title="Books"
-								icon={<Ionicons name="book" size={20} color="white" />}
+								icon={
+									<Ionicons
+										name="book"
+										size={20}
+										color={getTailwindHexColor('white')}
+									/>
+								}
 								bgColor="gray400"
 								textColor="white"
 								url="/category/books"
