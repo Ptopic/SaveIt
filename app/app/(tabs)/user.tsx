@@ -114,9 +114,9 @@ export default function TabUserScreen() {
 
 						<Link
 							href={'/profile' as any}
-							className="bg-gray400 p-2 rounded-md"
+							className="bg-gray200 p-2 rounded-md"
 						>
-							<Text className="text-white text-center body-medium-regular">
+							<Text className="text-black text-center body-medium-regular">
 								Edit Profile
 							</Text>
 						</Link>
@@ -131,10 +131,14 @@ export default function TabUserScreen() {
 								/>
 							</TouchableOpacity>
 							<TouchableOpacity
-								className="bg-gray400 rounded-full w-[30] h-[30] justify-center items-center"
+								className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
 								onPress={() => bottomSheetRef.current?.expand()}
 							>
-								<PlusIcon width={14} height={14} color="white" />
+								<PlusIcon
+									width={18}
+									height={18}
+									color={getTailwindHexColor('red400')}
+								/>
 							</TouchableOpacity>
 						</View>
 						<ScrollView
