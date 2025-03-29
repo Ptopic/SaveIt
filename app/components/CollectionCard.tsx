@@ -37,9 +37,9 @@ const CollectionCard = ({ id, name, image }: IProps) => {
 									justifyContent: 'space-between',
 									alignItems: 'center',
 									paddingHorizontal: 10,
-									paddingVertical: 5,
-									borderBottomLeftRadius: 10,
-									borderBottomRightRadius: 10,
+									paddingVertical: 10,
+									borderBottomLeftRadius: 8,
+									borderBottomRightRadius: 8,
 								}}
 							>
 								<Text className="text-white font-[500] w-[80%]">{name}</Text>
@@ -60,7 +60,7 @@ const CollectionCard = ({ id, name, image }: IProps) => {
 							style={{
 								width: '100%',
 								height: '100%',
-								borderRadius: 10,
+								borderRadius: 8,
 								justifyContent: 'flex-end',
 							}}
 						>
@@ -75,9 +75,9 @@ const CollectionCard = ({ id, name, image }: IProps) => {
 									justifyContent: 'space-between',
 									alignItems: 'center',
 									paddingHorizontal: 10,
-									paddingVertical: 5,
-									borderBottomLeftRadius: 10,
-									borderBottomRightRadius: 10,
+									paddingVertical: 10,
+									borderBottomLeftRadius: 8,
+									borderBottomRightRadius: 8,
 								}}
 							>
 								<Text className="text-white font-[500] w-[80%]">{name}</Text>

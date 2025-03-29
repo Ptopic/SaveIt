@@ -11,7 +11,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Yup from 'yup';
 
 const userSchema = Yup.object({
-	name: Yup.string().required('Name is required').max(50),
+	name: Yup.string().required('Name is required').max(30),
 	description: Yup.string().required('Description is required').max(200),
 });
 
@@ -119,7 +119,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 							value={values.name}
 							onChangeText={handleChange('name')}
 							onBlur={handleBlur('name')}
-							maxLength={50}
+							maxLength={30}
 						/>
 						{values.name && (
 							<Input
