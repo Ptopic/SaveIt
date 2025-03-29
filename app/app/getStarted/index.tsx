@@ -1,6 +1,8 @@
+import Button from '@/components/Button';
 import ModalComponent from '@/components/ModalComponent';
 import Text from '@/components/Text';
 import Title from '@/components/Title';
+import { AppleIcon, GoogleIcon } from '@/shared/svgs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
 import { makeRedirectUri } from 'expo-auth-session';
@@ -10,6 +12,7 @@ import React, { useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
 	Alert,
+	Platform,
 	SafeAreaView,
 	StyleSheet,
 	TouchableOpacity,
@@ -73,12 +76,7 @@ const index = () => {
 			</View>
 
 			<View className="items-center justify-center px-[15]">
-				<TouchableOpacity
-					className="w-full h-[50] bg-black rounded-lg items-center justify-center"
-					onPress={() => setModalVisible(true)}
-				>
-					<Text className="text-white text-lg font-bold">Get Started</Text>
-				</TouchableOpacity>
+				<Button onPress={() => setModalVisible(true)} text="Get Started" />
 			</View>
 
 			<ModalComponent
@@ -88,18 +86,44 @@ const index = () => {
 				modalStyle={styles.modalContainer}
 			>
 				<View className="gap-[10]">
-					<Title>Sign in with Google</Title>
+					<Title>Sign in to continue</Title>
+
+					{Platform.OS === 'ios' && (
+						<>
+							<TouchableOpacity
+								className="w-full h-[50] bg-gray200 rounded-lg items-center justify-center"
+								onPress={() => promptAsync()}
+								disabled={!request || isLoading}
+							>
+								{isLoading ? (
+									<ActivityIndicator color="white" />
+								) : (
+									<View className="flex-row gap-2 items-center">
+										<AppleIcon width={20} height={20} />
+										<Text className="text-black text-lg font-bold">
+											Sign in with Apple
+										</Text>
+									</View>
+								)}
+							</TouchableOpacity>
+							<View className="h-[1] bg-gray200" />
+						</>
+					)}
+
 					<TouchableOpacity
-						className="w-full h-[50] bg-black rounded-lg items-center justify-center"
+						className="w-full h-[50] bg-gray200 rounded-lg items-center justify-center"
 						onPress={() => promptAsync()}
 						disabled={!request || isLoading}
 					>
 						{isLoading ? (
 							<ActivityIndicator color="white" />
 						) : (
-							<Text className="text-white text-lg font-bold">
-								Sign in with Google
-							</Text>
+							<View className="flex-row gap-2 items-center">
+								<GoogleIcon width={20} height={20} />
+								<Text className="text-black text-lg font-bold">
+									Sign in with Google
+								</Text>
+							</View>
 						)}
 					</TouchableOpacity>
 				</View>

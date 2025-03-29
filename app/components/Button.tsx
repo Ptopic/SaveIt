@@ -21,7 +21,7 @@ const Button = ({
 			onPress={onPress}
 			disabled={disabled}
 			className={twMerge(
-				'bg-black rounded-lg p-[10] justify-center items-center',
+				'bg-black rounded-lg p-[10] justify-center items-center w-full',
 				disabled && 'opacity-50'
 			)}
 		>
