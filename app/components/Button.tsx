@@ -5,12 +5,16 @@ import Text from './Text';
 
 const Button = ({
 	onPress,
+	text,
 	disabled,
 	isSubmitting,
+	submittingText,
 }: {
 	onPress: () => void;
-	disabled: boolean;
-	isSubmitting: boolean;
+	text: string;
+	disabled?: boolean;
+	isSubmitting?: boolean;
+	submittingText?: string;
 }) => {
 	return (
 		<TouchableOpacity
@@ -22,7 +26,7 @@ const Button = ({
 			)}
 		>
 			<Text className="text-white text-lg font-bold">
-				{isSubmitting ? 'Creating...' : 'Create'}
+				{isSubmitting ? submittingText : text}
 			</Text>
 		</TouchableOpacity>
 	);

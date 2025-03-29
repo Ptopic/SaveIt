@@ -11,7 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import '../global.css';
-
+import { CustomToastProvider } from '@/utils/toast';
 export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
@@ -87,23 +87,25 @@ function RootLayoutNav() {
 	}, []);
 
 	return (
-		<QueryClientProvider client={queryClient}>
-			<StatusBar barStyle="dark-content" backgroundColor="white" />
-			<GestureHandlerRootView>
-				<Stack
-					screenOptions={{
-						headerShown: false,
-						contentStyle: { backgroundColor: 'white' },
-					}}
-				>
-					<Stack.Screen name="(tabs)" />
-					<Stack.Screen name="settings/index" />
-					<Stack.Screen name="profile/index" />
-					<Stack.Screen name="collection/[id]" />
-					<Stack.Screen name="category/[slug]" />
-					<Stack.Screen name="getStarted/index" />
-				</Stack>
-			</GestureHandlerRootView>
-		</QueryClientProvider>
+		<CustomToastProvider>
+			<QueryClientProvider client={queryClient}>
+				<StatusBar barStyle="dark-content" backgroundColor="white" />
+				<GestureHandlerRootView>
+					<Stack
+						screenOptions={{
+							headerShown: false,
+							contentStyle: { backgroundColor: 'white' },
+						}}
+					>
+						<Stack.Screen name="(tabs)" />
+						<Stack.Screen name="settings/index" />
+						<Stack.Screen name="profile/index" />
+						<Stack.Screen name="collection/[id]" />
+						<Stack.Screen name="category/[slug]" />
+						<Stack.Screen name="getStarted/index" />
+					</Stack>
+				</GestureHandlerRootView>
+			</QueryClientProvider>
+		</CustomToastProvider>
 	);
 }

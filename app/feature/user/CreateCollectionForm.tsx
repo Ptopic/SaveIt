@@ -143,10 +143,12 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 							onPress={() => {
 								handleSubmit();
 							}}
+							text="Create"
 							disabled={
 								!values.name || !values.description || isCreatingCollection
 							}
 							isSubmitting={isCreatingCollection}
+							submittingText="Creating..."
 						/>
 					</View>
 

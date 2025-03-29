@@ -1,6 +1,8 @@
 export { default as AlertTriangleIcon } from '@assets/icons/AlertTriangle.svg';
+export { default as AlertTriangleIconFull } from '@assets/icons/AlertTriangleFull.svg';
 export { default as ArrowLeftIcon } from '@assets/icons/ArrowLeft.svg';
 export { default as BookmarkIcon } from '@assets/icons/Bookmark.svg';
+export { default as CheckCircledIconFull } from '@assets/icons/CheckCircledFull.svg';
 export { default as ChevronRightIcon } from '@assets/icons/ChevronRight.svg';
 export { default as CloseIcon } from '@assets/icons/Close.svg';
 export { default as ImageIcon } from '@assets/icons/Image.svg';
