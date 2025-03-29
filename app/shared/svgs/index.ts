@@ -4,6 +4,8 @@ export { default as BookmarkIcon } from '@assets/icons/Bookmark.svg';
 export { default as ChevronRightIcon } from '@assets/icons/ChevronRight.svg';
 export { default as CloseIcon } from '@assets/icons/Close.svg';
 export { default as ImageIcon } from '@assets/icons/Image.svg';
+export { default as LockClosedIcon } from '@assets/icons/LockClosed.svg';
+export { default as LockOpenIcon } from '@assets/icons/LockOpen.svg';
 export { default as LogoutIcon } from '@assets/icons/Logout.svg';
 export { default as MapPinIcon } from '@assets/icons/MapPin.svg';
 export { default as MapPinFullIcon } from '@assets/icons/MapPinFull.svg';
