@@ -14,7 +14,7 @@ import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -120,7 +120,10 @@ export default function TabUserScreen() {
 						</Link>
 
 						<View className="flex-row justify-between items-center">
-							<TouchableOpacity className="flex-row gap-2 items-center">
+							<TouchableOpacity
+								className="flex-row gap-2 items-center"
+								onPress={() => router.push('/collections' as any)}
+							>
 								<Subtitle>My Collections</Subtitle>
 								<ChevronRightIcon
 									width={16}

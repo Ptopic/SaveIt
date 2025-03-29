@@ -12,7 +12,7 @@ const useGetAllCollections = ({
 	pageSize: string;
 }) => {
 	return useQuery({
-		queryKey: [COLLECTIONS],
+		queryKey: [COLLECTIONS, page, searchQuery, pageSize],
 		queryFn: () =>
 			collectionRequests.getCollections(page, searchQuery, pageSize),
 	});
