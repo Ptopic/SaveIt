@@ -101,14 +101,14 @@ export default function TabUserScreen() {
 							)}
 							<View>
 								<Text className="heading-xxsmall">7</Text>
-								<Text className="body-small-regular">Media Saved</Text>
+								<Text>Media Saved</Text>
 							</View>
 						</View>
 
 						{userInfo?.location && (
 							<View className="flex-row gap-2 items-center">
 								<Text>📍</Text>
-								<Text className="body-small-regular">Location</Text>
+								<Text>Location</Text>
 							</View>
 						)}
 
@@ -116,9 +116,7 @@ export default function TabUserScreen() {
 							href={'/profile' as any}
 							className="bg-gray200 p-2 rounded-md"
 						>
-							<Text className="text-black text-center body-medium-regular">
-								Edit Profile
-							</Text>
+							<Text className="text-black text-center">Edit Profile</Text>
 						</Link>
 
 						<View className="flex-row justify-between items-center">

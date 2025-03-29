@@ -1,5 +1,6 @@
 import useCreateCollection from '@/api/collection/hooks/useCreateCollection';
 import { COLLECTIONS } from '@/api/constants';
+import Button from '@/components/Button';
 import Input from '@/components/Input';
 import ModalComponent from '@/components/ModalComponent';
 import Text from '@/components/Text';
@@ -25,9 +26,10 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 
 	const initialValues = { name: '', description: '' };
 
-	const { mutate: createCollection } = useCreateCollection();
+	const { mutate: createCollection, isPending: isCreatingCollection } =
+		useCreateCollection();
 
-	const handleSubmit = (values: any, { setSubmitting, resetForm }: any) => {
+	const handleSubmit = (values: any, { resetForm }: any) => {
 		createCollection(
 			{
 				name: values.name,
@@ -40,14 +42,10 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 					resetForm();
 					setImage(null);
 					setImageBase64(null);
-					setSubmitting(false);
 					closeModal();
 				},
 			}
 		);
-
-		setSubmitting(false);
-		closeModal();
 	};
 
 	const pickImage = async () => {
@@ -78,7 +76,6 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 				handleSubmit,
 				errors,
 				resetForm,
-				isSubmitting,
 			}) => (
 				<View className="gap-[20]">
 					<TouchableOpacity
@@ -142,15 +139,15 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 								maxLength={200}
 							/>
 						)}
-						<TouchableOpacity
+						<Button
 							onPress={() => {
 								handleSubmit();
 							}}
-							disabled={!values.name || !values.description || isSubmitting}
-							className="bg-black rounded-lg p-[10] justify-center items-center"
-						>
-							<Text className="text-white text-lg font-bold">Create</Text>
-						</TouchableOpacity>
+							disabled={
+								!values.name || !values.description || isCreatingCollection
+							}
+							isSubmitting={isCreatingCollection}
+						/>
 					</View>
 
 					<ModalComponent

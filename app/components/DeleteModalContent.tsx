@@ -20,7 +20,7 @@ const DeleteModalContent = ({ setIsModalVisible }: IProps) => {
 			</View>
 			<Text className="heading-xxsmall">Are you sure?</Text>
 			<View className="w-full px-6">
-				<Text className="body-small-regular text-gray500 text-center">
+				<Text className="text-gray500 text-center">
 					This action cannot be undone. All values will be lost.
 				</Text>
 			</View>

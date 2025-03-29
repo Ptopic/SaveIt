@@ -37,9 +37,7 @@ export default function SettingsScreen() {
 							>
 								<View className="flex-row gap-3 items-center">
 									<UserCircleIcon width={18} height={18} color="#737373" />
-									<Text className="body-small-regular">
-										Personal Information
-									</Text>
+									<Text>Personal Information</Text>
 								</View>
 								<ChevronRightIcon width={18} height={18} color="#000000" />
 							</TouchableOpacity>
@@ -50,9 +48,7 @@ export default function SettingsScreen() {
 							>
 								<View className="flex-row gap-3 items-center">
 									<TrashIcon width={18} height={18} color="#b00000" />
-									<Text className="body-small-regular text-red600">
-										Delete Account
-									</Text>
+									<Text className="text-red600">Delete Account</Text>
 								</View>
 							</TouchableOpacity>
 						</View>
@@ -68,7 +64,7 @@ export default function SettingsScreen() {
 							>
 								<View className="flex-row gap-3 items-center">
 									<LogoutIcon width={18} height={18} color="#b00000" />
-									<Text className="body-small-regular text-red600">Logout</Text>
+									<Text className="text-red600">Logout</Text>
 								</View>
 							</TouchableOpacity>
 						</View>
