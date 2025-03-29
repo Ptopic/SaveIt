@@ -54,7 +54,12 @@ const AddModal = ({
 			className="absolute z-20 -top-[83px] left-0 right-0 bottom-0 w-full h-full"
 			style={[animatedModalOpacity, animatedModalTranslateY]}
 		>
-			<BlurView intensity={50} className="w-full h-full">
+			<BlurView
+				intensity={50}
+				className="w-full h-full"
+				tint="light"
+				experimentalBlurMethod="dimezisBlurView"
+			>
 				<TouchableOpacity
 					className="absolute z-20 pb-10 left-0 right-0 bottom-0 w-full h-full flex justify-end items-center"
 					onPress={() => setModalVisible(false)}
