@@ -7,7 +7,7 @@ import {
 	SearchIcon,
 	UserIcon,
 } from '@/shared/svgs';
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
 import Animated, {
@@ -17,6 +17,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 export default function TabLayout() {
+	const pathname = usePathname();
+
 	const [modalVisible, setModalVisible] = useState(false);
 
 	const addButtonRotation = useSharedValue(0);
@@ -38,6 +40,10 @@ export default function TabLayout() {
 			{ scale: addButtonScale.value },
 		],
 	}));
+
+	useEffect(() => {
+		setModalVisible(false);
+	}, [pathname]);
 
 	return (
 		<>
