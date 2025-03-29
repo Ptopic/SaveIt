@@ -82,7 +82,7 @@ export default function TabUserScreen() {
 						<View className="flex-row justify-between items-center">
 							<Title>{userInfo?.name}</Title>
 							<Link href={'/settings' as any}>
-								<SettingsIcon width={20} height={20} color="black" />
+								<SettingsIcon width={24} height={24} color="black" />
 							</Link>
 						</View>
 
@@ -106,7 +106,7 @@ export default function TabUserScreen() {
 
 						<View className="flex-row gap-2 items-center">
 							<Text>📍</Text>
-							<Text>Location</Text>
+							<Text className="body-medium-regular">Location</Text>
 						</View>
 
 						<Link
@@ -119,7 +119,7 @@ export default function TabUserScreen() {
 						<View className="flex-row justify-between items-center">
 							<TouchableOpacity className="flex-row gap-2 items-center">
 								<Subtitle>My Collections</Subtitle>
-								<ChevronRightIcon width={14} height={14} color="#a3a3a3" />
+								<ChevronRightIcon width={16} height={16} color="#a3a3a3" />
 							</TouchableOpacity>
 							<TouchableOpacity
 								className="bg-gray400 rounded-full w-[30] h-[30] justify-center items-center"
