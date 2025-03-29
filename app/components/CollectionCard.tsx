@@ -11,16 +11,21 @@ interface IProps {
 	id: number;
 	name: string;
 	image: string;
-	className?: string;
+	width?: number;
+	height?: number;
 }
 
-const CollectionCard = ({ id, name, image, className }: IProps) => {
+const CollectionCard = ({ id, name, image, width, height }: IProps) => {
 	return (
 		<>
 			{image ? (
 				<Link
 					href={`/collection/${id}`}
-					className={`w-[140px] h-[170px] rounded-lg bg-gray200 ${className}`}
+					style={{
+						width: width ? width : 140,
+						height: height ? height : 170,
+					}}
+					className={`rounded-lg bg-gray200`}
 				>
 					<View className="w-full h-full overflow-hidden rounded-lg">
 						<ImageBackground
@@ -55,7 +60,11 @@ const CollectionCard = ({ id, name, image, className }: IProps) => {
 			) : (
 				<Link
 					href={`/collection/${id}`}
-					className={`w-[140] h-[170] rounded-lg ${className}`}
+					style={{
+						width: width ? width : 140,
+						height: height ? height : 170,
+					}}
+					className={`rounded-lg bg-gray200`}
 				>
 					<View className="w-full h-full overflow-hidden rounded-lg">
 						<LinearGradient

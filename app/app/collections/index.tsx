@@ -73,7 +73,8 @@ const index = () => {
 										id={collection.id}
 										name={collection.name}
 										image={collection.image}
-										className={`w-[${cardWidth}px] h-[200px]`}
+										width={cardWidth}
+										height={200}
 									/>
 								) : null
 							)
