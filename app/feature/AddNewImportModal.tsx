@@ -51,7 +51,7 @@ const AddModal = ({
 
 	return (
 		<Animated.View
-			className="absolute z-20 -top-[85px] left-0 right-0 bottom-0 w-full h-full"
+			className="absolute z-20 -top-[83px] left-0 right-0 bottom-0 w-full h-full"
 			style={[animatedModalOpacity, animatedModalTranslateY]}
 		>
 			<BlurView intensity={50} className="w-full h-full">
