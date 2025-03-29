@@ -23,30 +23,35 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 
 	const initialValues = { name: '', description: '' };
 
-	const { mutate: createCollection } = useCreateCollection({
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
-			closeModal();
-		},
-		onError: (error: Error) => {
-			console.log(error);
-		},
-	});
+	const { mutate: createCollection } = useCreateCollection();
 
-	const handleSubmit = (values: any, { setSubmitting }: any) => {
-		createCollection({
-			name: values.name,
-			description: values.description || undefined,
-			image: imageBase64 || undefined,
-		});
+	const handleSubmit = (values: any, { setSubmitting, resetForm }: any) => {
+		createCollection(
+			{
+				name: values.name,
+				description: values.description || undefined,
+				image: imageBase64 || undefined,
+			},
+			{
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
+					resetForm();
+					setImage(null);
+					setImageBase64(null);
+					setSubmitting(false);
+					closeModal();
+				},
+			}
+		);
+
 		setSubmitting(false);
+		closeModal();
 	};
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ['images'],
-			allowsEditing: true,
-			aspect: [4, 3],
+			aspect: [16, 9],
 			quality: 1,
 			base64: true,
 		});
