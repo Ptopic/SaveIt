@@ -11,6 +11,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import React, { useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
 import * as Yup from 'yup';
 
 const userSchema = Yup.object({
@@ -19,6 +20,7 @@ const userSchema = Yup.object({
 });
 
 const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
+	const toast = useToast();
 	const queryClient = useQueryClient();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [image, setImage] = useState<string | null>(null);
@@ -38,11 +40,15 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 			},
 			{
 				onSuccess: async () => {
+					toast.show('Collection created successfully', { type: 'success' });
 					await queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
 					resetForm();
 					setImage(null);
 					setImageBase64(null);
 					closeModal();
+				},
+				onError: () => {
+					toast.show('Failed to create collection', { type: 'error' });
 				},
 			}
 		);
