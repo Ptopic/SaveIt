@@ -35,7 +35,7 @@ const CollectionCard = ({ id, name, image }: IProps) => {
 									width: '100%',
 									flexDirection: 'row',
 									justifyContent: 'space-between',
-									alignItems: 'center',
+									alignItems: 'flex-end',
 									paddingHorizontal: 10,
 									paddingVertical: 10,
 									borderBottomLeftRadius: 8,
@@ -53,7 +53,7 @@ const CollectionCard = ({ id, name, image }: IProps) => {
 				<Link href={`/collection/${id}`} className="w-[140] h-[170] rounded-lg">
 					<View className="w-full h-full overflow-hidden rounded-lg">
 						<LinearGradient
-							colors={['#FC5C7D', '#6A82FB']} // Adjust the main gradient colors as needed
+							colors={['#FC5C7D', '#6A82FB']}
 							locations={[0, 1]}
 							start={{ x: 0, y: 0 }}
 							end={{ x: 1, y: 1 }}
@@ -62,10 +62,11 @@ const CollectionCard = ({ id, name, image }: IProps) => {
 								height: '100%',
 								borderRadius: 8,
 								justifyContent: 'flex-end',
+								alignItems: 'flex-end',
 							}}
 						>
 							<LinearGradient
-								colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.7)']} // Black gradient for text overlay
+								colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.7)']}
 								locations={[0, 1]}
 								style={{
 									position: 'absolute',
@@ -73,7 +74,7 @@ const CollectionCard = ({ id, name, image }: IProps) => {
 									width: '100%',
 									flexDirection: 'row',
 									justifyContent: 'space-between',
-									alignItems: 'center',
+									alignItems: 'flex-end',
 									paddingHorizontal: 10,
 									paddingVertical: 10,
 									borderBottomLeftRadius: 8,
