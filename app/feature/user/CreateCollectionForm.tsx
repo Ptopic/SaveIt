@@ -3,6 +3,7 @@ import { COLLECTIONS } from '@/api/constants';
 import Input from '@/components/Input';
 import ModalComponent from '@/components/ModalComponent';
 import { CloseIcon, ImageIcon } from '@/shared/svgs';
+import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import { useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
@@ -80,7 +81,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 			}) => (
 				<View className="gap-[20]">
 					<TouchableOpacity
-						className="bg-gray400 rounded-full w-[30] h-[30] justify-center items-center"
+						className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
 						onPress={() => {
 							closeModal();
 							resetForm();
@@ -88,13 +89,17 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 							setImageBase64(null);
 						}}
 					>
-						<CloseIcon width={20} height={20} color="white" />
+						<CloseIcon
+							width={20}
+							height={20}
+							color={getTailwindHexColor('red400')}
+						/>
 					</TouchableOpacity>
 
 					<View className="items-center justify-center">
 						{image ? (
 							<TouchableOpacity
-								className="rounded-lg bg-gray400 w-[150] h-[180] justify-center items-center"
+								className="rounded-lg bg-gray200 w-[150] h-[180] justify-center items-center"
 								onPress={() => setModalVisible(true)}
 							>
 								<Image
@@ -104,10 +109,14 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 							</TouchableOpacity>
 						) : (
 							<TouchableOpacity
-								className="rounded-lg bg-gray400 w-[150] h-[180] justify-center items-center"
+								className="rounded-lg bg-gray200 w-[150] h-[180] justify-center items-center"
 								onPress={pickImage}
 							>
-								<ImageIcon width={34} height={34} color="white" />
+								<ImageIcon
+									width={34}
+									height={34}
+									color={getTailwindHexColor('black')}
+								/>
 							</TouchableOpacity>
 						)}
 					</View>
@@ -137,9 +146,9 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 								handleSubmit();
 							}}
 							disabled={!values.name || !values.description || isSubmitting}
-							className="bg-gray400 rounded-lg p-[10] justify-center items-center"
+							className="bg-gray200 rounded-lg p-[10] justify-center items-center"
 						>
-							<Text className="text-white text-lg font-bold">Create</Text>
+							<Text className="text-black text-lg font-bold">Create</Text>
 						</TouchableOpacity>
 					</View>
 
