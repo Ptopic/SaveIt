@@ -146,9 +146,9 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 								handleSubmit();
 							}}
 							disabled={!values.name || !values.description || isSubmitting}
-							className="bg-gray200 rounded-lg p-[10] justify-center items-center"
+							className="bg-black rounded-lg p-[10] justify-center items-center"
 						>
-							<Text className="text-black text-lg font-bold">Create</Text>
+							<Text className="text-white text-lg font-bold">Create</Text>
 						</TouchableOpacity>
 					</View>
 
@@ -159,7 +159,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 						modalStyle={styles.modalContainer}
 					>
 						<View>
-							<View className="flex-col mb-[10] rounded-lg bg-gray500">
+							<View className="flex-col mb-[10] rounded-lg bg-gray200">
 								<TouchableOpacity
 									className="p-[10] justify-center items-center"
 									onPress={() => {
@@ -170,7 +170,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 										Chose new image
 									</Text>
 								</TouchableOpacity>
-								<View className="h-[1] bg-gray600"></View>
+								<View className="h-[1] bg-gray300"></View>
 								<TouchableOpacity
 									className="p-[10] justify-center items-center"
 									onPress={() => {
@@ -179,14 +179,14 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 										setModalVisible(false);
 									}}
 								>
-									<Text className="text-red600 text-lg font-bold">Remove</Text>
+									<Text className="text-red500 text-lg font-bold">Remove</Text>
 								</TouchableOpacity>
 							</View>
 							<TouchableOpacity
 								onPress={() => setModalVisible(false)}
 								className="bg-white rounded-lg p-[10] justify-center items-center"
 							>
-								<Text className="text-red600 text-lg font-bold">Cancel</Text>
+								<Text className="text-red500 text-lg font-bold">Cancel</Text>
 							</TouchableOpacity>
 						</View>
 					</ModalComponent>
