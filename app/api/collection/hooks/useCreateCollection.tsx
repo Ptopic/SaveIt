@@ -1,18 +1,12 @@
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import collectionRequests from '../requests';
+import { ICreateCollectionRequest } from '../types';
 const useCreateCollection = (
-	options?: UseMutationOptions<any, Error, any, unknown>
+	options?: UseMutationOptions<ICreateCollectionRequest, Error, any, unknown>
 ) => {
 	return useMutation({
-		mutationFn: ({
-			name,
-			description,
-			image,
-		}: {
-			name: string;
-			description?: string;
-			image?: string;
-		}) => collectionRequests.createCollection(name, description, image),
+		mutationFn: (data: ICreateCollectionRequest) =>
+			collectionRequests.createCollection(data),
 		...options,
 	});
 };

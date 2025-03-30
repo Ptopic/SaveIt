@@ -35,7 +35,7 @@ export class CollectionsController {
 				searchQuery
 			);
 
-		return { data: collections, totalCollections };
+		return { data: collections, totalCount: totalCollections };
 	}
 
 	@Get('/:id')

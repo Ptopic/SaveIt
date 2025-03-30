@@ -1,6 +1,7 @@
 import { config } from '@/shared/config';
+import authenticatedRequest from '../authenticatedRequest';
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../constants';
-import fetchWithMiddleware from '../fetchWithMiddleware';
+import { ICreateCollectionRequest } from './types';
 
 const getCollections = async (
 	page = DEFAULT_PAGE,
@@ -12,30 +13,26 @@ const getCollections = async (
 	url.searchParams.set('searchQuery', searchQuery);
 	url.searchParams.set('pageSize', pageSize);
 
-	return await fetchWithMiddleware(url.toString(), {
+	return await authenticatedRequest(url.toString(), {
 		method: 'GET',
 	});
 };
 
 const getCollection = async (id: string) => {
-	return await fetchWithMiddleware(`${config.apiUrl}/collections/${id}`, {
+	return await authenticatedRequest(`${config.apiUrl}/collections/${id}`, {
 		method: 'GET',
 	});
 };
 
-const createCollection = async (
-	name: string,
-	description?: string,
-	image?: string
-) => {
-	return await fetchWithMiddleware(`${config.apiUrl}/collections`, {
+const createCollection = async (data: ICreateCollectionRequest) => {
+	return await authenticatedRequest(`${config.apiUrl}/collections`, {
 		method: 'POST',
-		body: JSON.stringify({ name, description, image }),
+		body: JSON.stringify(data),
 	});
 };
 
 const deleteCollection = async (id: string) => {
-	return await fetchWithMiddleware(`${config.apiUrl}/collections/${id}`, {
+	return await authenticatedRequest(`${config.apiUrl}/collections/${id}`, {
 		method: 'DELETE',
 	});
 };

@@ -1,6 +1,8 @@
 import { COLLECTIONS } from '@/api/constants';
+import { PaginatedResults } from '@/api/types';
 import { useQuery } from '@tanstack/react-query';
 import collectionRequests from '../requests';
+import { ICollection } from '../types';
 
 const useGetAllCollections = ({
 	page,
@@ -11,7 +13,7 @@ const useGetAllCollections = ({
 	searchQuery: string;
 	pageSize: string;
 }) => {
-	return useQuery({
+	return useQuery<PaginatedResults<ICollection>>({
 		queryKey: [COLLECTIONS, page, searchQuery, pageSize],
 		queryFn: () =>
 			collectionRequests.getCollections(page, searchQuery, pageSize),

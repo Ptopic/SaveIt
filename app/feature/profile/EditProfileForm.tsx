@@ -1,3 +1,4 @@
+import { ICreateUserRequest, IUser } from '@/api/auth/types';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Subtitle from '@/components/Subtitle';
@@ -12,14 +13,14 @@ const userSchema = Yup.object({
 	location: Yup.string().optional(),
 });
 
-const EditProfileForm = ({ userInfo }: { userInfo: any }) => {
+const EditProfileForm = ({ userInfo }: { userInfo: IUser }) => {
 	const initialValues = {
 		email: userInfo.email,
-		fullName: userInfo.name,
+		fullName: userInfo.fullName,
 		location: userInfo.location,
 	};
 
-	const handleSubmit = (values: any, { resetForm }: any) => {
+	const handleSubmit = (values: ICreateUserRequest) => {
 		console.log(values);
 	};
 	return (

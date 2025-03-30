@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
-const fetchWithMiddleware = async (url: string, options: RequestInit = {}) => {
+const authenticatedRequest = async (url: string, options: RequestInit = {}) => {
 	const accessToken = await AsyncStorage.getItem('accessToken');
 
 	try {
@@ -29,4 +29,4 @@ const fetchWithMiddleware = async (url: string, options: RequestInit = {}) => {
 	}
 };
 
-export default fetchWithMiddleware;
+export default authenticatedRequest;

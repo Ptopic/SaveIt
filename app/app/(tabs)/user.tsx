@@ -81,7 +81,7 @@ export default function TabUserScreen() {
 				) : (
 					<View className="flex-col gap-5">
 						<View className="flex-row justify-between items-center">
-							<Title>{userInfo?.name}</Title>
+							<Title>{userInfo?.fullName}</Title>
 							<Link href={'/settings' as any}>
 								<SettingsIcon width={24} height={24} color="black" />
 							</Link>

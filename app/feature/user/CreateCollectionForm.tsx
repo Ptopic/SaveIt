@@ -35,8 +35,8 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 		createCollection(
 			{
 				name: values.name,
-				description: values.description || undefined,
-				image: imageBase64 || undefined,
+				description: values.description ?? '',
+				image: imageBase64 ?? '',
 			},
 			{
 				onSuccess: async () => {
