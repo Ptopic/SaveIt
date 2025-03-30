@@ -52,14 +52,9 @@ export class CollectionsController {
 		@Req() req: Request,
 		@Body() body: CreateCollectionDto
 	) {
-		const { name, description, image } = body;
 		const userId = req.user.userId;
 
-		return await this.collectionsService.createCollection(userId, {
-			name,
-			description,
-			image,
-		});
+		return await this.collectionsService.createCollection(userId, body);
 	}
 
 	@Delete('/:id')
