@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateUserDto } from './dtos/updateUser.dto';
 import { UpdateUserProfilePictureDto } from './dtos/updateUserProfilePicture.dto';
 
 @Injectable()
@@ -29,6 +30,13 @@ export class UsersService {
 		return this.prisma.user.update({
 			where: { id },
 			data: { picture: uploadedImage.url, pictureId: uploadedImage.public_id },
+		});
+	}
+
+	async updateUser(id: string, updateUserDto: UpdateUserDto) {
+		return this.prisma.user.update({
+			where: { id },
+			data: updateUserDto,
 		});
 	}
 }

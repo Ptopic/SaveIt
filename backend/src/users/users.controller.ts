@@ -1,6 +1,7 @@
 import { Body, Controller, Patch, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
+import { UpdateUserDto } from './dtos/updateUser.dto';
 import { UpdateUserProfilePictureDto } from './dtos/updateUserProfilePicture.dto';
 import { UsersService } from './users.service';
 
@@ -18,5 +19,11 @@ export class UsersController {
 			req.user.userId,
 			updateUserProfilePictureDto
 		);
+	}
+
+	@Patch('/')
+	@JwtAuth()
+	updateUser(@Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
+		return this.usersService.updateUser(req.user.userId, updateUserDto);
 	}
 }
