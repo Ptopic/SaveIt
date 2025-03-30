@@ -17,6 +17,7 @@ export { default as MapPinFullIcon } from '@assets/icons/MapPinFull.svg';
 export { default as PlusIcon } from '@assets/icons/Plus.svg';
 export { default as SearchIcon } from '@assets/icons/Search.svg';
 export { default as SettingsIcon } from '@assets/icons/Settings.svg';
+export { default as SwitchIcon } from '@assets/icons/Switch.svg';
 export { default as TrashIcon } from '@assets/icons/Trash.svg';
 export { default as UserIcon } from '@assets/icons/User.svg';
 export { default as UserCircleIcon } from '@assets/icons/UserCircle.svg';

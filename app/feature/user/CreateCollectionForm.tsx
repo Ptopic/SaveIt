@@ -14,7 +14,7 @@ import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import * as Yup from 'yup';
 
-const userSchema = Yup.object({
+const collectionSchema = Yup.object({
 	name: Yup.string().required('Name is required').max(30),
 	description: Yup.string().required('Description is required').max(200),
 });
@@ -72,7 +72,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 	return (
 		<Formik
 			initialValues={initialValues}
-			validationSchema={userSchema}
+			validationSchema={collectionSchema}
 			onSubmit={handleSubmit}
 		>
 			{({
@@ -125,7 +125,7 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 						)}
 					</View>
 
-					<View className="gap-[10]">
+					<View className="gap-2">
 						<Input
 							name="name"
 							placeholder="Name"

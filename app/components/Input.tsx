@@ -1,5 +1,5 @@
 import Text from '@/components/Text';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	NativeSyntheticEvent,
 	TextInput,
@@ -22,6 +22,8 @@ const Input = ({
 	error,
 	type = 'text',
 	maxLength,
+	disabled,
+	placeholderAlwaysVisible = false,
 }: {
 	name: string;
 	placeholder: string;
@@ -31,10 +33,16 @@ const Input = ({
 	error?: string;
 	type?: 'text' | 'password';
 	maxLength?: number;
+	disabled?: boolean;
+	placeholderAlwaysVisible?: boolean;
 }) => {
 	const [isFocused, setIsFocused] = useState(false);
-	const placeholderPosition = useSharedValue(value ? -32 : 0);
-	const placeholderOpacity = useSharedValue(value ? 1 : 0);
+	const placeholderPosition = useSharedValue(
+		value && value.length > 0 && !placeholderAlwaysVisible ? -32 : 0
+	);
+	const placeholderOpacity = useSharedValue(
+		value && value.length > 0 && !placeholderAlwaysVisible ? 1 : 0
+	);
 
 	const animatedPlaceholderStyle = useAnimatedStyle(() => {
 		return {
@@ -46,12 +54,8 @@ const Input = ({
 	const handleChangeText = (text: string) => {
 		if (text.length > 0) {
 			setIsFocused(true);
-			placeholderPosition.value = withTiming(-32, { duration: 150 });
-			placeholderOpacity.value = withTiming(1, { duration: 150 });
 		} else {
 			setIsFocused(false);
-			placeholderPosition.value = withTiming(0, { duration: 150 });
-			placeholderOpacity.value = withTiming(0, { duration: 150 });
 		}
 		onChangeText(text);
 	};
@@ -65,10 +69,27 @@ const Input = ({
 		onBlur(e);
 	};
 
+	useEffect(() => {
+		if (placeholderAlwaysVisible) {
+			placeholderPosition.value = withTiming(-32, { duration: 150 });
+			placeholderOpacity.value = withTiming(1, { duration: 150 });
+		} else {
+			if (value && value.length > 0) {
+				placeholderPosition.value = withTiming(-32, { duration: 150 });
+				placeholderOpacity.value = withTiming(1, { duration: 150 });
+			} else {
+				placeholderPosition.value = withTiming(0, { duration: 150 });
+				placeholderOpacity.value = withTiming(0, { duration: 150 });
+			}
+		}
+	}, [placeholderAlwaysVisible, value]);
+
 	return (
 		<View
 			className="gap-[5] relative w-full"
-			style={{ marginTop: isFocused || value ? 20 : 0 }}
+			style={{
+				marginTop: isFocused || value || placeholderAlwaysVisible ? 20 : 0,
+			}}
 		>
 			<Animated.Text
 				className="absolute left-[2] top-[10] text-black"
@@ -76,7 +97,10 @@ const Input = ({
 			>
 				{placeholder}
 			</Animated.Text>
-			<View className="border border-black rounded-lg p-[10]">
+			<View
+				className="border border-black rounded-lg p-[10]"
+				style={{ opacity: disabled ? 0.5 : 1 }}
+			>
 				<TextInput
 					testID={name}
 					autoComplete="off"
@@ -87,6 +111,7 @@ const Input = ({
 					placeholder={placeholder}
 					placeholderTextColor="gray"
 					style={maxLength ? { width: '85%' } : {}}
+					editable={!disabled}
 				/>
 				{maxLength && (
 					<Text className="absolute right-[10] bottom-[10] text-gray-500">
