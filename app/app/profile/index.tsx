@@ -1,12 +1,15 @@
 import useGetUserInfo from '@/api/auth/hooks/useGetUserInfo';
+import { USER_INFO } from '@/api/constants';
+import useUpdateProfilePicture from '@/api/user/hooks/useUpdateProfilePicture';
 import ScreenHeader from '@/components/ScreenHeader';
 import EditProfileForm from '@/feature/profile/EditProfileForm';
 import { blurhash } from '@/shared/contants';
 import { ImageIcon, SwitchIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
+import { useQueryClient } from '@tanstack/react-query';
 import { ImageBackground } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useState } from 'react';
+import React from 'react';
 import {
 	ActivityIndicator,
 	SafeAreaView,
@@ -14,10 +17,14 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
 
 const ProfileScreen = () => {
-	const [image, setImage] = useState<string | null>(null);
-	const [imageBase64, setImageBase64] = useState<string | null>(null);
+	const toast = useToast();
+	const queryClient = useQueryClient();
+
+	const { mutate: updateProfilePicture, isPending: isUpdatingProfilePicture } =
+		useUpdateProfilePicture();
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -28,8 +35,21 @@ const ProfileScreen = () => {
 		});
 
 		if (!result.canceled && result.assets?.[0]) {
-			setImage(result.assets[0].uri ?? null);
-			setImageBase64(`data:image/jpeg;base64,${result.assets[0].base64}`);
+			const base64 = `data:image/jpeg;base64,${result.assets[0].base64}`;
+
+			await updateProfilePicture(
+				{ picture: base64 },
+				{
+					onSuccess: async () => {
+						toast.show('Profile picture updated successfully', {
+							type: 'success',
+						});
+						await queryClient.invalidateQueries({
+							queryKey: [USER_INFO],
+						});
+					},
+				}
+			);
 		}
 	};
 
