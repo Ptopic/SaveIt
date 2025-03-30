@@ -22,6 +22,7 @@ model User {
   // password String
   fullName String
   picture  String?
+  pictureId String?
   location String?
 
   collections Collection[]

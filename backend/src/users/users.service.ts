@@ -14,13 +14,21 @@ export class UsersService {
 		id: string,
 		updateUserProfilePictureDto: UpdateUserProfilePictureDto
 	) {
+		const user = await this.prisma.user.findUnique({
+			where: { id },
+		});
+
+		if (user.picture && user.pictureId) {
+			await this.cloudinaryService.deleteImage(user.pictureId);
+		}
+
 		const uploadedImage = await this.cloudinaryService.uploadImage(
 			updateUserProfilePictureDto.picture
 		);
 
 		return this.prisma.user.update({
 			where: { id },
-			data: { picture: uploadedImage.url },
+			data: { picture: uploadedImage.url, pictureId: uploadedImage.public_id },
 		});
 	}
 }
