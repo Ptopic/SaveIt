@@ -1,21 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import axios from 'axios';
-import { OAuth2Client } from 'google-auth-library';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-	private googleClient: OAuth2Client;
-
 	constructor(
 		private prisma: PrismaService,
 		private jwtService: JwtService
-	) {
-		this.googleClient = new OAuth2Client(
-			process.env.GOOGLE_CLIENT_ID // Make sure to set this in your backend .env
-		);
-	}
+	) {}
 
 	async verifyGoogleToken(accessToken: string) {
 		try {
@@ -47,7 +40,7 @@ export class AuthService {
 				const newUser = await this.prisma.user.create({
 					data: {
 						email,
-						name,
+						fullName: name,
 						picture,
 					},
 				});
