@@ -105,10 +105,10 @@ export default function TabUserScreen() {
 							</View>
 						</View>
 
-						{userInfo?.location && (
-							<View className="flex-row gap-2 items-center">
+						{userInfo?.country && (
+							<View className="flex-row gap-1 items-center">
 								<Text>📍</Text>
-								<Text>Location</Text>
+								<Text>{userInfo?.country}</Text>
 							</View>
 						)}
 

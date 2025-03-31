@@ -2,9 +2,10 @@ import useCreateCollection from '@/api/collection/hooks/useCreateCollection';
 import { COLLECTIONS } from '@/api/constants';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
+import ModalCloseButton from '@/components/ModalCloseButton';
 import ModalComponent from '@/components/ModalComponent';
 import Text from '@/components/Text';
-import { CloseIcon, ImageIcon } from '@/shared/svgs';
+import { ImageIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import { useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
@@ -84,21 +85,14 @@ const CreateCollectionForm = ({ closeModal }: { closeModal: () => void }) => {
 				resetForm,
 			}) => (
 				<View className="gap-[20]">
-					<TouchableOpacity
-						className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
-						onPress={() => {
+					<ModalCloseButton
+						closeModal={() => {
 							closeModal();
 							resetForm();
 							setImage(null);
 							setImageBase64(null);
 						}}
-					>
-						<CloseIcon
-							width={20}
-							height={20}
-							color={getTailwindHexColor('red400')}
-						/>
-					</TouchableOpacity>
+					/>
 
 					<View className="items-center justify-center">
 						{image ? (

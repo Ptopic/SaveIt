@@ -23,7 +23,7 @@ model User {
   fullName String
   picture  String?
   pictureId String?
-  location String?
+  country String?
 
   collections Collection[]
   imports     Import[]

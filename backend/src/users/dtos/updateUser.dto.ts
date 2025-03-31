@@ -6,5 +6,5 @@ export class UpdateUserDto {
 
 	@IsString()
 	@IsOptional()
-	location: string;
+	country: string;
 }
