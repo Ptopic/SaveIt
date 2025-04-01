@@ -7,9 +7,10 @@ import Title from './Title';
 interface IProps {
 	allowBack?: boolean;
 	title: string;
+	rightElement?: React.ReactNode;
 }
 
-const ScreenHeader = ({ allowBack = true, title }: IProps) => {
+const ScreenHeader = ({ allowBack = true, title, rightElement }: IProps) => {
 	return (
 		<View className="flex-row gap-[10] items-center">
 			{allowBack && (
@@ -19,8 +20,10 @@ const ScreenHeader = ({ allowBack = true, title }: IProps) => {
 					</TouchableOpacity>
 				</View>
 			)}
-			<View className="flex-1 flex-row justify-start">
+			<View className="flex-1 flex-row justify-between">
 				<Title>{title}</Title>
+
+				{rightElement}
 			</View>
 		</View>
 	);

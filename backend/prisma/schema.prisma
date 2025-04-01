@@ -37,6 +37,7 @@ model Collection {
   name        String
   description String?
   image       String?
+  imageId     String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String

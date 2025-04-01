@@ -74,7 +74,7 @@ const Input = ({
 			placeholderPosition.value = withTiming(-32, { duration: 150 });
 			placeholderOpacity.value = withTiming(1, { duration: 150 });
 		} else {
-			if (value && value.length > 0) {
+			if (value) {
 				placeholderPosition.value = withTiming(-32, { duration: 150 });
 				placeholderOpacity.value = withTiming(1, { duration: 150 });
 			} else {

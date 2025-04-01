@@ -4,7 +4,6 @@ import { IUser } from '@/api/user/types';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import SelectCountryModal from '@/components/SelectCountryModal';
-import Subtitle from '@/components/Subtitle';
 import Text from '@/components/Text';
 import { useQueryClient } from '@tanstack/react-query';
 import { Formik } from 'formik';
@@ -98,8 +97,6 @@ const EditProfileForm = ({ userInfo }: { userInfo: IUser }) => {
 								</TouchableOpacity>
 							</View>
 						</View>
-
-						<Subtitle>Extracts</Subtitle>
 
 						<Button
 							onPress={handleSubmit}

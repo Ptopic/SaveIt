@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCollectionDto } from './dtos/createCollection.dto';
+import { UpdateCollectionDto } from './dtos/updateCollection.dto';
 
 @Injectable()
 export class CollectionsService {
@@ -56,6 +57,39 @@ export class CollectionsService {
 				name,
 				description,
 				image: uploadedImage ? uploadedImage.url : null,
+				imageId: uploadedImage ? uploadedImage.public_id : null,
+			},
+		});
+	}
+
+	async updateCollection(
+		id: string,
+		userId: string,
+		data: UpdateCollectionDto
+	) {
+		const { name, description, oldImage, newImage } = data;
+
+		const collection = await this.prisma.collection.findUnique({
+			where: { id, userId },
+		});
+
+		if (!collection) {
+			throw new NotFoundException('Collection not found');
+		}
+
+		let uploadedImage = null;
+		if (newImage) {
+			await this.cloudinaryService.deleteImage(collection.imageId);
+			uploadedImage = await this.cloudinaryService.uploadImage(newImage);
+		}
+
+		return await this.prisma.collection.update({
+			where: { id, userId },
+			data: {
+				name,
+				description,
+				image: uploadedImage ? uploadedImage.url : oldImage,
+				imageId: uploadedImage ? uploadedImage.public_id : null,
 			},
 		});
 	}

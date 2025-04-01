@@ -13,9 +13,17 @@ interface IProps {
 	image: string;
 	width?: number;
 	height?: number;
+	hideOverlay?: boolean;
 }
 
-const CollectionCard = ({ id, name, image, width, height }: IProps) => {
+const CollectionCard = ({
+	id,
+	name,
+	image,
+	width,
+	height,
+	hideOverlay,
+}: IProps) => {
 	return (
 		<>
 			{image ? (
@@ -35,25 +43,27 @@ const CollectionCard = ({ id, name, image, width, height }: IProps) => {
 							placeholder={blurhash}
 							transition={500}
 						>
-							<LinearGradient
-								colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
-								style={{
-									position: 'absolute',
-									bottom: 0,
-									width: '100%',
-									flexDirection: 'row',
-									justifyContent: 'space-between',
-									alignItems: 'flex-end',
-									paddingHorizontal: 10,
-									paddingVertical: 10,
-									borderBottomLeftRadius: 8,
-									borderBottomRightRadius: 8,
-								}}
-							>
-								<Text className="text-white font-[500] w-[80%]">{name}</Text>
+							{!hideOverlay && (
+								<LinearGradient
+									colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
+									style={{
+										position: 'absolute',
+										bottom: 0,
+										width: '100%',
+										flexDirection: 'row',
+										justifyContent: 'space-between',
+										alignItems: 'flex-end',
+										paddingHorizontal: 10,
+										paddingVertical: 10,
+										borderBottomLeftRadius: 8,
+										borderBottomRightRadius: 8,
+									}}
+								>
+									<Text className="text-white font-[500] w-[80%]">{name}</Text>
 
-								<LockClosedIcon color="white" width={20} height={20} />
-							</LinearGradient>
+									<LockClosedIcon color="white" width={20} height={20} />
+								</LinearGradient>
+							)}
 						</ImageBackground>
 					</View>
 				</Link>
@@ -80,25 +90,27 @@ const CollectionCard = ({ id, name, image, width, height }: IProps) => {
 								alignItems: 'flex-end',
 							}}
 						>
-							<LinearGradient
-								colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.7)']}
-								locations={[0, 1]}
-								style={{
-									position: 'absolute',
-									bottom: 0,
-									width: '100%',
-									flexDirection: 'row',
-									justifyContent: 'space-between',
-									alignItems: 'flex-end',
-									paddingHorizontal: 10,
-									paddingVertical: 10,
-									borderBottomLeftRadius: 8,
-									borderBottomRightRadius: 8,
-								}}
-							>
-								<Text className="text-white font-[500] w-[80%]">{name}</Text>
-								<LockClosedIcon color="white" width={20} height={20} />
-							</LinearGradient>
+							{!hideOverlay && (
+								<LinearGradient
+									colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.7)']}
+									locations={[0, 1]}
+									style={{
+										position: 'absolute',
+										bottom: 0,
+										width: '100%',
+										flexDirection: 'row',
+										justifyContent: 'space-between',
+										alignItems: 'flex-end',
+										paddingHorizontal: 10,
+										paddingVertical: 10,
+										borderBottomLeftRadius: 8,
+										borderBottomRightRadius: 8,
+									}}
+								>
+									<Text className="text-white font-[500] w-[80%]">{name}</Text>
+									<LockClosedIcon color="white" width={20} height={20} />
+								</LinearGradient>
+							)}
 						</LinearGradient>
 					</View>
 				</Link>

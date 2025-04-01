@@ -5,6 +5,7 @@ import {
 	Get,
 	Param,
 	Post,
+	Put,
 	Query,
 	Req,
 } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { Request } from 'express';
 import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
 import { CollectionsService } from './collections.service';
 import { CreateCollectionDto } from './dtos/createCollection.dto';
+import { UpdateCollectionDto } from './dtos/updateCollection.dto';
 
 @Controller('collections')
 export class CollectionsController {
@@ -55,6 +57,18 @@ export class CollectionsController {
 		const userId = req.user.userId;
 
 		return await this.collectionsService.createCollection(userId, body);
+	}
+
+	@Put('/:id')
+	@JwtAuth()
+	async updateCollection(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Body() body: UpdateCollectionDto
+	) {
+		const userId = req.user.userId;
+
+		return await this.collectionsService.updateCollection(id, userId, body);
 	}
 
 	@Delete('/:id')

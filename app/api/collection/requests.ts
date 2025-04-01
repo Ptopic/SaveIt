@@ -1,7 +1,7 @@
 import { config } from '@/shared/config';
 import authenticatedRequest from '../authenticatedRequest';
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../constants';
-import { ICreateCollectionRequest } from './types';
+import { ICreateCollectionRequest, IUpdateCollectionRequest } from './types';
 
 const getCollections = async (
 	page = DEFAULT_PAGE,
@@ -31,6 +31,13 @@ const createCollection = async (data: ICreateCollectionRequest) => {
 	});
 };
 
+const updateCollection = async (id: string, data: IUpdateCollectionRequest) => {
+	return await authenticatedRequest(`${config.apiUrl}/collections/${id}`, {
+		method: 'PUT',
+		body: JSON.stringify(data),
+	});
+};
+
 const deleteCollection = async (id: string) => {
 	return await authenticatedRequest(`${config.apiUrl}/collections/${id}`, {
 		method: 'DELETE',
@@ -41,5 +48,6 @@ export default {
 	getCollections,
 	getCollection,
 	createCollection,
+	updateCollection,
 	deleteCollection,
 };

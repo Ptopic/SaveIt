@@ -12,3 +12,10 @@ export interface ICreateCollectionRequest {
 	description: string;
 	image: string;
 }
+
+export interface IUpdateCollectionRequest {
+	name: string;
+	description: string;
+	oldImage: string | null;
+	newImage: string | null;
+}
