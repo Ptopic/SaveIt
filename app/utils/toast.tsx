@@ -12,9 +12,10 @@ export const CustomToastProvider = ({
 }) => {
 	return (
 		<ToastProvider
-			duration={4000}
+			duration={2000}
 			animationType="slide-in"
 			swipeEnabled={false}
+			offsetBottom={90}
 			renderType={{
 				success: (toast) => (
 					<View style={styles.success}>
