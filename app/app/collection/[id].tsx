@@ -72,10 +72,10 @@ const CollectionScreen = () => {
 	};
 
 	useEffect(() => {
-		if (!collection) {
+		if (!collection && !isCollectionLoading) {
 			router.replace('/not-found' as any);
 		}
-	}, [collection]);
+	}, [collection, isCollectionLoading]);
 
 	return (
 		<SafeAreaView>
