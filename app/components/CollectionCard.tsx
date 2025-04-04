@@ -1,5 +1,5 @@
 import { blurhash } from '@/shared/contants';
-import { LockClosedIcon } from '@/shared/svgs';
+import { LockClosedIcon, LockOpenIcon } from '@/shared/svgs';
 import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
@@ -11,6 +11,7 @@ interface IProps {
 	id: number;
 	name: string;
 	image: string;
+	isPublic: boolean;
 	width?: number;
 	height?: number;
 	hideOverlay?: boolean;
@@ -20,6 +21,7 @@ const CollectionCard = ({
 	id,
 	name,
 	image,
+	isPublic,
 	width,
 	height,
 	hideOverlay,
@@ -108,7 +110,11 @@ const CollectionCard = ({
 									}}
 								>
 									<Text className="text-white font-[500] w-[80%]">{name}</Text>
-									<LockClosedIcon color="white" width={20} height={20} />
+									{isPublic ? (
+										<LockOpenIcon color="white" width={20} height={20} />
+									) : (
+										<LockClosedIcon color="white" width={20} height={20} />
+									)}
 								</LinearGradient>
 							)}
 						</LinearGradient>

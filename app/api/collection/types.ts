@@ -5,12 +5,14 @@ export interface ICollection {
 	image: string;
 	createdAt: string;
 	updatedAt: string;
+	isPublic: boolean;
 }
 
 export interface ICreateCollectionRequest {
 	name: string;
 	description: string;
 	image: string;
+	isPublic: boolean;
 }
 
 export interface IUpdateCollectionRequest {
@@ -18,4 +20,5 @@ export interface IUpdateCollectionRequest {
 	description: string;
 	oldImage: string | null;
 	newImage: string | null;
+	isPublic: boolean;
 }

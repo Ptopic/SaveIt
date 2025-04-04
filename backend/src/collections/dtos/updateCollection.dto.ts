@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateCollectionDto {
 	@IsString()
@@ -16,4 +16,8 @@ export class UpdateCollectionDto {
 	@IsString()
 	@IsOptional()
 	newImage: string | null;
+
+	@IsBoolean()
+	@IsOptional()
+	isPublic: boolean;
 }

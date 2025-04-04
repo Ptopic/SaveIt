@@ -10,7 +10,14 @@ import Subtitle from '@/components/Subtitle';
 import Text from '@/components/Text';
 import EditCollectionForm from '@/feature/user/EditCollectionForm';
 import useDebounce from '@/hooks/useDebounce';
-import { PencilIcon, PlusIcon, ThreeDotsIcon, TrashIcon } from '@/shared/svgs';
+import {
+	LockClosedIcon,
+	LockOpenIcon,
+	PencilIcon,
+	PlusIcon,
+	ThreeDotsIcon,
+	TrashIcon,
+} from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -78,7 +85,7 @@ const CollectionScreen = () => {
 	}, [collection, isCollectionLoading]);
 
 	return (
-		<SafeAreaView>
+		<SafeAreaView className="flex-1 bg-white">
 			<View className="p-4 gap-5">
 				<ScreenHeader
 					title="Collection Details"
@@ -100,13 +107,19 @@ const CollectionScreen = () => {
 								id={Number(collection?.id)}
 								name={collection?.name ?? ''}
 								image={collection?.image ?? ''}
+								isPublic={collection?.isPublic ?? false}
 								height={240}
 								width={200}
 								hideOverlay
 							/>
 
-							<View>
+							<View className="gap-2 flex-row items-center">
 								<Subtitle>{collection?.name}</Subtitle>
+								{collection?.isPublic ? (
+									<LockOpenIcon color="black" width={20} height={20} />
+								) : (
+									<LockClosedIcon color="black" width={20} height={20} />
+								)}
 							</View>
 						</View>
 
@@ -165,15 +178,16 @@ const CollectionScreen = () => {
 					</TouchableOpacity>
 				</View>
 			</ModalComponent>
-
-			{!isCollectionLoading && collection && (
-				<DrawerModal ref={bottomSheetRef} snapPoints={['80%']}>
+			<DrawerModal ref={bottomSheetRef} snapPoints={['70%']}>
+				{!isCollectionLoading && collection ? (
 					<EditCollectionForm
 						closeModal={() => bottomSheetRef.current?.close()}
 						collection={collection}
 					/>
-				</DrawerModal>
-			)}
+				) : (
+					<ActivityIndicator />
+				)}
+			</DrawerModal>
 		</SafeAreaView>
 	);
 };

@@ -5,6 +5,7 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import ModalCloseButton from '@/components/ModalCloseButton';
 import ModalComponent from '@/components/ModalComponent';
+import Switch from '@/components/Switch';
 import Text from '@/components/Text';
 import { ImageIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
@@ -32,6 +33,7 @@ const EditCollectionForm = ({ closeModal, collection }: IProps) => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [image, setImage] = useState<string | null>(collection.image);
 	const [imageBase64, setImageBase64] = useState<string | null>(null);
+	const [isPublic, setIsPublic] = useState(collection.isPublic);
 
 	const initialValues = {
 		name: collection.name,
@@ -48,6 +50,7 @@ const EditCollectionForm = ({ closeModal, collection }: IProps) => {
 				description: values.description ?? '',
 				oldImage: image ?? null,
 				newImage: imageBase64 ?? null,
+				isPublic,
 			},
 			{
 				onSuccess: async () => {
@@ -146,6 +149,10 @@ const EditCollectionForm = ({ closeModal, collection }: IProps) => {
 								maxLength={200}
 							/>
 						)}
+						<View className="flex-row items-center justify-between gap-2 my-2">
+							<Text className="body-medium-regular">Make Public</Text>
+							<Switch isPublic={isPublic} setIsPublic={setIsPublic} />
+						</View>
 						<Button
 							onPress={() => {
 								handleSubmit();

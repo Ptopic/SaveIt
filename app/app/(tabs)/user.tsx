@@ -160,6 +160,7 @@ export default function TabUserScreen() {
 										id={collection.id}
 										name={collection.name}
 										image={collection.image}
+										isPublic={collection.isPublic}
 									/>
 								))
 							)}
@@ -263,7 +264,7 @@ export default function TabUserScreen() {
 					</View>
 				)}
 			</ScrollView>
-			<DrawerModal ref={bottomSheetRef} snapPoints={['80%']}>
+			<DrawerModal ref={bottomSheetRef} snapPoints={['70%']}>
 				<CreateCollectionForm
 					closeModal={() => bottomSheetRef.current?.close()}
 				/>

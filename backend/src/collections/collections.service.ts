@@ -44,7 +44,7 @@ export class CollectionsService {
 	}
 
 	async createCollection(userId: string, data: CreateCollectionDto) {
-		const { name, description, image } = data;
+		const { name, description, image, isPublic } = data;
 
 		let uploadedImage;
 		if (image) {
@@ -58,6 +58,7 @@ export class CollectionsService {
 				description,
 				image: uploadedImage ? uploadedImage.url : null,
 				imageId: uploadedImage ? uploadedImage.public_id : null,
+				isPublic,
 			},
 		});
 	}
@@ -67,7 +68,7 @@ export class CollectionsService {
 		userId: string,
 		data: UpdateCollectionDto
 	) {
-		const { name, description, oldImage, newImage } = data;
+		const { name, description, oldImage, newImage, isPublic } = data;
 
 		const collection = await this.prisma.collection.findUnique({
 			where: { id, userId },
@@ -102,6 +103,7 @@ export class CollectionsService {
 				description,
 				image,
 				imageId,
+				isPublic,
 			},
 		});
 	}

@@ -73,6 +73,7 @@ const index = () => {
 										id={collection.id}
 										name={collection.name}
 										image={collection.image}
+										isPublic={collection.isPublic}
 										width={cardWidth}
 										height={200}
 									/>
