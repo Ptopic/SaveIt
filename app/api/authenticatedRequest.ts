@@ -24,7 +24,6 @@ const authenticatedRequest = async (url: string, options: RequestInit = {}) => {
 
 		return data;
 	} catch (error) {
-		console.error('Network error:', error);
 		return null;
 	}
 };

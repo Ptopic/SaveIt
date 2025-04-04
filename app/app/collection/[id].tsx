@@ -16,7 +16,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
 	StyleSheet,
@@ -70,6 +70,12 @@ const CollectionScreen = () => {
 			},
 		});
 	};
+
+	useEffect(() => {
+		if (!collection) {
+			router.replace('/not-found' as any);
+		}
+	}, [collection]);
 
 	return (
 		<SafeAreaView>
