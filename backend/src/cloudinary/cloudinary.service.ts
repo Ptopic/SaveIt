@@ -36,9 +36,9 @@ export class CloudinaryService {
 			throw new Error('Image size exceeds 20MB limit');
 		}
 
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve) => {
 			const upload = v2.uploader.upload_stream((error, result) => {
-				if (error) return reject(error);
+				if (error) throw new Error('Failed to upload image');
 				resolve(result);
 			});
 
@@ -47,6 +47,10 @@ export class CloudinaryService {
 	}
 
 	async deleteImage(id: string) {
-		return v2.uploader.destroy(id);
+		try {
+			return v2.uploader.destroy(id);
+		} catch (error) {
+			throw new Error('Failed to delete image');
+		}
 	}
 }

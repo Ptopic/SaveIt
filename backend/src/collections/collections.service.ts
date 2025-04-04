@@ -77,10 +77,22 @@ export class CollectionsService {
 			throw new NotFoundException('Collection not found');
 		}
 
-		let uploadedImage = null;
-		if (newImage) {
-			await this.cloudinaryService.deleteImage(collection.imageId);
-			uploadedImage = await this.cloudinaryService.uploadImage(newImage);
+		let image = collection.image;
+		let imageId = collection.imageId;
+
+		if (newImage !== null) {
+			if (collection.image) {
+				await this.cloudinaryService.deleteImage(collection.imageId);
+			}
+			const uploadedImage = await this.cloudinaryService.uploadImage(newImage);
+			image = uploadedImage.url;
+			imageId = uploadedImage.public_id;
+		} else {
+			if (collection.image && oldImage === null) {
+				await this.cloudinaryService.deleteImage(collection.imageId);
+				image = null;
+				imageId = null;
+			}
 		}
 
 		return await this.prisma.collection.update({
@@ -88,13 +100,25 @@ export class CollectionsService {
 			data: {
 				name,
 				description,
-				image: uploadedImage ? uploadedImage.url : oldImage,
-				imageId: uploadedImage ? uploadedImage.public_id : null,
+				image,
+				imageId,
 			},
 		});
 	}
 
 	async deleteCollection(id: string, userId: string) {
+		const collection = await this.prisma.collection.findUnique({
+			where: { id, userId },
+		});
+
+		if (!collection) {
+			throw new NotFoundException('Collection not found');
+		}
+
+		if (collection.image) {
+			await this.cloudinaryService.deleteImage(collection.imageId);
+		}
+
 		return await this.prisma.collection.delete({ where: { id, userId } });
 	}
 }

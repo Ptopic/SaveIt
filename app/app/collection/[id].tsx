@@ -1,4 +1,6 @@
+import useDeleteCollection from '@/api/collection/hooks/useDeleteCollection';
 import useGetCollection from '@/api/collection/hooks/useGetCollection';
+import { COLLECTIONS } from '@/api/constants';
 import CollectionCard from '@/components/CollectionCard';
 import DrawerModal from '@/components/DrawerModal';
 import ModalComponent from '@/components/ModalComponent';
@@ -12,6 +14,8 @@ import { PencilIcon, PlusIcon, ThreeDotsIcon, TrashIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -20,10 +24,14 @@ import {
 	View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useToast } from 'react-native-toast-notifications';
 
 type CollectionRouteProp = RouteProp<{ params: { id: string } }, 'params'>;
 
 const CollectionScreen = () => {
+	const toast = useToast();
+	const queryClient = useQueryClient();
+
 	const route = useRoute<CollectionRouteProp>();
 	const { id } = route.params;
 
@@ -31,6 +39,9 @@ const CollectionScreen = () => {
 
 	const { data: collection, isLoading: isCollectionLoading } =
 		useGetCollection(id);
+
+	const { mutate: deleteCollection, isPending: isDeletingCollection } =
+		useDeleteCollection(id);
 
 	const [collectionActionsModalVisible, setCollectionActionsModalVisible] =
 		useState(false);
@@ -45,6 +56,19 @@ const CollectionScreen = () => {
 	const handleEditCollection = () => {
 		setCollectionActionsModalVisible(false);
 		bottomSheetRef.current?.expand();
+	};
+
+	const handleDeleteCollection = () => {
+		deleteCollection(undefined, {
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: [COLLECTIONS] });
+				toast.show('Collection deleted successfully', { type: 'success' });
+				router.replace('/user');
+			},
+			onError: () => {
+				toast.show('Failed to delete collection', { type: 'error' });
+			},
+		});
 	};
 
 	return (
@@ -115,9 +139,7 @@ const CollectionScreen = () => {
 						<View className="h-[1] bg-gray300"></View>
 						<TouchableOpacity
 							className="p-[10] flex-row items-center gap-2 justify-center"
-							onPress={() => {
-								setCollectionActionsModalVisible(false);
-							}}
+							onPress={handleDeleteCollection}
 						>
 							<TrashIcon
 								color={getTailwindHexColor('red500')}

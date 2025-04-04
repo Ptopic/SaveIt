@@ -41,7 +41,7 @@ const EditCollectionForm = ({ closeModal, collection }: IProps) => {
 	const { mutate: editCollection, isPending: isEditingCollection } =
 		useUpdateCollection(collection.id);
 
-	const handleSubmit = (values: any, { resetForm }: any) => {
+	const handleSubmit = (values: any) => {
 		editCollection(
 			{
 				name: values.name,
@@ -58,6 +58,8 @@ const EditCollectionForm = ({ closeModal, collection }: IProps) => {
 				},
 				onError: () => {
 					toast.show('Failed to create collection', { type: 'error' });
+					setImage(collection.image ?? null);
+					setImageBase64(null);
 				},
 			}
 		);
