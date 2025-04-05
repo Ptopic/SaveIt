@@ -111,6 +111,7 @@ const CollectionScreen = () => {
 								height={240}
 								width={200}
 								hideOverlay
+								disableLink
 							/>
 
 							<View className="gap-2 flex-row items-center">

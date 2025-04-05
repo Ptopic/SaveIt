@@ -15,6 +15,7 @@ interface IProps {
 	width?: number;
 	height?: number;
 	hideOverlay?: boolean;
+	disableLink?: boolean;
 }
 
 const CollectionCard = ({
@@ -25,6 +26,7 @@ const CollectionCard = ({
 	width,
 	height,
 	hideOverlay,
+	disableLink,
 }: IProps) => {
 	return (
 		<>
@@ -35,6 +37,7 @@ const CollectionCard = ({
 						width: width ? width : 140,
 						height: height ? height : 170,
 					}}
+					disabled={disableLink}
 					className={`rounded-lg bg-gray200`}
 				>
 					<View className="w-full h-full overflow-hidden rounded-lg">
@@ -76,6 +79,7 @@ const CollectionCard = ({
 						width: width ? width : 140,
 						height: height ? height : 170,
 					}}
+					disabled={disableLink}
 					className={`rounded-lg bg-gray200`}
 				>
 					<View className="w-full h-full overflow-hidden rounded-lg">
