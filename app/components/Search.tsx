@@ -5,9 +5,22 @@ interface IProps {
 	value: string;
 	onChangeText: (text: string) => void;
 	placeholder: string;
+	onClear?: () => void;
+	clearAlwaysVisible?: boolean;
 }
 
-const Search = ({ value, onChangeText, placeholder }: IProps) => {
+const Search = ({
+	value,
+	onChangeText,
+	placeholder,
+	onClear,
+	clearAlwaysVisible = false,
+}: IProps) => {
+	const handleClearSearch = () => {
+		onChangeText('');
+		onClear && onClear();
+	};
+
 	return (
 		<View className="flex-row gap-2 bg-gray200 rounded-lg p-4">
 			<SearchIcon color="black" width={20} height={20} />
@@ -19,8 +32,8 @@ const Search = ({ value, onChangeText, placeholder }: IProps) => {
 				placeholderTextColor="gray"
 				className="flex-1"
 			/>
-			{value && (
-				<TouchableOpacity onPress={() => onChangeText('')}>
+			{(value || clearAlwaysVisible) && (
+				<TouchableOpacity onPress={handleClearSearch}>
 					<CloseIcon color="black" width={20} height={20} />
 				</TouchableOpacity>
 			)}

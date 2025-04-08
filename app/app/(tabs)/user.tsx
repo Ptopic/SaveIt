@@ -3,11 +3,11 @@ import useGetAllCollections from '@/api/collection/hooks/useGetAllCollections';
 import { COLLECTIONS, DEFAULT_PAGE, USER_INFO } from '@/api/constants';
 import CollectionCard from '@/components/CollectionCard';
 import DrawerModal from '@/components/DrawerModal';
-import ExtractCard from '@/components/ExtractCard';
 import Subtitle from '@/components/Subtitle';
 import Text from '@/components/Text';
 import Title from '@/components/Title';
 import CreateCollectionForm from '@/feature/user/CreateCollectionForm';
+import ExtractsCards from '@/feature/user/ExtractsCards';
 import { blurhash } from '@/shared/contants';
 import { ChevronRightIcon, PlusIcon, SettingsIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
@@ -25,8 +25,6 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome6';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function TabUserScreen() {
 	const queryClient = useQueryClient();
@@ -168,99 +166,7 @@ export default function TabUserScreen() {
 						<View>
 							<Subtitle>Extracts</Subtitle>
 						</View>
-						<ScrollView
-							horizontal
-							showsHorizontalScrollIndicator={false}
-							contentContainerStyle={{ gap: 10 }}
-						>
-							<ExtractCard
-								title="Restaurants"
-								iconName="local-restaurant"
-								bgColor="yellow100"
-								textColor="yellow400"
-								url="/category/restaurants"
-							/>
-							<ExtractCard
-								title="Places"
-								icon={
-									<FontAwesomeIcon
-										name="location-arrow"
-										size={16}
-										color={getTailwindHexColor('blue400')}
-									/>
-								}
-								bgColor="blue100"
-								textColor="blue400"
-								url="/category/places"
-							/>
-							<ExtractCard
-								title="Recipes"
-								icon={
-									<FontAwesomeIcon
-										name="book"
-										size={16}
-										color={getTailwindHexColor('orange400')}
-									/>
-								}
-								bgColor="orange100"
-								textColor="orange400"
-								url="/category/recipes"
-							/>
-							<ExtractCard
-								title="Products"
-								iconName="shopping-cart"
-								bgColor="red100"
-								textColor="red400"
-								url="/category/products"
-							/>
-							<ExtractCard
-								title="Events"
-								iconName="event"
-								bgColor="purple100"
-								textColor="purple400"
-								url="/category/events"
-							/>
-							<ExtractCard
-								title="Workout routines"
-								icon={
-									<FontAwesomeIcon
-										name="dumbbell"
-										size={16}
-										color={getTailwindHexColor('green400')}
-									/>
-								}
-								bgColor="green100"
-								textColor="green400"
-								url="/category/workout-routines"
-							/>
-							<ExtractCard
-								title="Books"
-								icon={
-									<Ionicons
-										name="book"
-										size={20}
-										color={getTailwindHexColor('brown400')}
-									/>
-								}
-								bgColor="brown100"
-								textColor="brown400"
-								url="/category/books"
-							/>
-							<ExtractCard
-								title="Films and shows"
-								iconName="movie"
-								bgColor="purple100"
-								textColor="purple400"
-								url="/category/films-and-shows"
-							/>
-							<ExtractCard
-								title="Software"
-								iconName="code"
-								bgColor="sky100"
-								textColor="sky400"
-								url="/category/software"
-							/>
-						</ScrollView>
+						<ExtractsCards />
 					</View>
 				)}
 			</ScrollView>
