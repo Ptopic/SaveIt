@@ -6,6 +6,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CollectionsModule } from './collections/collections.module';
 import { ImportsModule } from './imports/imports.module';
 import { UsersModule } from './users/users.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
 	imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from './users/users.module';
 		ImportsModule,
 		CloudinaryModule,
 		UsersModule,
+		NotificationsModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

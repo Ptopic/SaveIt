@@ -10,7 +10,7 @@ export class AuthService {
 		private jwtService: JwtService
 	) {}
 
-	async verifyGoogleToken(accessToken: string) {
+	async verifyGoogleToken(accessToken: string, pushNotificationId: string) {
 		try {
 			const tokenInfoResponse = await axios.get(
 				`https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`
@@ -42,12 +42,17 @@ export class AuthService {
 						email,
 						fullName: name,
 						picture,
+						pushNotificationId,
 					},
 				});
 
 				userId = newUser.id;
 			} else {
 				userId = existingUser.id;
+				await this.prisma.user.update({
+					where: { id: userId },
+					data: { pushNotificationId },
+				});
 			}
 
 			const jwtToken = this.jwtService.sign({

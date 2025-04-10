@@ -8,7 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
 	Alert,
@@ -18,6 +18,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import { OneSignal } from 'react-native-onesignal';
 
 const googleClientId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
 const androidClientId = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
@@ -43,13 +44,19 @@ const index = () => {
 			if (response?.type === 'success') {
 				const { access_token } = response.params;
 
+				const pushNotificationId =
+					await OneSignal.User.pushSubscription.getIdAsync();
+
 				try {
 					const apiResponse = await fetch(`${apiUrl}/auth/google`, {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 						},
-						body: JSON.stringify({ token: access_token }),
+						body: JSON.stringify({
+							token: access_token,
+							pushNotificationId,
+						}),
 					});
 
 					const data = await apiResponse.json();
@@ -68,6 +75,18 @@ const index = () => {
 		};
 		handleAuthResponse();
 	}, [response]);
+
+	useEffect(() => {
+		OneSignal.initialize(process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID as string);
+
+		OneSignal.Notifications.requestPermission(true).then((response) => {
+			console.log('Permission', response);
+		});
+
+		OneSignal.Notifications.addEventListener('click', (event) => {
+			console.log('Notification opened:', event);
+		});
+	}, []);
 
 	return (
 		<SafeAreaView className="flex-1 gap-[20]">

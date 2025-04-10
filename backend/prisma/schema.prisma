@@ -24,7 +24,7 @@ model User {
   picture  String?
   pictureId String?
   country String?
-
+  pushNotificationId String?
   collections Collection[]
   imports     Import[]
 }

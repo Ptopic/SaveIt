@@ -9,13 +9,19 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { ImportsService } from './imports.service';
 import { detectPostType, getSlideshowImages } from './utils/detectType.js';
 import { cleanDescription, getMetaData } from './utils/video.js';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('imports')
 export class ImportsController {
-	constructor(private readonly importsService: ImportsService) {}
+	constructor(
+		private readonly importsService: ImportsService,
+		private readonly prisma: PrismaService,
+		private readonly notificationsService: NotificationsService
+	) {}
 
 	@Get('/')
 	@JwtAuth()
@@ -65,6 +71,18 @@ export class ImportsController {
 					urlMetadata
 				);
 			}
+
+			const user = await this.prisma.user.findUnique({
+				where: {
+					id: userId,
+				},
+			});
+
+			await this.notificationsService.sendNotification(
+				user.pushNotificationId,
+				'Collection Import',
+				'✅ Your collection has been imported successfully'
+			);
 
 			return await this.importsService.createImport(userId, {
 				postType: postType.type,

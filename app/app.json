@@ -1,12 +1,12 @@
 {
 	"expo": {
-		"name": "Saveit",
-		"slug": "Saveit",
+		"name": "saveit",
+		"slug": "saveit",
 		"owner": "ghosty09",
 		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/images/icon.png",
-		"scheme": "Saveit",
+		"scheme": "saveit",
 		"userInterfaceStyle": "automatic",
 		"newArchEnabled": true,
 		"splash": {
@@ -16,11 +16,15 @@
 		},
 		"ios": {
 			"supportsTablet": true,
-			"bundleIdentifier": "com.petartopic.Saveit",
+			"bundleIdentifier": "com.petartopic.saveit",
 			"infoPlist": {
 				"NSAppTransportSecurity": {
 					"NSAllowsArbitraryLoads": true
-				}
+				},
+				"ITSAppUsesNonExemptEncryption": false,
+				"UIBackgroundModes": ["fetch", "remote-notification"],
+				"UIUserInterfaceStyle": "light",
+				"permissions": ["alert", "badge", "sound"]
 			}
 		},
 		"android": {
@@ -33,7 +37,7 @@
 				"android.permission.ACCESS_FINE_LOCATION",
 				"android.permission.RECORD_AUDIO"
 			],
-			"package": "com.petartopic.Saveit",
+			"package": "com.petartopic.saveit",
 			"usesCleartextTraffic": true
 		},
 		"web": {
@@ -53,6 +57,12 @@
 				"expo-image-picker",
 				{
 					"photosPermission": "The app accesses your photos to let you share them with your friends."
+				}
+			],
+			[
+				"onesignal-expo-plugin",
+				{
+					"mode": "development"
 				}
 			]
 		],
