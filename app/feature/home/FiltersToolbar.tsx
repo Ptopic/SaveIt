@@ -42,6 +42,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			)}
 			<FilterBadge
 				title="Restaurants"
+				value="Restaurant"
 				icon={
 					<RestaurantsIcon
 						height={16}
@@ -56,6 +57,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			/>
 			<FilterBadge
 				title="Places"
+				value="Place"
 				icon={
 					<PlacesIcon
 						height={16}
@@ -71,6 +73,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			/>
 			<FilterBadge
 				title="Recipes"
+				value="Recipe"
 				icon={
 					<RecipesIcon
 						height={16}
@@ -86,6 +89,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			/>
 			<FilterBadge
 				title="Products"
+				value="Product"
 				icon={
 					<ProductsIcon
 						height={16}
@@ -101,6 +105,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			/>
 			<FilterBadge
 				title="Events"
+				value="Event"
 				icon={
 					<EventsIcon
 						height={16}
@@ -115,6 +120,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			/>
 			<FilterBadge
 				title="Workout Routines"
+				value="Workout"
 				icon={
 					<WorkoutsIcon
 						height={16}
@@ -130,6 +136,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			/>
 			<FilterBadge
 				title="Books"
+				value="Book"
 				icon={
 					<BooksIcon
 						height={16}
@@ -145,6 +152,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			/>
 			<FilterBadge
 				title="Films and Shows"
+				value="Film"
 				icon={
 					<FilmsIcon
 						height={16}
@@ -159,6 +167,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			/>
 			<FilterBadge
 				title="Software"
+				value="Software"
 				icon={
 					<SoftwareIcon
 						height={16}
@@ -173,6 +182,7 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 			/>
 			<FilterBadge
 				title="Other"
+				value="Other"
 				icon={
 					<EllipsisCircledIcon
 						height={16}

@@ -1,3 +1,4 @@
+import useCreateImport from '@/api/imports/hooks/useCreateImport';
 import Text from '@/components/Text';
 import { LinkIcon } from '@/shared/svgs';
 import { BlurView } from 'expo-blur';
@@ -45,9 +46,21 @@ const AddModal = ({
 		opacity: textOpacity.value,
 	}));
 
+	const { mutate: createImport } = useCreateImport();
+
 	const pasteFromClipboard = async () => {
-		const text = await Clipboard.getStringAsync();
-		Alert.alert(text);
+		const url = await Clipboard.getStringAsync();
+
+		if (
+			!url.includes('https://') ||
+			(!url.includes('tiktok') && !url.includes('instagram'))
+		) {
+			Alert.alert('Please paste a valid link');
+			return;
+		}
+
+		createImport({ url });
+		setModalVisible(false);
 	};
 
 	return (

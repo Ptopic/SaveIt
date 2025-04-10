@@ -5,15 +5,16 @@ import {
 	Get,
 	Param,
 	Post,
+	Query,
 	Req,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { ImportsService } from './imports.service';
 import { detectPostType, getSlideshowImages } from './utils/detectType.js';
 import { cleanDescription, getMetaData } from './utils/video.js';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('imports')
 export class ImportsController {
@@ -25,10 +26,24 @@ export class ImportsController {
 
 	@Get('/')
 	@JwtAuth()
-	async getImports(@Req() req: Request) {
+	async getAllImports(
+		@Req() req: Request,
+		@Query('page') page: string,
+		@Query('pageSize') pageSize: string,
+		@Query('searchQuery') searchQuery?: string,
+		@Query('type') type?: string
+	) {
 		const userId = req.user.userId;
 
-		return await this.importsService.getAllImports(userId);
+		const { imports, totalImports } = await this.importsService.getAllImports(
+			userId,
+			page,
+			pageSize,
+			searchQuery,
+			type
+		);
+
+		return { data: imports, totalCount: totalImports };
 	}
 
 	@Get('/:id')
@@ -44,7 +59,33 @@ export class ImportsController {
 	async transcribe(@Body() body: { url: string }, @Req() req: Request) {
 		const { url } = body;
 
+		console.log('import creation started');
+
+		console.log(url);
+
 		const userId = req.user.userId;
+
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+		});
+
+		const socialMediaType = url.includes('instagram')
+			? 'instagram'
+			: url.includes('tiktok')
+				? 'tiktok'
+				: null;
+
+		if (!socialMediaType) {
+			throw new Error('Invalid URL');
+		}
+
+		const startingImport = await this.importsService.createImport(userId, {
+			title: url,
+			duration: 0,
+			socialMediaType,
+		});
 
 		let result;
 
@@ -72,10 +113,10 @@ export class ImportsController {
 				);
 			}
 
-			const user = await this.prisma.user.findUnique({
-				where: {
-					id: userId,
-				},
+			const createdImport = await this.importsService.updateImport(userId, {
+				id: startingImport.id,
+				postType: postType.type,
+				...result,
 			});
 
 			await this.notificationsService.sendNotification(
@@ -84,11 +125,14 @@ export class ImportsController {
 				'✅ Your collection has been imported successfully'
 			);
 
-			return await this.importsService.createImport(userId, {
-				postType: postType.type,
-				...result,
-			});
+			return createdImport;
 		} catch (error) {
+			await this.notificationsService.sendNotification(
+				user.pushNotificationId,
+				'Collection Import',
+				'❌ Failed to import collection'
+			);
+
 			throw new Error(error);
 		}
 	}

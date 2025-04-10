@@ -58,6 +58,8 @@ model Import {
   summary   Json?
   location  String?
   address   String?
+  status    String @default("Importing...")
+  socialMediaType String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String

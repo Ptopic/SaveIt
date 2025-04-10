@@ -4,6 +4,7 @@ import { TouchableOpacity } from 'react-native';
 
 interface IProps {
 	title: string;
+	value: string;
 	icon: React.ReactNode;
 	bgColor: string;
 	textColor: string;
@@ -13,6 +14,7 @@ interface IProps {
 
 const FilterBadge = ({
 	title,
+	value,
 	icon,
 	bgColor,
 	textColor,
@@ -23,17 +25,17 @@ const FilterBadge = ({
 	const textColorHex = getTailwindHexColor(textColor);
 	const regularBgColorHex = getTailwindHexColor('gray100');
 
-	const isActive = activeFilter === title;
+	const isActive = activeFilter === value;
 
 	const isVisible = activeFilter === '';
 
 	const toggleFilter = () => {
-		isActive ? setActiveFilter('') : setActiveFilter(title);
+		isActive ? setActiveFilter('') : setActiveFilter(value);
 	};
 
 	return (
 		<TouchableOpacity
-			className="p-3 rounded-full flex gap-2 flex-row items-center"
+			className="px-3 py-2 rounded-full flex gap-2 flex-row items-center"
 			style={{
 				backgroundColor: isActive ? bgColorHex : regularBgColorHex,
 				borderWidth: isActive ? 1 : 0,
@@ -45,7 +47,7 @@ const FilterBadge = ({
 		>
 			{icon}
 			<Text
-				className="!font-medium body-medium-regular"
+				className="!font-medium body-small-regular"
 				style={{ color: isActive ? textColorHex : 'black' }}
 			>
 				{title}

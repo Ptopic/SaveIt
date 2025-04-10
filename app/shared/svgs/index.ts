@@ -35,3 +35,7 @@ export { default as RecipesIcon } from '@assets/icons/categories/Recipes.svg';
 export { default as RestaurantsIcon } from '@assets/icons/categories/Restaurants.svg';
 export { default as SoftwareIcon } from '@assets/icons/categories/Software.svg';
 export { default as WorkoutsIcon } from '@assets/icons/categories/Workouts.svg';
+
+// Social Media Logos
+export { default as InstagramIcon } from '@assets/icons/socialMedia/instagram.svg';
+export { default as TiktokIcon } from '@assets/icons/socialMedia/tiktok.svg';

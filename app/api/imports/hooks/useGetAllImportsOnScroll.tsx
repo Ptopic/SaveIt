@@ -1,16 +1,18 @@
-import collectionRequests from '@/api/collection/requests';
-import { DEFAULT_PAGE } from '@/api/constants';
+import { DEFAULT_PAGE, IMPORTS } from '@/api/constants';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import importRequests from '../requests';
 
-interface UseGetAllCollectionsOnScrollProps {
+interface UseGetAllImportsOnScrollProps {
 	pageSize?: string;
 	searchQuery?: string;
+	type?: string;
 }
 
-const useGetAllCollectionsOnScroll = ({
+const useGetAllImportsOnScroll = ({
 	pageSize = '6',
 	searchQuery = '',
-}: UseGetAllCollectionsOnScrollProps = {}) => {
+	type = '',
+}: UseGetAllImportsOnScrollProps = {}) => {
 	const {
 		data,
 		isLoading,
@@ -20,12 +22,13 @@ const useGetAllCollectionsOnScroll = ({
 		error,
 		refetch,
 	} = useInfiniteQuery({
-		queryKey: ['collections', pageSize, searchQuery],
+		queryKey: [IMPORTS, pageSize, searchQuery, type],
 		queryFn: async ({ pageParam = DEFAULT_PAGE }) => {
-			const response = await collectionRequests.getCollections(
+			const response = await importRequests.getAllImports(
 				pageParam,
 				searchQuery,
-				pageSize
+				pageSize,
+				type
 			);
 
 			return {
@@ -46,13 +49,13 @@ const useGetAllCollectionsOnScroll = ({
 		initialPageParam: DEFAULT_PAGE,
 	});
 
-	const collections =
+	const imports =
 		data?.pages
 			.flatMap((page) => page.data || [])
 			.filter((item) => item != null) || [];
 
 	return {
-		collections,
+		imports,
 		isLoading,
 		isFetchingNextPage,
 		hasNextPage,
@@ -62,4 +65,4 @@ const useGetAllCollectionsOnScroll = ({
 	};
 };
 
-export default useGetAllCollectionsOnScroll;
+export default useGetAllImportsOnScroll;

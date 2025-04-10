@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import * as fs from 'fs';
+import { Server } from 'http';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
 	analyzeContentDeepSeek,
@@ -9,8 +11,12 @@ import { downloadAudio, transcribeAudioWithDeepgram } from './utils/audio';
 import { getAnalyzePrompt, getSlideshowAnalyzePrompt } from './utils/prompts';
 import { extractTextFromImage } from './utils/vision';
 
+@WebSocketGateway({ cors: true })
 @Injectable()
 export class ImportsService {
+	@WebSocketServer()
+	private server: Server;
+
 	constructor(private readonly prisma: PrismaService) {}
 
 	async transcribeVideo(url: string, urlMetadata: any) {
@@ -141,9 +147,7 @@ export class ImportsService {
 	}
 
 	async createImport(userId: string, data: any) {
-		const type = data.type.toString();
-
-		return await this.prisma.import.create({
+		const createdImport = await this.prisma.import.create({
 			data: {
 				userId,
 				title: data.title,
@@ -155,10 +159,62 @@ export class ImportsService {
 				address: data?.address,
 			},
 		});
+
+		this.server.emit(`refetchImports-${userId}`, true);
+
+		return createdImport;
 	}
 
-	async getAllImports(userId: string) {
-		return await this.prisma.import.findMany({ where: { userId } });
+	async updateImport(userId: string, data: any) {
+		const updatedImport = await this.prisma.import.update({
+			where: { id: data.id },
+			data: {
+				userId,
+				title: data.title,
+				thumbnail: data?.thumbnail,
+				duration: data?.duration,
+				type: data?.type,
+				summary: data?.summary,
+				location: data?.location,
+				address: data?.address,
+				status: 'Finished',
+			},
+		});
+
+		this.server.emit(`refetchImports-${userId}`, true);
+
+		return updatedImport;
+	}
+
+	async getAllImports(
+		userId: string,
+		page: string,
+		pageSize: string,
+		searchQuery?: string,
+		type?: string
+	) {
+		const imports = await this.prisma.import.findMany({
+			where: {
+				userId,
+				title: { contains: searchQuery, mode: 'insensitive' },
+				type: type ? { contains: type, mode: 'insensitive' } : undefined,
+			},
+			skip: parseInt(page) * parseInt(pageSize),
+			take: parseInt(pageSize),
+			orderBy: {
+				createdAt: 'desc',
+			},
+		});
+
+		const totalImports = await this.prisma.import.count({
+			where: {
+				userId,
+				title: { contains: searchQuery, mode: 'insensitive' },
+				type: { contains: type, mode: 'insensitive' },
+			},
+		});
+
+		return { imports, totalImports };
 	}
 
 	async getImport(id: string, userId: string) {
