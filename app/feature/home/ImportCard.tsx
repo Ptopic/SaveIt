@@ -4,6 +4,7 @@ import { blurhash } from '@/shared/contants';
 import { InstagramIcon, ThreeDotsIcon, TiktokIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import { ImageBackground } from 'expo-image';
+import { Link } from 'expo-router';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import ImportTypeIcon from './ImportTypeIcon';
@@ -15,7 +16,8 @@ interface IProps {
 
 const ImportCard = ({ importItem, cardWidth }: IProps) => {
 	return (
-		<View
+		<Link
+			href={`/import/${importItem.id}`}
 			className="bg-gray-100 rounded-lg flex-col gap-3 overflow-hidden"
 			style={{ width: cardWidth, height: 300 }}
 		>
@@ -69,7 +71,7 @@ const ImportCard = ({ importItem, cardWidth }: IProps) => {
 					</View>
 				)}
 			</View>
-		</View>
+		</Link>
 	);
 };
 
