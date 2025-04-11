@@ -40,34 +40,14 @@ const ImportCard = ({ importItem, cardWidth }: IProps) => {
 							<View className="bg-gray-100 rounded-lg p-[6px] items-center justify-center border border-gray-200 absolute left-2 bottom-2">
 								{icon}
 							</View>
-							<TouchableOpacity
-								className="rounded-lg bg-gray-100 border p-[6px] border-gray-200 items-center justify-center absolute z-20 right-2 bottom-2"
-								activeOpacity={1}
-							>
-								<BookmarkIcon
-									height={20}
-									width={20}
-									color={getTailwindHexColor('black')}
-								/>
-							</TouchableOpacity>
 						</ImageBackground>
 					) : (
 						<View style={styles.image} className="bg-gray200">
 							{icon && (
-								<View className="bg-gray-100 rounded-lg p-[6px] items-center justify-center border border-gray-200 absolute left-2 bottom-2">
+								<View className="bg-gray100 rounded-lg p-[6px] items-center justify-center border border-gray200 absolute left-2 bottom-2">
 									{icon}
 								</View>
 							)}
-							<TouchableOpacity
-								className="rounded-lg bg-gray-100 border p-[6px] border-gray-200 items-center justify-center absolute z-20 right-2 bottom-2"
-								activeOpacity={1}
-							>
-								<BookmarkIcon
-									height={20}
-									width={20}
-									color={getTailwindHexColor('black')}
-								/>
-							</TouchableOpacity>
 						</View>
 					)}
 				</View>
@@ -84,6 +64,16 @@ const ImportCard = ({ importItem, cardWidth }: IProps) => {
 					)}
 				</View>
 			</Link>
+			<TouchableOpacity
+				className="rounded-lg bg-white border p-[6px] border-gray-200 items-center justify-center absolute z-20 right-2 top-2"
+				activeOpacity={1}
+			>
+				<BookmarkIcon
+					height={20}
+					width={20}
+					color={getTailwindHexColor('black')}
+				/>
+			</TouchableOpacity>
 		</View>
 	);
 };
