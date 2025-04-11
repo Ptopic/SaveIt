@@ -146,7 +146,7 @@ const CollectionScreen = () => {
 				modalStyle={styles.modalContainer}
 			>
 				<View>
-					<View className="flex-col mb-[10] rounded-lg bg-gray200">
+					<View className="flex-col mb-[10] rounded-lg bg-gray100">
 						<TouchableOpacity
 							className="p-[10] flex-row items-center gap-2 justify-center"
 							onPress={handleEditCollection}

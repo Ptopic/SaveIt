@@ -1,7 +1,8 @@
 import { IImport } from '@/api/imports/types';
+import SocialMediaIcon from '@/components/SocialMediaIcon';
 import Text from '@/components/Text';
 import { blurhash } from '@/shared/contants';
-import { BookmarkIcon, InstagramIcon, TiktokIcon } from '@/shared/svgs';
+import { BookmarkIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import { ImageBackground } from 'expo-image';
 import { Link } from 'expo-router';
@@ -66,26 +67,7 @@ const ImportCard = ({ importItem, cardWidth }: IProps) => {
 					<Text className="heading-import-title" numberOfLines={2}>
 						{importItem.title}
 					</Text>
-					{importItem.socialMediaType === 'tiktok' && (
-						<View className="flex-row gap-1 items-center">
-							<TiktokIcon
-								width={14}
-								height={14}
-								color={getTailwindHexColor('gray500')}
-							/>
-							<Text className="body-small-regular text-gray500">Tiktok</Text>
-						</View>
-					)}
-					{importItem.socialMediaType === 'instagram' && (
-						<View className="flex-row gap-2 items-center">
-							<InstagramIcon
-								width={14}
-								height={14}
-								color={getTailwindHexColor('gray500')}
-							/>
-							<Text className="body-small-regular text-gray500">Instagram</Text>
-						</View>
-					)}
+					<SocialMediaIcon socialMediaType={importItem.socialMediaType} />
 				</View>
 			</Link>
 		</View>
