@@ -85,6 +85,7 @@ export class ImportsController {
 			title: url,
 			duration: 0,
 			socialMediaType,
+			videoUrl: url,
 		});
 
 		let result;

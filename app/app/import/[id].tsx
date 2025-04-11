@@ -3,6 +3,7 @@ import useDeleteImport from '@/api/imports/hooks/useDeleteImport';
 import useGetImport from '@/api/imports/hooks/useGetImport';
 import ModalComponent from '@/components/ModalComponent';
 import SocialMediaIcon from '@/components/SocialMediaIcon';
+import Subtitle from '@/components/Subtitle';
 import Text from '@/components/Text';
 import Title from '@/components/Title';
 import FilterBadge from '@/feature/home/FilterBadge/FilterBadge';
@@ -71,21 +72,29 @@ const ImportDetailsScreen = () => {
 				<ActivityIndicator />
 			) : (
 				<View className="flex-col gap-4">
-					<View className="flex items-center justify-center">
-						<Image
-							source={{ uri: importData.thumbnail }}
-							style={styles.image}
-							contentFit="cover"
-							placeholder={blurhash}
-							transition={500}
-						/>
-					</View>
-					<FilterBadge type={importData.type} alwaysActive />
-					<Title>{importData.title}</Title>
+					{importData?.type ? (
+						<>
+							<View className="flex items-center justify-center">
+								<Image
+									source={{ uri: importData?.thumbnail }}
+									style={styles.image}
+									contentFit="cover"
+									placeholder={blurhash}
+									transition={500}
+								/>
+							</View>
+							<FilterBadge type={importData?.type} alwaysActive />
+						</>
+					) : (
+						<View className="flex items-center justify-center">
+							<View className="h-[300px] w-[80%] bg-gray100 rounded-[15px]" />
+						</View>
+					)}
+					{importData?.title && <Title>{importData.title}</Title>}
 					<View className="flex-row gap-2">
-						{importData.url && (
+						{importData?.videoUrl && (
 							<Link
-								href={importData.url}
+								href={importData.videoUrl as any}
 								className="bg-gray100 rounded-full px-4 py-2"
 							>
 								<SocialMediaIcon
@@ -109,11 +118,23 @@ const ImportDetailsScreen = () => {
 							/>
 						</TouchableOpacity>
 					</View>
-					<ScrollView className="h-[30%]">
-						<Text className="body-small-regular text-gray500">
-							{JSON.stringify(importData.summary, null, 2)}
-						</Text>
-					</ScrollView>
+					{importData?.summary && (
+						<ScrollView className="h-[30%]">
+							<Text className="body-small-regular text-gray500">
+								{JSON.stringify(importData.summary, null, 2)}
+							</Text>
+						</ScrollView>
+					)}
+
+					{importData?.status === 'Importing' && (
+						<View className="flex-col gap-2 bg-gray100 rounded-lg p-4">
+							<Subtitle>This import is being processed...</Subtitle>
+							<Text>
+								This might take a few minutes. You will get a notification once
+								its processed.
+							</Text>
+						</View>
+					)}
 				</View>
 			)}
 			<ModalComponent

@@ -4,12 +4,13 @@ import { LinkIcon } from '@/shared/svgs';
 import { BlurView } from 'expo-blur';
 import * as Clipboard from 'expo-clipboard';
 import React, { useEffect } from 'react';
-import { Alert, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
 	withTiming,
 } from 'react-native-reanimated';
+import { useToast } from 'react-native-toast-notifications';
 
 const AddModal = ({
 	modalVisible,
@@ -18,6 +19,8 @@ const AddModal = ({
 	modalVisible: boolean;
 	setModalVisible: (visible: boolean) => void;
 }) => {
+	const toast = useToast();
+
 	const modalOpacity = useSharedValue(0);
 	const modalTranslateY = useSharedValue(150);
 	const textOpacity = useSharedValue(0);
@@ -55,12 +58,13 @@ const AddModal = ({
 			!url.includes('https://') ||
 			(!url.includes('tiktok') && !url.includes('instagram'))
 		) {
-			Alert.alert('Please paste a valid link');
+			toast.show('Please paste a valid link', { type: 'error' });
 			return;
 		}
 
 		createImport({ url });
 		setModalVisible(false);
+		toast.show('Import started', { type: 'regular' });
 	};
 
 	return (

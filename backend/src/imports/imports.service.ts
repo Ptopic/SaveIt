@@ -157,6 +157,8 @@ export class ImportsService {
 				summary: data?.summary,
 				location: data?.location,
 				address: data?.address,
+				socialMediaType: data?.socialMediaType,
+				videoUrl: data?.videoUrl,
 			},
 		});
 

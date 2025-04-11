@@ -16,7 +16,11 @@ interface IProps {
 }
 
 const ImportCard = ({ importItem, cardWidth }: IProps) => {
-	const { icon } = ImportTypeOptions[importItem.type];
+	let icon = null;
+
+	if (importItem.type) {
+		icon = ImportTypeOptions[importItem.type].icon;
+	}
 
 	return (
 		<View
@@ -49,9 +53,11 @@ const ImportCard = ({ importItem, cardWidth }: IProps) => {
 						</ImageBackground>
 					) : (
 						<View style={styles.image} className="bg-gray200">
-							<View className="bg-gray-100 rounded-lg p-[6px] items-center justify-center border border-gray-200 absolute left-2 bottom-2">
-								{icon}
-							</View>
+							{icon && (
+								<View className="bg-gray-100 rounded-lg p-[6px] items-center justify-center border border-gray-200 absolute left-2 bottom-2">
+									{icon}
+								</View>
+							)}
 							<TouchableOpacity
 								className="rounded-lg bg-gray-100 border p-[6px] border-gray-200 items-center justify-center absolute z-20 right-2 bottom-2"
 								activeOpacity={1}
@@ -66,10 +72,16 @@ const ImportCard = ({ importItem, cardWidth }: IProps) => {
 					)}
 				</View>
 				<View className="flex-col px-3 py-3 gap-2">
-					<Text className="heading-import-title" numberOfLines={2}>
-						{importItem.title}
-					</Text>
-					<SocialMediaIcon socialMediaType={importItem.socialMediaType} />
+					{importItem.status === 'Importing' ? (
+						<Text className="body-small-regular">Play importing animation</Text>
+					) : (
+						<Text className="heading-import-title" numberOfLines={2}>
+							{importItem.title}
+						</Text>
+					)}
+					{importItem.socialMediaType && (
+						<SocialMediaIcon socialMediaType={importItem.socialMediaType} />
+					)}
 				</View>
 			</Link>
 		</View>

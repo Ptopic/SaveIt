@@ -11,6 +11,7 @@ export interface IImport {
 	address: string;
 	status: string;
 	socialMediaType: string;
+	videoUrl: string;
 	createdAt: string;
 	updatedAt: string;
 }
