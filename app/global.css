@@ -35,6 +35,12 @@
    line-height: 24px;
 }
 
+.heading-import-title {
+   font-size: 16px;
+   font-weight: 600;
+   line-height: 20px;
+}
+
 /* Body large */
 
 .body-large-regular {

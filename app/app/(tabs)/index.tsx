@@ -7,7 +7,8 @@ import Title from '@/components/Title';
 import FiltersToolbar from '@/feature/home/FiltersToolbar';
 import ImportCard from '@/feature/home/ImportCard';
 import { config } from '@/shared/config';
-import { SearchIcon } from '@/shared/svgs';
+import { BookmarkIcon, SearchIcon } from '@/shared/svgs';
+import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -79,7 +80,15 @@ export default function TabOneScreen() {
 				<View className="flex-row justify-between items-center">
 					{!isSearchOpen ? (
 						<>
-							<Title>Saveit</Title>
+							<View className="flex-row items-center gap-2">
+								<BookmarkIcon
+									height={24}
+									width={24}
+									color={getTailwindHexColor('black')}
+									fill={getTailwindHexColor('black')}
+								/>
+								<Title>Saveit</Title>
+							</View>
 							<TouchableOpacity onPress={() => setIsSearchOpen(true)}>
 								<SearchIcon height={24} width={24} color="black" />
 							</TouchableOpacity>
