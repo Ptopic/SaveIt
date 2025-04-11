@@ -111,7 +111,7 @@ export default function TabOneScreen() {
 						</TouchableOpacity>
 
 						<TouchableOpacity>
-							<Subtitle>Extracts</Subtitle>
+							<Subtitle>Locations</Subtitle>
 						</TouchableOpacity>
 					</View>
 

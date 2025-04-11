@@ -117,56 +117,58 @@ export default function TabUserScreen() {
 							<Text className="text-black text-center">Edit Profile</Text>
 						</Link>
 
-						<View className="flex-row justify-between items-center">
-							<TouchableOpacity
-								className="flex-row gap-2 items-center"
-								onPress={() => router.push('/collections' as any)}
-							>
-								<Subtitle>My Collections</Subtitle>
-								<ChevronRightIcon
-									width={16}
-									height={16}
-									color={getTailwindHexColor('gray600')}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity
-								className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
-								onPress={() => bottomSheetRef.current?.expand()}
-							>
-								<PlusIcon
-									width={18}
-									height={18}
-									color={getTailwindHexColor('red400')}
-								/>
-							</TouchableOpacity>
-						</View>
-						<ScrollView
-							horizontal
-							showsHorizontalScrollIndicator={false}
-							contentContainerStyle={{ gap: 10 }}
-						>
-							{isCollectionsLoading ||
-							isCollectionsFetching ||
-							isCollectionsRefetching ? (
-								<ActivityIndicator color="black" />
-							) : (
-								collections?.data &&
-								collections?.data.length > 0 &&
-								collections?.data.map((collection: any, index: number) => (
-									<CollectionCard
-										key={index}
-										id={collection.id}
-										name={collection.name}
-										image={collection.image}
-										isPublic={collection.isPublic}
+						<View className="flex-col gap-2">
+							<View className="flex-row justify-between items-center">
+								<TouchableOpacity
+									className="flex-row gap-2 items-center"
+									onPress={() => router.push('/collections' as any)}
+								>
+									<Subtitle>My Collections</Subtitle>
+									<ChevronRightIcon
+										width={16}
+										height={16}
+										color={getTailwindHexColor('gray600')}
 									/>
-								))
-							)}
-						</ScrollView>
-						<View>
-							<Subtitle>Extracts</Subtitle>
+								</TouchableOpacity>
+								<TouchableOpacity
+									className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
+									onPress={() => bottomSheetRef.current?.expand()}
+								>
+									<PlusIcon
+										width={18}
+										height={18}
+										color={getTailwindHexColor('red400')}
+									/>
+								</TouchableOpacity>
+							</View>
+							<ScrollView
+								horizontal
+								showsHorizontalScrollIndicator={false}
+								contentContainerStyle={{ gap: 10 }}
+							>
+								{isCollectionsLoading ||
+								isCollectionsFetching ||
+								isCollectionsRefetching ? (
+									<ActivityIndicator color="black" />
+								) : (
+									collections?.data &&
+									collections?.data.length > 0 &&
+									collections?.data.map((collection: any, index: number) => (
+										<CollectionCard
+											key={index}
+											id={collection.id}
+											name={collection.name}
+											image={collection.image}
+											isPublic={collection.isPublic}
+										/>
+									))
+								)}
+							</ScrollView>
 						</View>
-						<ExtractsCards />
+						<View className="flex-col gap-2">
+							<Subtitle>Imports</Subtitle>
+							<ExtractsCards />
+						</View>
 					</View>
 				)}
 			</ScrollView>
