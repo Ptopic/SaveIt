@@ -150,9 +150,7 @@ export default function TabUserScreen() {
 								isCollectionsFetching ||
 								isCollectionsRefetching ? (
 									<ActivityIndicator color="black" />
-								) : (
-									collections?.data &&
-									collections?.data.length > 0 &&
+								) : collections?.data && collections?.data.length > 0 ? (
 									collections?.data.map((collection: any, index: number) => (
 										<CollectionCard
 											key={index}
@@ -162,6 +160,8 @@ export default function TabUserScreen() {
 											isPublic={collection.isPublic}
 										/>
 									))
+								) : (
+									<Text>No collections found</Text>
 								)}
 							</ScrollView>
 						</View>

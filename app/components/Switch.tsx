@@ -18,6 +18,9 @@ const Switch = ({ isPublic, setIsPublic }: IProps) => {
 			ios_backgroundColor={getTailwindHexColor('gray200')}
 			onValueChange={setIsPublic}
 			value={isPublic}
+			style={{
+				transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+			}}
 		/>
 	);
 };
