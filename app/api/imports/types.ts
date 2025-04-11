@@ -1,9 +1,11 @@
+import { ImportType } from '@/feature/home/FilterBadge/types';
+
 export interface IImport {
 	id: string;
 	title: string;
 	thumbnail: string;
 	duration: number;
-	type: string;
+	type: ImportType;
 	summary: string;
 	location: string;
 	address: string;

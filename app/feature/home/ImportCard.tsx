@@ -8,7 +8,7 @@ import { ImageBackground } from 'expo-image';
 import { Link } from 'expo-router';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import ImportTypeIcon from './ImportTypeIcon';
+import { ImportTypeOptions } from './FilterBadge/types';
 
 interface IProps {
 	importItem: IImport;
@@ -16,6 +16,8 @@ interface IProps {
 }
 
 const ImportCard = ({ importItem, cardWidth }: IProps) => {
+	const { icon } = ImportTypeOptions[importItem.type];
+
 	return (
 		<View
 			className="bg-gray-100 rounded-lg flex-col overflow-hidden relative z-10"
@@ -32,7 +34,7 @@ const ImportCard = ({ importItem, cardWidth }: IProps) => {
 							transition={500}
 						>
 							<View className="bg-gray-100 rounded-lg p-[6px] items-center justify-center border border-gray-200 absolute left-2 bottom-2">
-								<ImportTypeIcon type={importItem.type} />
+								{icon}
 							</View>
 							<TouchableOpacity
 								className="rounded-lg bg-gray-100 border p-[6px] border-gray-200 items-center justify-center absolute z-20 right-2 bottom-2"
@@ -48,7 +50,7 @@ const ImportCard = ({ importItem, cardWidth }: IProps) => {
 					) : (
 						<View style={styles.image} className="bg-gray200">
 							<View className="bg-gray-100 rounded-lg p-[6px] items-center justify-center border border-gray-200 absolute left-2 bottom-2">
-								<ImportTypeIcon type={importItem.type} />
+								{icon}
 							</View>
 							<TouchableOpacity
 								className="rounded-lg bg-gray-100 border p-[6px] border-gray-200 items-center justify-center absolute z-20 right-2 bottom-2"

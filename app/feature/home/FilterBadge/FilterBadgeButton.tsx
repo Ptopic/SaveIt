@@ -1,28 +1,16 @@
 import Text from '@/components/Text';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import { TouchableOpacity } from 'react-native';
+import { ImportType, ImportTypeOptions } from './types';
 
 interface IProps {
-	title: string;
-	value: string;
-	icon: React.ReactNode;
-	bgColor: string;
-	textColor: string;
+	type: ImportType;
 	activeFilter: string;
 	setActiveFilter: (filter: string) => void;
 }
 
-const FilterBadge = ({
-	title,
-	value,
-	icon,
-	bgColor,
-	textColor,
-	activeFilter,
-	setActiveFilter,
-}: IProps) => {
-	const bgColorHex = getTailwindHexColor(bgColor);
-	const textColorHex = getTailwindHexColor(textColor);
+const FilterBadgeButton = ({ type, activeFilter, setActiveFilter }: IProps) => {
+	const { icon, title, value, bgColor, textColor } = ImportTypeOptions[type];
 	const regularBgColorHex = getTailwindHexColor('gray100');
 
 	const isActive = activeFilter === value;
@@ -37,9 +25,9 @@ const FilterBadge = ({
 		<TouchableOpacity
 			className="px-3 py-2 rounded-full flex gap-2 flex-row items-center"
 			style={{
-				backgroundColor: isActive ? bgColorHex : regularBgColorHex,
+				backgroundColor: isActive ? bgColor : regularBgColorHex,
 				borderWidth: isActive ? 1 : 0,
-				borderColor: isActive ? textColorHex : 'transparent',
+				borderColor: isActive ? textColor : 'transparent',
 				display: isActive ? 'flex' : isVisible ? 'flex' : 'none',
 			}}
 			activeOpacity={1}
@@ -48,7 +36,7 @@ const FilterBadge = ({
 			{icon}
 			<Text
 				className="!font-medium body-small-regular"
-				style={{ color: isActive ? textColorHex : 'black' }}
+				style={{ color: isActive ? textColor : 'black' }}
 			>
 				{title}
 			</Text>
@@ -56,4 +44,4 @@ const FilterBadge = ({
 	);
 };
 
-export default FilterBadge;
+export default FilterBadgeButton;

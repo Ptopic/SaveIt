@@ -1,20 +1,9 @@
-import {
-	BooksIcon,
-	CloseIcon,
-	EllipsisCircledIcon,
-	EventsIcon,
-	FilmsIcon,
-	PlacesIcon,
-	ProductsIcon,
-	RecipesIcon,
-	RestaurantsIcon,
-	SoftwareIcon,
-	WorkoutsIcon,
-} from '@/shared/svgs';
+import { CloseIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import React from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native';
-import FilterBadge from './FilterBadge';
+import FilterBadgeButton from './FilterBadge/FilterBadgeButton';
+import { ImportType } from './FilterBadge/types';
 
 interface IProps {
 	activeFilter: string;
@@ -40,158 +29,53 @@ const FiltersToolbar = ({ activeFilter, setActiveFilter }: IProps) => {
 					/>
 				</TouchableOpacity>
 			)}
-			<FilterBadge
-				title="Restaurants"
-				value="Restaurant"
-				icon={
-					<RestaurantsIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('yellow400')}
-					/>
-				}
-				bgColor="yellow100"
-				textColor="yellow400"
+			<FilterBadgeButton
+				type={ImportType.RESTAURANT}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>
-			<FilterBadge
-				title="Places"
-				value="Place"
-				icon={
-					<PlacesIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('blue400')}
-						fill={getTailwindHexColor('blue400')}
-					/>
-				}
-				bgColor="blue100"
-				textColor="blue400"
+			<FilterBadgeButton
+				type={ImportType.PLACE}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>
-			<FilterBadge
-				title="Recipes"
-				value="Recipe"
-				icon={
-					<RecipesIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('orange400')}
-						fill={getTailwindHexColor('orange400')}
-					/>
-				}
-				bgColor="orange100"
-				textColor="orange400"
+			<FilterBadgeButton
+				type={ImportType.RECIPE}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>
-			<FilterBadge
-				title="Products"
-				value="Product"
-				icon={
-					<ProductsIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('red400')}
-						fill={getTailwindHexColor('red400')}
-					/>
-				}
-				bgColor="red100"
-				textColor="red400"
+			<FilterBadgeButton
+				type={ImportType.PRODUCT}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>
-			<FilterBadge
-				title="Events"
-				value="Event"
-				icon={
-					<EventsIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('purple400')}
-					/>
-				}
-				bgColor="purple100"
-				textColor="purple400"
+			<FilterBadgeButton
+				type={ImportType.EVENT}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>
-			<FilterBadge
-				title="Workout Routines"
-				value="Workout"
-				icon={
-					<WorkoutsIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('green400')}
-						fill={getTailwindHexColor('green400')}
-					/>
-				}
-				bgColor="green100"
-				textColor="green400"
+			<FilterBadgeButton
+				type={ImportType.WORKOUT}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>
-			<FilterBadge
-				title="Books"
-				value="Book"
-				icon={
-					<BooksIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('brown400')}
-						fill={getTailwindHexColor('brown400')}
-					/>
-				}
-				bgColor="brown100"
-				textColor="brown400"
+			<FilterBadgeButton
+				type={ImportType.BOOK}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>
-			<FilterBadge
-				title="Films and Shows"
-				value="Film"
-				icon={
-					<FilmsIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('purple400')}
-					/>
-				}
-				bgColor="purple100"
-				textColor="purple400"
+			<FilterBadgeButton
+				type={ImportType.FILM}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>
-			<FilterBadge
-				title="Software"
-				value="Software"
-				icon={
-					<SoftwareIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('sky400')}
-					/>
-				}
-				bgColor="sky100"
-				textColor="sky400"
+			<FilterBadgeButton
+				type={ImportType.SOFTWARE}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>
-			<FilterBadge
-				title="Other"
-				value="Other"
-				icon={
-					<EllipsisCircledIcon
-						height={16}
-						width={16}
-						color={getTailwindHexColor('sky400')}
-					/>
-				}
-				bgColor="sky100"
-				textColor="sky400"
+			<FilterBadgeButton
+				type={ImportType.OTHER}
 				activeFilter={activeFilter}
 				setActiveFilter={setActiveFilter}
 			/>

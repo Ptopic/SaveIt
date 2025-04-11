@@ -5,6 +5,7 @@ import ModalComponent from '@/components/ModalComponent';
 import SocialMediaIcon from '@/components/SocialMediaIcon';
 import Text from '@/components/Text';
 import Title from '@/components/Title';
+import FilterBadge from '@/feature/home/FilterBadge/FilterBadge';
 import { blurhash } from '@/shared/contants';
 import {
 	ArrowLeftIcon,
@@ -79,6 +80,7 @@ const ImportDetailsScreen = () => {
 							transition={500}
 						/>
 					</View>
+					<FilterBadge type={importData.type} alwaysActive />
 					<Title>{importData.title}</Title>
 					<View className="flex-row gap-2">
 						{importData.url && (
@@ -107,7 +109,7 @@ const ImportDetailsScreen = () => {
 							/>
 						</TouchableOpacity>
 					</View>
-					<ScrollView className="h-[40%]">
+					<ScrollView className="h-[30%]">
 						<Text className="body-small-regular text-gray500">
 							{JSON.stringify(importData.summary, null, 2)}
 						</Text>
