@@ -3,13 +3,10 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import * as fs from 'fs';
 import { Server } from 'http';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-	analyzeContentDeepSeek,
-	searchForCoordinatesAndAddress,
-} from './utils/analyze';
+import { askOpenRouter, searchForCoordinatesAndAddress } from './utils/analyze';
 import { downloadAudio, transcribeAudioWithDeepgram } from './utils/audio';
-import { getAnalyzePrompt, getSlideshowAnalyzePrompt } from './utils/prompts';
-import { extractTextFromImage } from './utils/vision';
+import { getAnalyzePromptByContentType } from './utils/prompts';
+import { detectContentType } from './utils/video';
 
 @WebSocketGateway({ cors: true })
 @Injectable()
@@ -20,18 +17,31 @@ export class ImportsService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async transcribeVideo(url: string, urlMetadata: any) {
-		const audioPath = await downloadAudio(url);
+		const audioPath = (await downloadAudio(url)) as string;
 
 		const transcript = await transcribeAudioWithDeepgram(audioPath);
 
-		const prompt = getAnalyzePrompt(
-			transcript.text + '\n' + urlMetadata.description
+		const postText = transcript.text + '\n' + urlMetadata.description;
+
+		// TODO: Use hashtags to detect content type - If that produces bugs use transcribed text and hashtags
+		const contentType = await detectContentType(urlMetadata.description, null);
+		console.log(contentType);
+
+		const prompt = getAnalyzePromptByContentType(
+			postText,
+			contentType,
+			'video'
 		);
-		const analysis = await analyzeContentDeepSeek(prompt);
 
-		const address = analysis.json.locationData?.address || null;
+		const analysis = await askOpenRouter(prompt, null);
 
-		if (analysis.json.type === 'Place' && analysis.json) {
+		console.log(analysis.inputTokens, analysis.outputTokens);
+
+		console.log(analysis.json);
+
+		const address = analysis.json?.locationData?.address || null;
+
+		if (contentType === 'Place' && analysis.json) {
 			const place = analysis.json.summary;
 
 			const name = place.name;
@@ -41,30 +51,6 @@ export class ImportsService {
 			place.coordinates = coordinates || null;
 		}
 
-		// let ingredientIcons = null;
-
-		// // If the content is a recipe, get icons for ingredients
-		// if (analysis.json.type === 'Recipe' && analysis.json.summary) {
-		// 	try {
-		// 		// Parse the summary as JSON
-		// 		const summaryObj = analysis.json.summary;
-
-		// 		// Get ingredients from the Recipe.Ingredients array
-		// 		if (summaryObj.Ingredients && Array.isArray(summaryObj.Ingredients)) {
-		// 			const ingredients = summaryObj.Ingredients;
-		// 			console.log(ingredients);
-
-		// 			if (ingredients.length > 0) {
-		// 				console.log('Found ingredients:', ingredients);
-		// 				ingredientIcons = await getIngredientIcons(ingredients);
-		// 				summaryObj.Ingredients = ingredientIcons;
-		// 			}
-		// 		}
-		// 	} catch (error) {
-		// 		console.error('Error parsing recipe summary:', error);
-		// 	}
-		// }
-
 		fs.unlinkSync(audioPath as fs.PathLike);
 
 		return {
@@ -73,7 +59,7 @@ export class ImportsService {
 			thumbnail: urlMetadata.thumbnail,
 			text: transcript.text,
 			duration: transcript.duration,
-			type: analysis.json?.type,
+			type: contentType,
 			summary: analysis.json.summary,
 			name: analysis.json?.locationData?.name || null,
 			location: analysis.json?.locationData?.location || null,
@@ -84,21 +70,35 @@ export class ImportsService {
 	}
 
 	async transcribeSlideshow(images: any[], urlMetadata: any) {
-		const imagesText = [];
+		// const imagesText = [];
 
-		for (const image of images) {
-			const text = await extractTextFromImage(image);
-			imagesText.push(text);
-		}
+		// for (const image of images) {
+		// 	const text = await extractTextFromImage(image);
+		// 	imagesText.push(text);
+		// }
 
-		const prompt = getSlideshowAnalyzePrompt(
-			imagesText.join('\n') + '\n' + urlMetadata.description
+		// const postText = imagesText.join('\n') + '\n' + urlMetadata.description;
+		const postText = urlMetadata.description;
+
+		// TODO: Use hashtags to detect content type - If that produces bugs use transcribed text and hashtags
+		const contentType = await detectContentType(postText, null);
+
+		console.log(contentType);
+
+		const prompt = getAnalyzePromptByContentType(
+			postText,
+			contentType,
+			'slideshow'
 		);
 
-		const analysis = await analyzeContentDeepSeek(prompt);
+		const analysis = await askOpenRouter(prompt, images);
+
+		console.log(analysis.inputTokens, analysis.outputTokens);
+
+		console.log(analysis.json);
 
 		if (
-			(analysis.json.type === 'Place' || analysis.json.type === 'Restaurant') &&
+			(contentType === 'Place' || contentType === 'Restaurant') &&
 			analysis.json
 		) {
 			const places = analysis.json.summary.Place;
@@ -138,8 +138,8 @@ export class ImportsService {
 			title: analysis.json.title,
 			description: urlMetadata.description,
 			thumbnail: urlMetadata.thumbnail,
-			text: imagesText.join('\n'),
-			type: analysis.json.type,
+			// text: imagesText.join('\n'),
+			type: contentType,
 			summary: analysis.json.summary,
 			inputTokens: analysis.inputTokens,
 			outputTokens: analysis.outputTokens,

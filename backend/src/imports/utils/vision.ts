@@ -5,7 +5,6 @@ import * as path from 'path';
 import * as sharp from 'sharp';
 import { promisify } from 'util';
 
-console.log(process.cwd());
 const modelsDir = path.resolve(process.cwd(), './src/imports/utils/');
 const ocrScriptPath = path.join(modelsDir, 'ocr.py');
 
@@ -68,13 +67,10 @@ export async function preprocessImage(imagePath, outputPath) {
 }
 
 export async function extractTextFromImage(imageUrl) {
-	// Prvo preuzmi sliku i dohvati lokalnu putanju
 	const imagePath = await downloadImage(imageUrl);
 
-	// Definiraj izlaznu putanju za procesiranu sliku
 	const processedImagePath = 'processed_image.png';
 
-	// Procesiraj sliku koristeći sharp
 	await preprocessImage(imagePath, processedImagePath);
 
 	try {

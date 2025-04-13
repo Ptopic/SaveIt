@@ -1,4 +1,6 @@
 import puppeteer from 'puppeteer';
+import { askOpenRouter } from './analyze';
+import { detectContentTypePrompt } from './prompts';
 
 export async function getMetaData(url) {
 	const browser = await puppeteer.launch({ headless: true });
@@ -36,6 +38,20 @@ export async function getMetaData(url) {
 		await browser.close();
 	}
 }
+
+export const detectContentType = async (postText, images?: string[]) => {
+	try {
+		const prompt = detectContentTypePrompt(postText);
+
+		const contentTypePromptResponse = await askOpenRouter(prompt, images);
+
+		const contentType = contentTypePromptResponse.json.type;
+
+		return contentType;
+	} catch (error) {
+		return 'Other';
+	}
+};
 
 export const cleanDescription = (description) => {
 	const cleanedDescription = description.replace(/#\w+/g, '');

@@ -14,7 +14,7 @@ import { NotificationsService } from 'src/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ImportsService } from './imports.service';
 import { detectPostType, getSlideshowImages } from './utils/detectType.js';
-import { cleanDescription, getMetaData } from './utils/video.js';
+import { getMetaData } from './utils/video.js';
 
 @Controller('imports')
 export class ImportsController {
@@ -61,8 +61,6 @@ export class ImportsController {
 
 		console.log('import creation started');
 
-		console.log(url);
-
 		const userId = req.user.userId;
 
 		const user = await this.prisma.user.findUnique({
@@ -93,11 +91,13 @@ export class ImportsController {
 		try {
 			const urlMetadata = await getMetaData(url);
 
-			urlMetadata.description = cleanDescription(urlMetadata.description);
-
 			if (!url) throw new Error('URL is missing');
 
 			const postType = await detectPostType(url);
+
+			console.log(postType);
+
+			// urlMetadata.description = cleanDescription(urlMetadata.description);
 
 			if (postType.type === 'video') {
 				result = await this.importsService.transcribeVideo(url, urlMetadata);
@@ -122,16 +122,18 @@ export class ImportsController {
 
 			await this.notificationsService.sendNotification(
 				user.pushNotificationId,
-				'Collection Import',
-				'✅ Your collection has been imported successfully'
+				'Content Import',
+				'✅ Your content has been imported successfully'
 			);
 
 			return createdImport;
 		} catch (error) {
+			await this.importsService.deleteImport(startingImport.id, userId);
+
 			await this.notificationsService.sendNotification(
 				user.pushNotificationId,
-				'Collection Import',
-				'❌ Failed to import collection'
+				'Content Import',
+				'❌ Failed to import content'
 			);
 
 			throw new Error(error);
