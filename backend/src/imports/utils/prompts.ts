@@ -49,6 +49,7 @@ export const getBaseAnalyzePrompt = (
   - Restaurant: Dining establishments, cafes, food venues
   - Book: Literature, publications, reading materials
   - Product: Consumer goods, items for purchase, merchandise
+  - Event: Music concerts, shows, festivals, sports events, etc.
   
   TRANSCRIPT AND DESCRIPTION:
   "${transcript}"
@@ -64,24 +65,52 @@ export const getBaseAnalyzePrompt = (
      - DEFAULT TO "PLACE" FOR LOCATION CONTENT: When in doubt about content showing a physical location, categorize as "Place" rather than "Other"
      - Only use "Other" if the content truly doesn't fit any specific category
   
-  3. INFORMATION EXTRACTION:
-     - Extract ONLY information explicitly stated in the transcript/description OR that you can verify through web search
-     - For any information you add through web search, include "[Verified]" at the beginning
-     - For any field where information is missing or cannot be verified, you MUST use null
+  3. MULTIPLE ITEMS HANDLING:
+     - IDENTIFY: Scan transcript/description for multiple distinct items of the same type
+     - SEPARATE: Create individual entries for each distinct item mentioned
+     - PROCESS: Apply content-specific search and analysis rules to EACH item individually
+     - EXAMPLE: If video mentions "5 must-read books", create 5 separate book entries with full details
+     - MAINTAIN QUALITY: Apply same thorough analysis to each item, not just the first few
+     - ORDER: Preserve the order of items as mentioned in the content
+     - COMPLETENESS: Process ALL items mentioned, don't truncate the list
+
+  4. INFORMATION EXTRACTION:
+     - Extract information explicitly stated in the transcript/description
+     - For any missing information, ACTIVELY SEARCH the web to find accurate data
+     - Follow the detailed search instructions in the category-specific rules below
+     - For any field where information cannot be found or verified even after web search, use null
      - NEVER use text placeholders like "Not available", "Unknown", "Not mentioned" - use null instead
      - NEVER invent or assume information not present in the source or verifiable through search
 
-  4. FORMAT-SPECIFIC HANDLING:
-     - For VIDEO content: Return a single detailed object about the main subject
-     - For SLIDESHOW content: Return an array of objects, each describing a separate item/location/subject shown in the slideshow
-     - For both formats: Maintain consistent structure but adapt between single object and array based on format
+  5. WEB SEARCH GUIDELINES:
+     - Prioritize official sources (publisher sites, official business pages, etc.)
+     - Cross-reference information across multiple reliable sources
+     - For conflicting information, use the most commonly reported data or null
+     - Ensure all searched information is current and accurate
+     - If information varies by region/edition/version, specify which one
+     
+  6. MULTIPLE ITEMS RESPONSE FORMAT:
+     When multiple items are detected, structure the response as:
+     {
+       "title": "descriptive_title_for_collection",
+       "summary": [
+           {
+             ...item_specific_fields_following_type_guidelines
+           },
+           {
+             ...item_specific_fields_following_type_guidelines
+           }
+       ]
+     }
   
-  5. FINAL VERIFICATION CHECKLIST:
+  7. FINAL VERIFICATION CHECKLIST:
      - Double-check that any content about a physical location is categorized as "Place"
      - Ensure all place-related content is categorized as "Place"
      - Confirm that all information is either from the transcript or verified through search
      - Verify that null is used for ALL missing or unverified information
      - Check that response format matches content format (single object for video, array for slideshow)
+     - For multiple items: verify each item has complete information
+     - For multiple items: confirm no items were skipped or merged
   `;
 
 	return prompt;
@@ -91,6 +120,7 @@ export const getBaseAnalyzePrompt = (
 const getRecipeAnalyzePrompt = () => {
 	const prompt = `
   RECIPE ANALYSIS RULES:
+  * Name: [🍽️ Exact name of the recipe]
   * Main description: 1-2 sentences about what this dish is
   * Type: "Main course", "Dessert", "Breakfast", etc.
   * Origin: Cuisine origin with appropriate flag emoji (🇮🇹 Italian, 🇲🇽 Mexican, 🇨🇳 Chinese, etc.)
@@ -254,6 +284,7 @@ const getRestaurantAnalyzePrompt = () => {
 const getSoftwareAnalyzePrompt = () => {
 	const prompt = `
   SOFTWARE ANALYSIS RULES:
+  * Name: [💻 Exact name of the software]
   * Purpose: [🎯 Main functionality]
   * Features: [Bullet list with relevant tech emojis BEFORE each feature]
   * Platforms: [Device emojis BEFORE platform types: 📱 (mobile), 💻 (desktop), etc.]
@@ -286,6 +317,7 @@ const getSoftwareAnalyzePrompt = () => {
 const getFilmShowAnalyzePrompt = () => {
 	const prompt = `
   FILM/SHOW ANALYSIS RULES:
+  * Name: [🎬 Exact name of the film/show]
   * Genre: [Relevant genre emoji BEFORE genre type: 😂 (comedy), 😱 (horror), etc.]
   * Platform: [📺 Where to watch]
   * Release: [📅 When released]
@@ -317,6 +349,7 @@ const getFilmShowAnalyzePrompt = () => {
 const getWorkoutAnalyzePrompt = () => {
 	const prompt = `
   WORKOUT ROUTINE ANALYSIS RULES:
+  * Name: [🏋️ Exact name of the workout routine]
   * Target: 🎯 Muscle groups/fitness goals
   * Exercises: Bullet list with fitness emojis
   * Sets/Reps: 🔄 Recommended sets and repetitions
@@ -347,6 +380,7 @@ const getWorkoutAnalyzePrompt = () => {
 const getBookAnalyzePrompt = () => {
 	const prompt = `
   BOOK ANALYSIS RULES:
+  * Title: [🔍 Title of the book]
   * Author: [✍️ Writer's name]
   * Genre: [Relevant emoji BEFORE book type]
   * Key themes: [🔑 Bullet list of main themes]
@@ -355,9 +389,47 @@ const getBookAnalyzePrompt = () => {
   * Publisher: [🏢 Publishing house]
   * Format: [📚 Available formats]
   * Length: [📏 Page count/duration]
-  * Awards: [🏆 Notable awards/recognition]
-  * Reviews: [⭐ Notable reviews/ratings]
+  * Series: [📚 Series name and book number if part of a series]
+  * Goodreads: [📊 Average rating and number of ratings if available] 
   
+  BOOK SEARCH INSTRUCTIONS:
+  1. MANDATORY SEARCH STEPS:
+     a) FIRST: Search for exact book title and author combination
+        - Example search: "Book Title by Author Name Goodreads"
+        - Look for the official Goodreads book page
+     
+     b) FROM GOODREADS PAGE EXTRACT:
+        - REQUIRED: Page count (number only)
+        - REQUIRED: Publication date (full date if available)
+        - REQUIRED: Publisher name
+        - REQUIRED: Average rating (X.XX format)
+        - REQUIRED: Total number of ratings
+        - Available formats
+        - Series information
+
+  2. DATA FORMATTING:
+     - Page count: Number only (e.g. "324" not "324 pages")
+     - Publication date: "YYYY-MM-DD" format
+     - Average rating: "X.XX" format
+     - Number of ratings: Number only (e.g. "1234" not "1,234 ratings")
+     - Publisher: Official publisher name only
+
+  3. NULL VALUE RULES:
+     - Use null ONLY if information cannot be found after searching both Goodreads AND publisher website
+     - Do not use null if information exists but in different format
+     - Do not skip search steps - all steps are mandatory
+
+  4. EXAMPLE RESPONSE FORMAT:
+     {
+       "pageCount": 324,
+       "publicationDate": "2024-01-15",
+       "publisher": "Penguin Random House",
+       "averageRating": "4.25",
+       "totalRatings": 1234,
+       "formats": ["Hardcover", "Paperback", "Kindle", "Audiobook"],
+       "series": "Series Name #1" // or null if not part of series
+     }
+
   GENRE EMOJI MAPPING:
   - 📚 Fiction
   - 🔍 Mystery
@@ -410,6 +482,22 @@ const getProductAnalyzePrompt = () => {
 	return prompt;
 };
 
+const getEventAnalyzePrompt = () => {
+	const prompt = `
+  EVENT ANALYSIS RULES:
+  * Name: [🎉 Event name]
+  * Type: [Category emoji BEFORE event type]
+  * Location: [COUNTRY FLAG emoji + 📍 followed by city name - e.g. "🇺🇸 📍 New York". Always include the country flag emoji based on location]
+  * Date: [📅 Event date]
+  * Time: [🕒 Event time]
+  * Price: [💰 Ticket price]
+  * Tickets: [🎫 Purchase link]
+  * Description: [ℹ️ Brief 1-2 sentence description]
+  `;
+
+	return prompt;
+};
+
 const getOtherAnalyzePrompt = () => {
 	const prompt = `
   OTHER ANALYSIS RULES:
@@ -435,6 +523,7 @@ export const getAnalyzePromptByContentType = (
 		'Workout Routine': getWorkoutAnalyzePrompt(),
 		Book: getBookAnalyzePrompt(),
 		Product: getProductAnalyzePrompt(),
+		Event: getEventAnalyzePrompt(),
 		Other: getOtherAnalyzePrompt(),
 	};
 

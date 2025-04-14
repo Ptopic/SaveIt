@@ -18,9 +18,9 @@ export enum ImportType {
 	RECIPE = 'Recipe',
 	PRODUCT = 'Product',
 	EVENT = 'Event',
-	WORKOUT = 'Workout',
+	WORKOUT = 'Workout Routine',
 	BOOK = 'Book',
-	FILM = 'Film',
+	FILM = 'Film/Show',
 	SOFTWARE = 'Software',
 	OTHER = 'Other',
 }

@@ -8,7 +8,7 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 
 	app.enableCors();
-	app.use(json({ limit: '20mb' }));
+	app.use(json({ limit: '50mb' }));
 	app.useGlobalPipes(new ValidationPipe());
 
 	const config = new DocumentBuilder()

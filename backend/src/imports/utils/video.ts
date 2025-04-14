@@ -1,3 +1,6 @@
+import { exec } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
 import puppeteer from 'puppeteer';
 import { askOpenRouter } from './analyze';
 import { detectContentTypePrompt } from './prompts';
@@ -57,3 +60,74 @@ export const cleanDescription = (description) => {
 	const cleanedDescription = description.replace(/#\w+/g, '');
 	return cleanedDescription;
 };
+
+export async function downloadVideo(videoUrl) {
+	return new Promise((resolve, reject) => {
+		const timestamp = Date.now();
+		const outputFilename = `video_${timestamp}.mp4`;
+		const videosDir = 'videos';
+
+		if (!fs.existsSync(videosDir)) {
+			fs.mkdirSync(videosDir);
+		}
+
+		const command = `yt-dlp -f mp4 -o ${videosDir}/${outputFilename} "${videoUrl}" --quiet --no-warnings`;
+		exec(command, async (error, stdout, stderr) => {
+			if (error) {
+				return reject(error);
+			}
+
+			const videoPath = path.join(videosDir, outputFilename);
+			if (fs.existsSync(videoPath)) {
+				resolve(videoPath);
+			} else {
+				reject(new Error('MP4 file not found'));
+			}
+		});
+	});
+}
+
+export async function extractFramesFromVideo(videoPath) {
+	return new Promise((resolve, reject) => {
+		const framesDir = 'frames';
+		const timestamp = Date.now();
+		const base64Images = [];
+
+		if (!fs.existsSync(framesDir)) {
+			fs.mkdirSync(framesDir);
+		}
+
+		const command = `ffmpeg -i ${videoPath} -vf "select='not(mod(n,100))',setpts='N/(30*TB)',mpdecimate" ${framesDir}/frame${timestamp}_%d.jpg`;
+		exec(command, async (error, stdout, stderr) => {
+			if (error) {
+				return reject(error);
+			}
+
+			setTimeout(() => {
+				const files = fs
+					.readdirSync(framesDir)
+					.filter((file) => file.startsWith(`frame${timestamp}_`))
+					.sort((a, b) => {
+						const numA = parseInt(a.split('_')[1]);
+						const numB = parseInt(b.split('_')[1]);
+						return numA - numB;
+					});
+
+				for (const file of files) {
+					const framePath = path.join(framesDir, file);
+
+					const base64Image = fs.readFileSync(framePath, {
+						encoding: 'base64',
+					});
+					base64Images.push(base64Image);
+
+					fs.unlinkSync(framePath);
+				}
+
+				fs.unlinkSync(videoPath);
+
+				resolve(base64Images);
+			}, 100);
+		});
+	});
+}

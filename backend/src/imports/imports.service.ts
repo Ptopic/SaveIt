@@ -6,7 +6,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { askOpenRouter, searchForCoordinatesAndAddress } from './utils/analyze';
 import { downloadAudio, transcribeAudioWithDeepgram } from './utils/audio';
 import { getAnalyzePromptByContentType } from './utils/prompts';
-import { detectContentType } from './utils/video';
+import {
+	detectContentType,
+	downloadVideo,
+	extractFramesFromVideo,
+} from './utils/video';
 
 @WebSocketGateway({ cors: true })
 @Injectable()
@@ -19,7 +23,15 @@ export class ImportsService {
 	async transcribeVideo(url: string, urlMetadata: any) {
 		const audioPath = (await downloadAudio(url)) as string;
 
+		const videoPath = await downloadVideo(url);
+
+		const frames = (await extractFramesFromVideo(videoPath)) as string[];
+
+		console.log(frames.length);
+
 		const transcript = await transcribeAudioWithDeepgram(audioPath);
+
+		fs.unlinkSync(audioPath as fs.PathLike);
 
 		const postText = transcript.text + '\n' + urlMetadata.description;
 
@@ -33,7 +45,7 @@ export class ImportsService {
 			'video'
 		);
 
-		const analysis = await askOpenRouter(prompt, null);
+		const analysis = await askOpenRouter(prompt, frames);
 
 		console.log(analysis.inputTokens, analysis.outputTokens);
 
@@ -50,8 +62,6 @@ export class ImportsService {
 			const coordinates = await searchForCoordinatesAndAddress(name, location);
 			place.coordinates = coordinates || null;
 		}
-
-		fs.unlinkSync(audioPath as fs.PathLike);
 
 		return {
 			title: analysis.json?.title,

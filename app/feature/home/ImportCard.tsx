@@ -18,7 +18,7 @@ interface IProps {
 const ImportCard = ({ importItem, cardWidth }: IProps) => {
 	let icon = null;
 
-	if (importItem.type) {
+	if (importItem.type !== null) {
 		icon = ImportTypeOptions[importItem.type].icon;
 	}
 

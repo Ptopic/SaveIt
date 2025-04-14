@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as JSON5 from 'json5';
 import { OpenAI } from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -71,26 +72,22 @@ export async function askOpenRouter(prompt: string, images?: string[]) {
 
 		let responseContent = response.data.choices[0].message.content || '';
 
+		// Clean the response content
 		let cleanedContent = responseContent
-			.replace(/```json\s*|\s*```/g, '')
-			.replace(/`/g, '')
-			.replace(/[\u0000-\u001F]+/g, '')
-			.replace(/\r?\n/g, '')
-			.replace(/\\'/g, "'")
-			.replace(/\\"/g, '"')
-			.replace(/,\s*([}\]])/g, '$1');
+			.replace(/```json\s*|\s*```/g, '') // Remove code block markers
+			.replace(/`/g, '') // Remove backticks
+			.trim();
 
+		// Remove any control characters but preserve emojis and valid Unicode
 		cleanedContent = cleanedContent.replace(
-			/:\s*"([^"]*?)"([^",\]}]*)/g,
-			(match, p1, p2) => {
-				const fixed = (p1 + p2).trim();
-				return `: "${fixed}"`;
-			}
+			/[\u0000-\u001F\u007F-\u009F]/g,
+			''
 		);
 
 		console.log('[CLEANED JSON]:', cleanedContent);
 
-		const parsedResponse = JSON.parse(cleanedContent);
+		// Use JSON5 for more lenient parsing
+		const parsedResponse = JSON5.parse(cleanedContent);
 
 		const inputTokens = response.data.usage?.prompt_tokens || 0;
 		const outputTokens = response.data.usage?.completion_tokens || 0;
