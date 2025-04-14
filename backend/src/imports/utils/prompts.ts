@@ -201,20 +201,32 @@ const getRecipeAnalyzePrompt = () => {
     - 🍚 white sugar
     - 🟤 brown sugar
     
-  EMOJI SELECTION PRIORITY:
-  1. ALWAYS use the most specific ingredient emoji that matches the actual ingredient
-  2. If no exact match, use an emoji for a similar ingredient in the same food category
-  3. For prepared ingredients (like sauces), use an emoji for the main ingredient
-  4. For spice blends, use 🧂 or an emoji for the dominant spice
-    
-  For measurements with no specific ingredient emoji (USE ONLY AS LAST RESORT):
-  - 🥄 for teaspoon (tsp) or tablespoon (tbsp) measurements
-  - 🧊 for cup measurements
-  - 🧂 for pinch/dash
-  - 🍶 for liquid measurements (ml, oz, etc.)
-  - ⚖️ for weight measurements (g, kg, oz, lb)
-    
-  Only use measurement emojis when you cannot find ANY suitable food emoji for the ingredient. Make every effort to use a food-related emoji that represents the ingredient or its category before falling back to measurement emojis.]
+  EMOJI SELECTION RULES (STRICT PRIORITY ORDER):
+  
+  1. FOOD EMOJIS ONLY - FOLLOW THIS ORDER:
+     a. EXACT ingredient emoji match (e.g. 🥕 for carrot)
+     b. SIMILAR ingredient in same category (e.g. 🥬 for kale if no specific kale emoji)
+     c. MAIN ingredient for prepared foods (e.g. 🫘 for refried beans)
+     d. PRIMARY ingredient for blends (e.g. 🌶️ for chili powder)
+  
+  2. MEASUREMENT EMOJIS - USE ONLY IF NO FOOD EMOJI EXISTS:
+     ⚠️ IMPORTANT: NEVER combine food emojis with measurement emojis
+     ⚠️ ONLY use these if NO suitable food emoji can be found:
+     - 🥄 for tsp/tbsp
+     - 🧊 for cups
+     - 🧂 for pinch/dash
+     - 🍶 for liquids
+     - ⚖️ for weights
+  
+  EXAMPLES:
+  ✅ CORRECT:
+  - "1 cup carrots" = 🥕
+  - "1 tbsp soy sauce" = 🫗
+  - "1 cup water" = 🍶 (only because no specific water emoji exists)
+  
+  ❌ INCORRECT:
+  - "1 cup carrots" = 🥕🧊 (NEVER combine)
+  - "1 tbsp soy sauce" = 🫗🥄 (NEVER combine)
     
   * Steps: [Numbered list of preparation steps with relevant emojis BEFORE each step: 🔪 (cutting/chopping), 🍳 (frying/cooking), 🌡️ (temperature/heating), ⏲️ (timing), 🌀 (mixing/stirring), 🧊 (freezing/cooling), 🥣 (combining ingredients), 🔥 (baking/roasting), 💧 (washing/rinsing), 🧴 (marinating), etc.]
   * Time: [⏱️ Prep/cooking time]
