@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import { CustomToastProvider } from '@/utils/toast';
+import { OneSignal } from 'react-native-onesignal';
 import '../global.css';
 export { ErrorBoundary } from 'expo-router';
 
@@ -64,6 +65,7 @@ function RootLayoutNav() {
 		if (isLoading) return;
 
 		if (!accessToken) {
+			OneSignal.logout();
 			router.navigate('/getStarted' as any);
 		} else {
 			// PROD: router.navigate('/' as any);

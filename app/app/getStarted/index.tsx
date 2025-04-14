@@ -34,8 +34,8 @@ const index = () => {
 		iosClientId: iosClientId,
 		androidClientId: androidClientId,
 		redirectUri: makeRedirectUri({
-			native: 'com.petartopic.Saveit:/oauth2redirect/google',
-			scheme: 'Saveit',
+			native: 'com.petartopic.saveit:/oauth2redirect/google',
+			scheme: 'saveit',
 		}),
 	});
 

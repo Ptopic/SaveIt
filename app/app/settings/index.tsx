@@ -12,6 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { OneSignal } from 'react-native-onesignal';
 
 export default function SettingsScreen() {
 	const [isDeleteAccountModalVisible, setIsDeleteAccountModalVisible] =
@@ -19,6 +20,7 @@ export default function SettingsScreen() {
 
 	const handleLogout = async () => {
 		await AsyncStorage.removeItem('accessToken');
+		await OneSignal.logout();
 		router.push('/getStarted');
 	};
 	return (
