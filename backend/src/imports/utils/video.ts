@@ -97,7 +97,8 @@ export async function extractFramesFromVideo(videoPath) {
 			fs.mkdirSync(framesDir);
 		}
 
-		const command = `ffmpeg -i ${videoPath} -vf "select='not(mod(n,100))',setpts='N/(30*TB)',mpdecimate" ${framesDir}/frame${timestamp}_%d.jpg`;
+		// Extract frame every 3 seconds using fps=1/3
+		const command = `ffmpeg -i ${videoPath} -vf "fps=1/3" ${framesDir}/frame${timestamp}_%d.jpg`;
 		exec(command, async (error, stdout, stderr) => {
 			if (error) {
 				return reject(error);
@@ -119,7 +120,8 @@ export async function extractFramesFromVideo(videoPath) {
 					const base64Image = fs.readFileSync(framePath, {
 						encoding: 'base64',
 					});
-					base64Images.push(base64Image);
+
+					base64Images.push('data:image/jpeg;base64,' + base64Image);
 
 					fs.unlinkSync(framePath);
 				}

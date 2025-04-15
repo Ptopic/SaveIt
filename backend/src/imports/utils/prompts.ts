@@ -136,6 +136,22 @@ const getRecipeAnalyzePrompt = () => {
     - 💡 Time-saving tips
     - 💡 Flavor enhancement tips
   ]
+  * Nutrition Facts: [IMPORTANT - YOU MUST ALWAYS CALCULATE ESTIMATED NUTRITION FACTS:
+    1. For EACH ingredient:
+      - Look up standard nutrition values per serving/amount
+      - Calculate based on recipe quantity
+    2. Sum ALL ingredients to get recipe totals
+    3. REQUIRED VALUES (do not skip any):
+      - 🥩 Total Protein (g) 
+      - 🥖 Total Carbohydrates (g)
+      - 🫚 Total Fat (g)
+      - 🔥 Total Calories
+    4. If exact amounts unclear:
+      - Use reasonable estimates based on similar recipes
+      - Err on higher side for calories
+    5. NEVER return null or skip nutrition facts
+    6. Round to nearest whole number]
+
   * Ingredients: [Bullet list of ingredients with quantities AND EMOJIS - place emoji BEFORE each ingredient name. Use these specific emojis for common ingredients:
     - 🍅 tomato/tomatoes
     - 🥔 potato/potatoes
@@ -236,7 +252,6 @@ const getRecipeAnalyzePrompt = () => {
   * Serving Suggestions: [🍴 How to serve/present the dish, garnishes, accompaniments]
   * Substitutions: [🔄 Common substitutions for ingredients mentioned in the video]
   * Background: [📜 Cultural, historical or personal story about the recipe if mentioned]
-  * Health Notes: [❤️ Any health benefits or nutritional information mentioned]
   * Equipment: [🍲 Special equipment or tools needed for the recipe]
   * Storage: [🧊 Information about storing leftovers or meal prep if mentioned]
   * Did You Know: [✨ Interesting facts or trivia about the dish or ingredients mentioned in the video]
