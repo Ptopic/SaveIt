@@ -56,9 +56,6 @@ model Import {
   thumbnail       String?
   duration        Float?
   type            String?
-  summary         Json?
-  location        String?
-  address         String?
   status          String  @default("Importing")
   socialMediaType String?
   videoUrl        String?
@@ -68,7 +65,23 @@ model Import {
 
   collection     Collection?      @relation(fields: [collectionId], references: [id])
   collectionId   String?
-  ImportLocation ImportLocation[]
+
+  places Place[]
+}
+
+model Place {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String?
+  description String?
+  emoji String?
+  
+  import   Import @relation(fields: [importId], references: [id])
+  importId String
+
+  importLocation ImportLocation?
 }
 
 model ImportLocation {
@@ -86,14 +99,20 @@ model ImportLocation {
   bestTimeToVisit String?
   description     String?
   openingHours    String?
+  phone           String?
+  email           String?
+  website         String?
+  indoor_seating  String?
+  outdoor_seating String?
+  wheelchair      String?
 
-  import   Import @relation(fields: [importId], references: [id])
-  importId String
+  place   Place @relation(fields: [placeId], references: [id])
+  placeId String @unique
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  tips ImportLocationTip[]
+  tips       ImportLocationTip[]
   highlights ImportLocationHighlight[]
   categories ImportLocationCategory[]
 }
@@ -105,7 +124,7 @@ model ImportLocationTip {
 
   tip String
 
-  importLocation ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id])
   importLocationId String
 }
 
@@ -116,7 +135,7 @@ model ImportLocationHighlight {
 
   highlight String
 
-  importLocation ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id])
   importLocationId String
 }
 
@@ -127,7 +146,7 @@ model ImportLocationCategory {
 
   category String
 
-  importLocation ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id])
   importLocationId String
 }
 

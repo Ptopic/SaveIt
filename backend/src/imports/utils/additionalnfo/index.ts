@@ -68,17 +68,26 @@ async function getPlaceAdditionalInfo(
 				return {
 					cordinates: place.lat + ',' + place.lon,
 					address: place.display_name,
-					// phone: place.extratags.phone,
-					// email: place.extratags.email,
-					// website: place.extratags.website,
+					phone: place.extratags.phone,
+					email: place.extratags.email,
+					website: place.extratags.website,
 					openingHours: place?.extratags?.opening_hours,
-					// indoor_seating: place.extratags.indoor_seating,
-					// outdoor_seating: place.extratags.outdoor_seating,
-					// wheelchair: place.extratags.wheelchair,
+					indoor_seating: place.extratags.indoor_seating,
+					outdoor_seating: place.extratags.outdoor_seating,
+					wheelchair: place.extratags.wheelchair,
 				};
 			});
 
 			if (placeDetails.length > 0) {
+				const createdPlace = await prisma.place.create({
+					data: {
+						name: name,
+						description: place.Description,
+						emoji: emoji,
+						importId: importId,
+					},
+				});
+
 				const importLocation = await prisma.importLocation.create({
 					data: {
 						name: name,
@@ -91,7 +100,13 @@ async function getPlaceAdditionalInfo(
 						bestTimeToVisit: place['Best time to visit'],
 						description: place.Description,
 						openingHours: placeDetails[0]?.openingHours,
-						importId: importId,
+						phone: placeDetails[0]?.phone,
+						email: placeDetails[0]?.email,
+						website: placeDetails[0]?.website,
+						indoor_seating: placeDetails[0]?.indoor_seating,
+						outdoor_seating: placeDetails[0]?.outdoor_seating,
+						wheelchair: placeDetails[0]?.wheelchair,
+						placeId: createdPlace.id,
 						userId: userId,
 					},
 				});

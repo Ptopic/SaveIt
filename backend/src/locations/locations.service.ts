@@ -77,7 +77,7 @@ export class LocationsService {
 
 	async getLocationByImportId(importId: string) {
 		return this.prisma.importLocation.findMany({
-			where: { importId },
+			where: { place: { importId } },
 			include: {
 				highlights: true,
 				tips: true,

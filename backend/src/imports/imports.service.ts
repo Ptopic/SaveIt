@@ -117,9 +117,6 @@ export class ImportsService {
 				thumbnail: data?.thumbnail,
 				duration: data?.duration,
 				type: data?.type,
-				summary: data?.summary,
-				location: data?.location,
-				address: data?.address,
 				socialMediaType: data?.socialMediaType,
 				videoUrl: data?.videoUrl,
 			},
@@ -139,9 +136,6 @@ export class ImportsService {
 				thumbnail: data?.thumbnail,
 				duration: data?.duration,
 				type: data?.type,
-				summary: data?.summary,
-				location: data?.location,
-				address: data?.address,
 				status: 'Finished',
 			},
 		});
@@ -190,7 +184,9 @@ export class ImportsService {
 		await this.prisma.importLocationTip.deleteMany({
 			where: {
 				importLocation: {
-					importId: id,
+					place: {
+						importId: id,
+					},
 				},
 			},
 		});
@@ -198,7 +194,9 @@ export class ImportsService {
 		await this.prisma.importLocationHighlight.deleteMany({
 			where: {
 				importLocation: {
-					importId: id,
+					place: {
+						importId: id,
+					},
 				},
 			},
 		});
@@ -206,12 +204,22 @@ export class ImportsService {
 		await this.prisma.importLocationCategory.deleteMany({
 			where: {
 				importLocation: {
-					importId: id,
+					place: {
+						importId: id,
+					},
 				},
 			},
 		});
 
 		await this.prisma.importLocation.deleteMany({
+			where: {
+				place: {
+					importId: id,
+				},
+			},
+		});
+
+		await this.prisma.place.deleteMany({
 			where: {
 				importId: id,
 			},
