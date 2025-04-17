@@ -52,13 +52,10 @@ const CollectionScreen = () => {
 
 	const [collectionActionsModalVisible, setCollectionActionsModalVisible] =
 		useState(false);
+
 	const [search, setSearch] = useState('');
 
 	const debouncedSearchValue = useDebounce(search, 600);
-
-	const handleSearchChange = (text: string) => {
-		setSearch(text);
-	};
 
 	const handleEditCollection = () => {
 		setCollectionActionsModalVisible(false);
@@ -133,7 +130,7 @@ const CollectionScreen = () => {
 
 						<Search
 							value={search}
-							onChangeText={handleSearchChange}
+							onChangeText={(text) => setSearch(text)}
 							placeholder="Search"
 						/>
 					</View>

@@ -1,4 +1,3 @@
-import puppeteer from 'puppeteer';
 import { URL } from 'url';
 
 export async function expandTikTokUrl(shortUrl) {
@@ -28,37 +27,5 @@ export async function detectPostType(url) {
 		}
 	} catch (error) {
 		throw error;
-	}
-}
-
-export async function getSlideshowImages(url) {
-	const browser = await puppeteer.launch({ headless: true });
-	const page = await browser.newPage();
-
-	try {
-		await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
-
-		const images = await page.evaluate(() => {
-			const slides = Array.from(document.querySelectorAll('.swiper-slide'));
-
-			const slidesLength = slides.length / 3;
-
-			const slicedSlides = slides.slice(0, slidesLength);
-
-			const imageUrls = slicedSlides
-				.map((slide) => {
-					const img = slide.querySelector('img');
-					return img ? img.src : null;
-				})
-				.filter((url) => url !== null);
-
-			return imageUrls;
-		});
-
-		return images;
-	} catch (error) {
-		throw error;
-	} finally {
-		await browser.close();
 	}
 }

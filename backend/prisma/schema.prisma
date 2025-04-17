@@ -18,15 +18,16 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email    String @unique
+  email              String           @unique
   // password String
-  fullName String
-  picture  String?
-  pictureId String?
-  country String?
+  fullName           String
+  picture            String?
+  pictureId          String?
+  country            String?
   pushNotificationId String?
-  collections Collection[]
-  imports     Import[]
+  collections        Collection[]
+  imports            Import[]
+  ImportLocation     ImportLocation[]
 }
 
 model Collection {
@@ -51,22 +52,82 @@ model Import {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  title     String
-  thumbnail String?
-  duration  Float?
-  type      String?
-  summary   Json?
-  location  String?
-  address   String?
-  status    String @default("Importing")
+  title           String
+  thumbnail       String?
+  duration        Float?
+  type            String?
+  summary         Json?
+  location        String?
+  address         String?
+  status          String  @default("Importing")
   socialMediaType String?
-  videoUrl String?
+  videoUrl        String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  collection   Collection? @relation(fields: [collectionId], references: [id])
-  collectionId String?
+  collection     Collection?      @relation(fields: [collectionId], references: [id])
+  collectionId   String?
+  ImportLocation ImportLocation[]
+}
+
+model ImportLocation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name            String?
+  city            String?
+  country         String?
+  flag            String?
+  coordinates     String?
+  emoji           String?
+  address         String?
+  bestTimeToVisit String?
+  description     String?
+
+  import   Import @relation(fields: [importId], references: [id])
+  importId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  tips ImportLocationTip[]
+  highlights ImportLocationHighlight[]
+  categories ImportLocationCategory[]
+}
+
+model ImportLocationTip {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tip String
+
+  importLocation ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocationId String
+}
+
+model ImportLocationHighlight {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  highlight String
+
+  importLocation ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocationId String
+}
+
+model ImportLocationCategory {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category String
+
+  importLocation ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocationId String
 }
 
 // model UserScratchedCard {

@@ -54,6 +54,7 @@ export async function askOpenRouter(prompt: string, images?: string[]) {
 				// model: 'google/gemini-2.0-flash-001',
 				// model: 'openai/gpt-4o-mini',
 				model: 'google/gemini-2.0-flash-lite-001',
+				// model: 'google/gemini-2.0-flash-001',
 				messages: [
 					{
 						role: 'system',
@@ -99,38 +100,6 @@ export async function askOpenRouter(prompt: string, images?: string[]) {
 		};
 	} catch (error) {
 		console.error('Error fetching AI response:', error);
-		throw error;
-	}
-}
-
-export async function searchForCoordinatesAndAddress(
-	name: string,
-	location?: string
-) {
-	try {
-		let searchQuery;
-		if (location) {
-			searchQuery = name + ', ' + location;
-		} else {
-			searchQuery = name;
-		}
-
-		const geocodingUrl = `https://nominatim.openstreetmap.org/search?q=${searchQuery}&format=json&limit=1`;
-
-		const response = await axios.get(geocodingUrl);
-
-		if (response.data.length > 0) {
-			const result = response.data[0];
-
-			return {
-				latitude: result.lat,
-				longitude: result.lon,
-				address: result.display_name,
-			};
-		} else {
-			return null;
-		}
-	} catch (error) {
 		throw error;
 	}
 }

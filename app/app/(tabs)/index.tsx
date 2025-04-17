@@ -6,6 +6,7 @@ import Text from '@/components/Text';
 import Title from '@/components/Title';
 import FiltersToolbar from '@/feature/home/FiltersToolbar';
 import ImportCard from '@/feature/home/ImportCard';
+import useDebounce from '@/hooks/useDebounce';
 import { config } from '@/shared/config';
 import { BookmarkIcon, SearchIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
@@ -39,9 +40,7 @@ export default function TabOneScreen() {
 	const [isSearchOpen, setIsSearchOpen] = useState(false);
 	const [searchValue, setSearchValue] = useState('');
 
-	const handleSearch = (value: string) => {
-		setSearchValue(value);
-	};
+	const debouncedSearchValue = useDebounce(searchValue, 600);
 
 	const {
 		imports,
@@ -52,7 +51,7 @@ export default function TabOneScreen() {
 		refetch: refetchImports,
 	} = useGetAllImportsOnScroll({
 		pageSize: IMPORTS_PAGE_SIZE,
-		searchQuery: searchValue,
+		searchQuery: debouncedSearchValue,
 		type: activeFilter,
 	});
 
@@ -96,7 +95,7 @@ export default function TabOneScreen() {
 					) : (
 						<Search
 							value={searchValue}
-							onChangeText={handleSearch}
+							onChangeText={(text) => setSearchValue(text)}
 							onClear={() => setIsSearchOpen(false)}
 							placeholder="Search"
 							clearAlwaysVisible

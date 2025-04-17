@@ -265,16 +265,19 @@ const getPlaceAnalyzePrompt = () => {
 	const prompt = `
   PLACE ANALYSIS RULES:
   * Name: [Appropriate emoji BEFORE place name: 🏰 (castle), 🏝️ (beach), 🏞️ (nature), 🏛️ (monument), etc., followed by exact name of the place/attraction/landmark]
-  * Location: [COUNTRY FLAG emoji + 📍 followed by city name - e.g. "🇮🇹 📍 Rome" or "🇺🇸 📍 New York". Always include the country flag emoji based on location]
+  * City: [city name - e.g. "Rome" or "New York"]
+  * Country: [country name - e.g. "Italy" or "United States"]
+  * Flag: [COUNTRY FLAG emoji - e.g. "🇮🇹" or "🇺🇸"]
   * Highlights: [Bullet list with relevant emojis BEFORE each highlight]
-  * Best time to visit: [🗓️ Season or months]
-  * Tips: [💡 1-2 short travel tips]
-  * Description: [ℹ️ Brief 1-2 sentence description]
+  * Best time to visit: [Season or months]
+  * Tips: [1-2 short travel tips with 💡 emoji BEFORE each tip]
+  * Description: [Brief 1-2 sentence description]
+  * Categories: [Bullet list of a few categories that the place belongs to]
   
-  LOCATION NAME RULES:
+  CITY NAME RULES:
   - Prioritize major city/region names
   - Use widely recognized names
-  - Include single primary location
+  - Include single primary city name
   
   ADDRESS SEARCH INSTRUCTIONS:
   1. Identify exact place name
@@ -295,13 +298,6 @@ const getRestaurantAnalyzePrompt = () => {
   * Location: [COUNTRY FLAG emoji + 📍 followed by city name - e.g. "🇫🇷 📍 Paris". Always include the country flag emoji based on location]
   * Must-try dishes: [Bullet list with relevant food emojis BEFORE each dish]
   * Price range: [💰 Budget indicator]
-  * Hours: [🕒 Opening hours if mentioned]
-  
-  ADDRESS SEARCH INSTRUCTIONS:
-  1. Search exact restaurant name
-  2. Check multiple review sites
-  3. Include complete address
-  4. Use null if not found
   `;
 
 	return prompt;

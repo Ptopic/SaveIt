@@ -1,6 +1,8 @@
+import { IMPORTS, LOCATIONS } from '@/api/constants';
 import useCreateImport from '@/api/imports/hooks/useCreateImport';
 import Text from '@/components/Text';
 import { LinkIcon } from '@/shared/svgs';
+import { useQueryClient } from '@tanstack/react-query';
 import { BlurView } from 'expo-blur';
 import * as Clipboard from 'expo-clipboard';
 import React, { useEffect } from 'react';
@@ -20,7 +22,7 @@ const AddModal = ({
 	setModalVisible: (visible: boolean) => void;
 }) => {
 	const toast = useToast();
-
+	const queryClient = useQueryClient();
 	const modalOpacity = useSharedValue(0);
 	const modalTranslateY = useSharedValue(150);
 	const textOpacity = useSharedValue(0);
@@ -62,7 +64,19 @@ const AddModal = ({
 			return;
 		}
 
-		createImport({ url });
+		createImport(
+			{ url },
+			{
+				onSuccess: () => {
+					queryClient.invalidateQueries({
+						queryKey: [IMPORTS],
+					});
+					queryClient.invalidateQueries({
+						queryKey: [LOCATIONS],
+					});
+				},
+			}
+		);
 		setModalVisible(false);
 		toast.show('Import started', { type: 'regular' });
 	};

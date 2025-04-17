@@ -2,6 +2,7 @@ import axios from 'axios';
 import { exec } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import puppeteer from 'puppeteer';
 import * as sharp from 'sharp';
 import { promisify } from 'util';
 
@@ -24,23 +25,6 @@ export const downloadImage = async (imageUrl) => {
 		throw new Error('IMAGE_DOWNLOAD_FAILED');
 	}
 };
-
-// Works fine
-// async function preprocessImage(imagePath) {
-// 	const processedPath = path.join(__dirname, 'processed_image.png');
-
-// 	await sharp(imagePath)
-// 		.normalize() // Enhance the contrast
-// 		.threshold(200) // Apply binary threshold to differentiate text and background
-// 		.toBuffer() // Get the image buffer for further manipulation
-// 		.then((buffer) => {
-// 			return sharp(buffer)
-// 				.tint({ r: 255, g: 105, b: 180 }) // Apply bright pink tint (RGB: 255, 105, 180)
-// 				.toFile(processedPath); // Save the processed image
-// 		}); // Save the processed image
-
-// 	return processedPath;
-// }
 
 export async function preprocessImage(imagePath, outputPath) {
 	const image = sharp(imagePath);
@@ -85,32 +69,34 @@ export async function extractTextFromImage(imageUrl) {
 	}
 }
 
-// Google Cloud Vision API -> 1000 images/month free, then 1.50 for 1000 images
+export async function getSlideshowImages(url) {
+	const browser = await puppeteer.launch({ headless: true });
+	const page = await browser.newPage();
 
-// OPENAI Solution --> TO EXPENSIVE!!
+	try {
+		await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
 
-// const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+		const images = await page.evaluate(() => {
+			const slides = Array.from(document.querySelectorAll('.swiper-slide'));
 
-// export async function extractTextFromImage(imageUrl) {
-// 	const response = await openai.chat.completions.create({
-// 		model: 'gpt-4o-mini',
-// 		messages: [
-// 			{
-// 				role: 'system',
-// 				content:
-// 					'FOCUS ONLY ON TEXT EXTRACTION: Your task is to extract all readable text that appears in the image. Ignore all non-text elements such as people, landscapes, objects, icons, or decorative elements. Only return the actual written/printed text you can see, with proper spacing and line breaks. If no text is present in the image, return "NO_TEXT_FOUND". Do not include any descriptions, explanations, or comments about the image contents.',
-// 			},
-// 			{
-// 				role: 'user',
-// 				content: [
-// 					{
-// 						type: 'image_url',
-// 						image_url: { url: imageUrl },
-// 					},
-// 				],
-// 			},
-// 		],
-// 	});
+			const slidesLength = slides.length / 3;
 
-// 	return response.choices[0].message.content;
-// }
+			const slicedSlides = slides.slice(0, slidesLength);
+
+			const imageUrls = slicedSlides
+				.map((slide) => {
+					const img = slide.querySelector('img');
+					return img ? img.src : null;
+				})
+				.filter((url) => url !== null);
+
+			return imageUrls;
+		});
+
+		return images;
+	} catch (error) {
+		throw error;
+	} finally {
+		await browser.close();
+	}
+}

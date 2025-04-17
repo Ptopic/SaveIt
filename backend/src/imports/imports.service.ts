@@ -3,7 +3,7 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import * as fs from 'fs';
 import { Server } from 'http';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { askOpenRouter, searchForCoordinatesAndAddress } from './utils/analyze';
+import { askOpenRouter } from './utils/analyze';
 import { downloadAudio, transcribeAudioWithDeepgram } from './utils/audio';
 import { getAnalyzePromptByContentType } from './utils/prompts';
 import {
@@ -53,16 +53,6 @@ export class ImportsService {
 
 		const address = analysis.json?.locationData?.address || null;
 
-		if (contentType === 'Place' && analysis.json) {
-			const place = analysis.json.summary;
-
-			const name = place.name;
-			const location = place.location || '';
-
-			const coordinates = await searchForCoordinatesAndAddress(name, location);
-			place.coordinates = coordinates || null;
-		}
-
 		return {
 			title: analysis.json?.title,
 			description: urlMetadata.description,
@@ -106,43 +96,6 @@ export class ImportsService {
 		console.log(analysis.inputTokens, analysis.outputTokens);
 
 		console.log(analysis.json);
-
-		if (
-			(contentType === 'Place' || contentType === 'Restaurant') &&
-			analysis.json
-		) {
-			const places = analysis.json.summary.Place;
-
-			if (places) {
-				if (places.length > 1) {
-					for (const place of places) {
-						const name = place.Name;
-						const location = place.Location;
-
-						const coordinates = await searchForCoordinatesAndAddress(
-							name,
-							location
-						);
-
-						if (coordinates) {
-							place.coordinates =
-								coordinates.latitude + ',' + coordinates.longitude;
-							place.address = coordinates.address;
-						}
-					}
-				} else {
-					const name = places.Name;
-
-					const coordinates = await searchForCoordinatesAndAddress(name);
-
-					if (coordinates) {
-						places.coordinates =
-							coordinates.latitude + ',' + coordinates.longitude;
-						places.address = coordinates.address;
-					}
-				}
-			}
-		}
 
 		return {
 			title: analysis.json.title,

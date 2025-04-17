@@ -5,8 +5,9 @@ import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CollectionsModule } from './collections/collections.module';
 import { ImportsModule } from './imports/imports.module';
-import { UsersModule } from './users/users.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { UsersModule } from './users/users.module';
+import { LocationsModule } from './locations/locations.module';
 
 @Module({
 	imports: [
@@ -16,6 +17,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 		CloudinaryModule,
 		UsersModule,
 		NotificationsModule,
+		LocationsModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

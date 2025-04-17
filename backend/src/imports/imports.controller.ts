@@ -8,12 +8,15 @@ import {
 	Query,
 	Req,
 } from '@nestjs/common';
+import axios from 'axios';
 import { Request } from 'express';
 import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ImportsService } from './imports.service';
-import { detectPostType, getSlideshowImages } from './utils/detectType.js';
+import { getAdditionalInfoByContentType } from './utils/additionalnfo';
+import { detectPostType } from './utils/detectType.js';
+import { getSlideshowImages } from './utils/image';
 import { getMetaData } from './utils/video.js';
 
 @Controller('imports')
@@ -54,6 +57,27 @@ export class ImportsController {
 		return await this.importsService.getImport(id, userId);
 	}
 
+	@Post('/test')
+	async test(@Query('query') query: string) {
+		const response = await axios.get(
+			`${process.env.NOMINATIM_URL}/search?q=${query}&format=json&limit=1&addressdetails=1&namedetails=1`,
+			{
+				headers: {
+					'Accept-Language': 'en',
+				},
+			}
+		);
+
+		const placesCordinates = response.data.map((place) => {
+			return {
+				cordinates: place.lat + ',' + place.lon,
+			};
+		});
+
+		console.log(response.data);
+
+		return placesCordinates[0].cordinates;
+	}
 	@Post('/transcribe')
 	@JwtAuth()
 	async transcribe(@Body() body: { url: string }, @Req() req: Request) {
@@ -113,6 +137,8 @@ export class ImportsController {
 					urlMetadata
 				);
 			}
+
+			await getAdditionalInfoByContentType(result, userId, startingImport.id);
 
 			const createdImport = await this.importsService.updateImport(userId, {
 				id: startingImport.id,

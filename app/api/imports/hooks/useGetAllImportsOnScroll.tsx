@@ -2,7 +2,7 @@ import { DEFAULT_PAGE, IMPORTS } from '@/api/constants';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import importRequests from '../requests';
 
-interface UseGetAllImportsOnScrollProps {
+interface IProps {
 	pageSize?: string;
 	searchQuery?: string;
 	type?: string;
@@ -12,7 +12,7 @@ const useGetAllImportsOnScroll = ({
 	pageSize = '6',
 	searchQuery = '',
 	type = '',
-}: UseGetAllImportsOnScrollProps = {}) => {
+}: IProps) => {
 	const {
 		data,
 		isLoading,
