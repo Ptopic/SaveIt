@@ -17,7 +17,7 @@ import { ImportsService } from './imports.service';
 import { getAdditionalInfoByContentType } from './utils/additionalnfo';
 import { detectPostType } from './utils/detectType.js';
 import { getSlideshowImages } from './utils/image';
-import { getMetaData } from './utils/video.js';
+import { cleanDescription, getMetaData } from './utils/video.js';
 
 @Controller('imports')
 export class ImportsController {
@@ -121,7 +121,9 @@ export class ImportsController {
 
 			console.log(postType);
 
-			// urlMetadata.description = cleanDescription(urlMetadata.description);
+			if (urlMetadata.description) {
+				urlMetadata.description = cleanDescription(urlMetadata.description);
+			}
 
 			if (postType.type === 'video') {
 				result = await this.importsService.transcribeVideo(url, urlMetadata);

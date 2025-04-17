@@ -229,7 +229,11 @@ export default function TabMapScreen() {
 								{selectedLocation?.flag + ' ' + selectedLocation?.city}
 							</Text>
 							<Text className="text-gray500">{selectedLocation?.address}</Text>
-							<View className="flex-row gap-2">
+							<ScrollView
+								horizontal
+								showsHorizontalScrollIndicator={false}
+								contentContainerStyle={{ gap: 10 }}
+							>
 								{selectedLocation?.categories &&
 									selectedLocation?.categories.map((category, index) => (
 										<View
@@ -239,7 +243,7 @@ export default function TabMapScreen() {
 											<Text>{category}</Text>
 										</View>
 									))}
-							</View>
+							</ScrollView>
 							<Text>{selectedLocation?.description}</Text>
 							<View className="flex-col gap-4">
 								{selectedLocation?.highlights && (
@@ -318,16 +322,20 @@ export default function TabMapScreen() {
 										<Subtitle>Best Time to Visit</Subtitle>
 										<View className="flex-row gap-2 items-center">
 											<Text className="text-xl">{'🗓️'}</Text>
-											<Text>{selectedLocation?.bestTimeToVisit}</Text>
+											<Text className="flex-1 flex-wrap">
+												{selectedLocation?.bestTimeToVisit}
+											</Text>
 										</View>
 									</View>
 								)}
 								{selectedLocation?.openingHours && (
 									<View className="flex-col gap-2 bg-gray50 p-3 rounded-lg">
-										<Subtitle>Best Time to Visit</Subtitle>
+										<Subtitle>Opening Hours</Subtitle>
 										<View className="flex-row gap-2 items-center">
 											<Text className="text-xl">{'🕒'}</Text>
-											<Text>{selectedLocation?.openingHours}</Text>
+											<Text className="flex-1 flex-wrap">
+												{selectedLocation?.openingHours}
+											</Text>
 										</View>
 									</View>
 								)}
