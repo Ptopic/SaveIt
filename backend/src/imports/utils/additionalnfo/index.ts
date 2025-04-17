@@ -44,74 +44,82 @@ async function getPlaceAdditionalInfo(
 ) {
 	const places = result.summary;
 
-	for (const place of places) {
-		console.log(place);
+	const placesArray = Array.isArray(places) ? places : [places];
+
+	for (const place of placesArray) {
 		const emoji = place?.Name?.match(/[^\p{L}\p{N}\s]/gu)?.[0] || '';
 		const name = removeEmojiFromText(place?.Name) || '';
 		const city = place?.City || '';
 		const country = place?.Country || '';
 
-		const query =
-			city !== '' && country !== ''
-				? `${name}, ${city}, ${country}`
-				: city !== ''
-					? `${name}, ${city}`
-					: country !== ''
-						? `${name}, ${country}`
-						: name;
+		const queries = [
+			`${name}, ${city}, ${country}`,
+			`${name}, ${city}`,
+			`${name}, ${country}`,
+			`${name}`,
+		];
 
-		const response = await axios.get(
-			`${process.env.NOMINATIM_URL}/search?q=${query}&format=json&limit=1&addressdetails=1&namedetails=1`,
-			{
-				headers: {
-					'Accept-Language': 'en',
-				},
+		for (const query of queries) {
+			const response = await axios.get(
+				`${process.env.NOMINATIM_URL}/search?q=${query}&format=json&limit=1&addressdetails=1&namedetails=1&extratags=1`
+			);
+
+			const placeDetails = response.data.map((place) => {
+				return {
+					cordinates: place.lat + ',' + place.lon,
+					address: place.display_name,
+					// phone: place.extratags.phone,
+					// email: place.extratags.email,
+					// website: place.extratags.website,
+					openingHours: place?.extratags?.opening_hours,
+					// indoor_seating: place.extratags.indoor_seating,
+					// outdoor_seating: place.extratags.outdoor_seating,
+					// wheelchair: place.extratags.wheelchair,
+				};
+			});
+
+			if (placeDetails.length > 0) {
+				const importLocation = await prisma.importLocation.create({
+					data: {
+						name: name,
+						city: city,
+						country: place.Country,
+						flag: place.Flag,
+						coordinates: placeDetails[0]?.cordinates,
+						emoji: emoji,
+						address: placeDetails[0]?.address,
+						bestTimeToVisit: place['Best time to visit'],
+						description: place.Description,
+						openingHours: placeDetails[0]?.openingHours,
+						importId: importId,
+						userId: userId,
+					},
+				});
+
+				await prisma.importLocationTip.createMany({
+					data: place.Tips.map((tip) => ({
+						tip: tip,
+						importLocationId: importLocation.id,
+					})),
+				});
+
+				await prisma.importLocationHighlight.createMany({
+					data: place.Highlights.map((highlight) => ({
+						highlight: highlight,
+						importLocationId: importLocation.id,
+					})),
+				});
+
+				await prisma.importLocationCategory.createMany({
+					data: place.Categories.map((category) => ({
+						category: category,
+						importLocationId: importLocation.id,
+					})),
+				});
+
+				break;
 			}
-		);
-
-		const placeDetails = response.data.map((place) => {
-			return {
-				cordinates: place.lat + ',' + place.lon,
-				address: place.display_name,
-			};
-		});
-
-		const importLocation = await prisma.importLocation.create({
-			data: {
-				name: name,
-				city: city,
-				country: place.Country,
-				flag: place.Flag,
-				coordinates: placeDetails[0]?.cordinates,
-				emoji: emoji,
-				address: placeDetails[0]?.address,
-				bestTimeToVisit: place['Best time to visit'],
-				description: place.Description,
-				importId: importId,
-				userId: userId,
-			},
-		});
-
-		await prisma.importLocationTip.createMany({
-			data: place.Tips.map((tip) => ({
-				tip: tip,
-				importLocationId: importLocation.id,
-			})),
-		});
-
-		await prisma.importLocationHighlight.createMany({
-			data: place.Highlights.map((highlight) => ({
-				highlight: highlight,
-				importLocationId: importLocation.id,
-			})),
-		});
-
-		await prisma.importLocationCategory.createMany({
-			data: place.Categories.map((category) => ({
-				category: category,
-				importLocationId: importLocation.id,
-			})),
-		});
+		}
 	}
 }
 

@@ -10,6 +10,7 @@ export interface ILocation {
 	emoji: string;
 	address: string;
 	bestTimeToVisit: string;
+	openingHours: string;
 	description: string;
 	tips: string[];
 	highlights: string[];

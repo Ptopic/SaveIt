@@ -1,4 +1,4 @@
-import { IMPORTS } from '@/api/constants';
+import { IMPORTS, LOCATIONS } from '@/api/constants';
 import useDeleteImport from '@/api/imports/hooks/useDeleteImport';
 import useGetImport from '@/api/imports/hooks/useGetImport';
 import ModalComponent from '@/components/ModalComponent';
@@ -43,7 +43,8 @@ const ImportDetailsScreen = () => {
 
 	const { mutate: deleteImport } = useDeleteImport({
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: [IMPORTS] });
+			queryClient.invalidateQueries({ queryKey: [IMPORTS], exact: false });
+			queryClient.invalidateQueries({ queryKey: [LOCATIONS], exact: false });
 			router.back();
 		},
 	});

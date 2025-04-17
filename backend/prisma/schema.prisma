@@ -85,6 +85,7 @@ model ImportLocation {
   address         String?
   bestTimeToVisit String?
   description     String?
+  openingHours    String?
 
   import   Import @relation(fields: [importId], references: [id])
   importId String

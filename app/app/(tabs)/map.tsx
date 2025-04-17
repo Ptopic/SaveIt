@@ -27,6 +27,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function TabMapScreen() {
 	const snapPoints = useMemo(() => ['25%', '50%', '70%'], []);
+	const locationSnapPoints = useMemo(() => ['25%', '70%'], []);
 	const insets = useSafeAreaInsets();
 
 	const bottomSheetRef = useRef<BottomSheet>(null);
@@ -175,20 +176,24 @@ export default function TabMapScreen() {
 								onChangeText={(text) => setSearch(text)}
 							/>
 							<Title>Locations</Title>
-							<FlatList
-								data={locations}
-								contentContainerStyle={{ gap: 10 }}
-								renderItem={({ item }) => (
-									<TouchableOpacity onPress={() => onLocationPress(item)}>
-										<View className="flex-row gap-3 items-center">
-											<View className="w-10 h-10 rounded-full bg-gray100 border border-gray200 items-center justify-center">
-												<Text className="text-md">{item.emoji}</Text>
+							{locations && locations.length > 0 ? (
+								<FlatList
+									data={locations}
+									contentContainerStyle={{ gap: 10 }}
+									renderItem={({ item }) => (
+										<TouchableOpacity onPress={() => onLocationPress(item)}>
+											<View className="flex-row gap-3 items-center">
+												<View className="w-10 h-10 rounded-full bg-gray100 border border-gray200 items-center justify-center">
+													<Text className="text-md">{item.emoji}</Text>
+												</View>
+												<Text className="body-large-regular">{item.name}</Text>
 											</View>
-											<Text className="body-large-regular">{item.name}</Text>
-										</View>
-									</TouchableOpacity>
-								)}
-							/>
+										</TouchableOpacity>
+									)}
+								/>
+							) : (
+								<Text>No locations found</Text>
+							)}
 						</View>
 					)}
 				</BottomSheetView>
@@ -197,7 +202,7 @@ export default function TabMapScreen() {
 			<BottomSheet
 				ref={locationDetailsBottomSheetRef}
 				index={-1}
-				snapPoints={snapPoints}
+				snapPoints={locationSnapPoints}
 			>
 				<BottomSheetView className="flex-1 px-[15] pb-[15] flex-col gap-4">
 					<ScrollView showsVerticalScrollIndicator={false}>
@@ -237,73 +242,95 @@ export default function TabMapScreen() {
 							</View>
 							<Text>{selectedLocation?.description}</Text>
 							<View className="flex-col gap-4">
-								<View className="flex-col gap-2">
-									<Subtitle>Highlights</Subtitle>
-									<ScrollView
-										horizontal
-										showsVerticalScrollIndicator={false}
-										showsHorizontalScrollIndicator={false}
-										decelerationRate="fast"
-										snapToInterval={cardWidth + 15}
-										snapToAlignment="start"
-										contentContainerStyle={{
-											alignItems: 'flex-start',
-											gap: 10,
-										}}
-									>
-										<View className="flex-row items-stretch gap-2">
-											{selectedLocation?.highlights.map((highlight, index) => (
-												<View
-													key={index}
-													className="bg-gray50 border border-gray200 rounded-lg p-4 flex flex-row items-center gap-2"
-													style={{ width: cardWidth, flex: 1 }}
-												>
-													<Text>{getEmoji(highlight)}</Text>
-													<Text className="flex-1 flex-wrap">
-														{removeEmoji(highlight)}
-													</Text>
-												</View>
-											))}
-										</View>
-									</ScrollView>
-								</View>
-								<View className="flex-col gap-2">
-									<Subtitle>Tips</Subtitle>
-									<ScrollView
-										horizontal
-										showsVerticalScrollIndicator={false}
-										showsHorizontalScrollIndicator={false}
-										decelerationRate="fast"
-										snapToInterval={cardWidth + 15}
-										snapToAlignment="start"
-										contentContainerStyle={{
-											alignItems: 'flex-start',
-											gap: 10,
-										}}
-									>
-										<View className="flex-row items-stretch gap-2">
-											{selectedLocation?.tips.map((tip, index) => (
-												<View
-													key={index}
-													style={{ width: cardWidth, flex: 1 }}
-													className="bg-gray50 border border-gray200 rounded-lg p-4 flex flex-row items-center gap-2"
-												>
-													<Text>{getEmoji(tip)}</Text>
-													<Text className="flex-1 flex-wrap">
-														{removeEmoji(tip)}
-													</Text>
-												</View>
-											))}
-										</View>
-									</ScrollView>
-								</View>
-								<View className="flex-col gap-2 bg-gray50 p-3 rounded-lg">
-									<Subtitle>Best Time to Visit</Subtitle>
-									<View className="flex-row gap-2 items-center">
-										<Text className="text-xl">{'🗓️'}</Text>
-										<Text>{selectedLocation?.bestTimeToVisit}</Text>
+								{selectedLocation?.highlights && (
+									<View className="flex-col gap-2">
+										<Subtitle>Highlights</Subtitle>
+										<ScrollView
+											horizontal
+											showsVerticalScrollIndicator={false}
+											showsHorizontalScrollIndicator={false}
+											decelerationRate="fast"
+											snapToInterval={cardWidth + 15}
+											snapToAlignment="start"
+											contentContainerStyle={{
+												alignItems: 'flex-start',
+												gap: 10,
+											}}
+										>
+											<View className="flex-row items-stretch gap-2">
+												{selectedLocation?.highlights.map(
+													(highlight, index) => {
+														const emoji = getEmoji(highlight);
+														const text = emoji
+															? removeEmoji(highlight)
+															: highlight;
+
+														return (
+															<View
+																key={index}
+																className="bg-gray50 border border-gray200 rounded-lg p-4 flex flex-row items-center gap-2"
+																style={{ width: cardWidth, flex: 1 }}
+															>
+																{emoji && <Text>{emoji}</Text>}
+																<Text className="flex-1 flex-wrap">{text}</Text>
+															</View>
+														);
+													}
+												)}
+											</View>
+										</ScrollView>
 									</View>
-								</View>
+								)}
+								{selectedLocation?.tips && (
+									<View className="flex-col gap-2">
+										<Subtitle>Tips</Subtitle>
+										<ScrollView
+											horizontal
+											showsVerticalScrollIndicator={false}
+											showsHorizontalScrollIndicator={false}
+											decelerationRate="fast"
+											snapToInterval={cardWidth + 15}
+											snapToAlignment="start"
+											contentContainerStyle={{
+												alignItems: 'flex-start',
+												gap: 10,
+											}}
+										>
+											<View className="flex-row items-stretch gap-2">
+												{selectedLocation?.tips.map((tip, index) => (
+													<View
+														key={index}
+														style={{ width: cardWidth, flex: 1 }}
+														className="bg-gray50 border border-gray200 rounded-lg p-4 flex flex-row items-center gap-2"
+													>
+														<Text>{getEmoji(tip)}</Text>
+														<Text className="flex-1 flex-wrap">
+															{removeEmoji(tip)}
+														</Text>
+													</View>
+												))}
+											</View>
+										</ScrollView>
+									</View>
+								)}
+								{selectedLocation?.bestTimeToVisit && (
+									<View className="flex-col gap-2 bg-gray50 p-3 rounded-lg">
+										<Subtitle>Best Time to Visit</Subtitle>
+										<View className="flex-row gap-2 items-center">
+											<Text className="text-xl">{'🗓️'}</Text>
+											<Text>{selectedLocation?.bestTimeToVisit}</Text>
+										</View>
+									</View>
+								)}
+								{selectedLocation?.openingHours && (
+									<View className="flex-col gap-2 bg-gray50 p-3 rounded-lg">
+										<Subtitle>Best Time to Visit</Subtitle>
+										<View className="flex-row gap-2 items-center">
+											<Text className="text-xl">{'🕒'}</Text>
+											<Text>{selectedLocation?.openingHours}</Text>
+										</View>
+									</View>
+								)}
 							</View>
 						</View>
 					</ScrollView>

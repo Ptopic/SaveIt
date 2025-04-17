@@ -111,6 +111,9 @@ export const getBaseAnalyzePrompt = (
      - Check that response format matches content format (single object for video, array for slideshow)
      - For multiple items: verify each item has complete information
      - For multiple items: confirm no items were skipped or merged
+
+  4. TRANSLATION:
+     - Ensure all extracted information is translated to English.
   `;
 
 	return prompt;

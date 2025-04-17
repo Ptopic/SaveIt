@@ -187,6 +187,38 @@ export class ImportsService {
 	}
 
 	async deleteImport(id: string, userId: string) {
-		return await this.prisma.import.delete({ where: { id, userId } });
+		await this.prisma.importLocationTip.deleteMany({
+			where: {
+				importLocation: {
+					importId: id,
+				},
+			},
+		});
+
+		await this.prisma.importLocationHighlight.deleteMany({
+			where: {
+				importLocation: {
+					importId: id,
+				},
+			},
+		});
+
+		await this.prisma.importLocationCategory.deleteMany({
+			where: {
+				importLocation: {
+					importId: id,
+				},
+			},
+		});
+
+		await this.prisma.importLocation.deleteMany({
+			where: {
+				importId: id,
+			},
+		});
+
+		return await this.prisma.import.delete({
+			where: { id, userId },
+		});
 	}
 }

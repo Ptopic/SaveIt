@@ -60,7 +60,7 @@ export class ImportsController {
 	@Post('/test')
 	async test(@Query('query') query: string) {
 		const response = await axios.get(
-			`${process.env.NOMINATIM_URL}/search?q=${query}&format=json&limit=1&addressdetails=1&namedetails=1`,
+			`${process.env.NOMINATIM_URL}/search?q=${query}&format=json&limit=1&addressdetails=1&namedetails=1&extratags=1`,
 			{
 				headers: {
 					'Accept-Language': 'en',

@@ -42,12 +42,26 @@ export class LocationsService {
 			},
 		});
 
-		return locations.map((location) => ({
-			...location,
-			highlights: location.highlights.map((highlight) => highlight.highlight),
-			tips: location.tips.map((tip) => tip.tip),
-			categories: location.categories.map((category) => category.category),
-		}));
+		const uniqueLocations = [];
+		const seenIdentifiers = new Set();
+
+		for (const location of locations) {
+			const [latitude, longitude] = location.coordinates.split(',');
+			const identifier = `${location.name}-${latitude}-${longitude}`;
+			if (!seenIdentifiers.has(identifier)) {
+				seenIdentifiers.add(identifier);
+				uniqueLocations.push({
+					...location,
+					highlights: location.highlights.map(
+						(highlight) => highlight.highlight
+					),
+					tips: location.tips.map((tip) => tip.tip),
+					categories: location.categories.map((category) => category.category),
+				});
+			}
+		}
+
+		return uniqueLocations;
 	}
 
 	async getLocationById(id: string) {
