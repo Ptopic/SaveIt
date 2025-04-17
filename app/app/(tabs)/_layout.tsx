@@ -1,3 +1,4 @@
+import { IMPORTS, LOCATIONS } from '@/api/constants';
 import AddNewImportModal from '@/feature/AddNewImportModal';
 import {
 	BookmarkIcon,
@@ -7,9 +8,10 @@ import {
 	SearchIcon,
 	UserIcon,
 } from '@/shared/svgs';
+import { useQueryClient } from '@tanstack/react-query';
 import { Tabs, usePathname } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Pressable } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { AppState, AppStateStatus, Pressable } from 'react-native';
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -18,6 +20,40 @@ import Animated, {
 
 export default function TabLayout() {
 	const pathname = usePathname();
+	const queryClient = useQueryClient();
+
+	const appState = useRef(AppState.currentState);
+
+	useEffect(() => {
+		const handleAppStateChange = (nextAppState: AppStateStatus) => {
+			if (
+				appState.current.match(/inactive|background/) &&
+				nextAppState === 'active'
+			) {
+				onAppRefocused();
+			}
+
+			appState.current = nextAppState;
+		};
+
+		const subscription = AppState.addEventListener(
+			'change',
+			handleAppStateChange
+		);
+
+		return () => {
+			subscription.remove();
+		};
+	}, []);
+
+	const onAppRefocused = () => {
+		queryClient.invalidateQueries({
+			queryKey: [IMPORTS],
+		});
+		queryClient.invalidateQueries({
+			queryKey: [LOCATIONS],
+		});
+	};
 
 	const [modalVisible, setModalVisible] = useState(false);
 
