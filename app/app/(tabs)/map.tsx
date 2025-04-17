@@ -5,9 +5,11 @@ import Search from '@/components/Search';
 import Subtitle from '@/components/Subtitle';
 import Text from '@/components/Text';
 import Title from '@/components/Title';
+import CategoryBadge from '@/feature/map/CategoryBadge';
+import InfoBox from '@/feature/map/InfoBox';
+import LocationsList from '@/feature/map/LocationsList';
 import useDebounce from '@/hooks/useDebounce';
 import { CloseIcon } from '@/shared/svgs';
-import { getEmoji, removeEmoji } from '@/utils/emoji';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Location from 'expo-location';
@@ -15,7 +17,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
 	Dimensions,
-	FlatList,
 	ScrollView,
 	StyleSheet,
 	TouchableOpacity,
@@ -25,6 +26,10 @@ import MapView, { Marker, Region } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+const { width } = Dimensions.get('window');
+
+const cardWidth = width - 30;
+
 export default function TabMapScreen() {
 	const snapPoints = useMemo(() => ['25%', '50%', '70%'], []);
 	const locationSnapPoints = useMemo(() => ['25%', '70%'], []);
@@ -32,10 +37,6 @@ export default function TabMapScreen() {
 
 	const bottomSheetRef = useRef<BottomSheet>(null);
 	const locationDetailsBottomSheetRef = useRef<BottomSheet>(null);
-
-	const { width } = Dimensions.get('window');
-
-	const cardWidth = width - 30;
 
 	const mapRef = useRef<MapView | null>(null);
 
@@ -177,19 +178,9 @@ export default function TabMapScreen() {
 							/>
 							<Title>Locations</Title>
 							{locations && locations.length > 0 ? (
-								<FlatList
-									data={locations}
-									contentContainerStyle={{ gap: 10 }}
-									renderItem={({ item }) => (
-										<TouchableOpacity onPress={() => onLocationPress(item)}>
-											<View className="flex-row gap-3 items-center">
-												<View className="w-10 h-10 rounded-full bg-gray100 border border-gray200 items-center justify-center">
-													<Text className="text-md">{item.emoji}</Text>
-												</View>
-												<Text className="body-large-regular">{item.name}</Text>
-											</View>
-										</TouchableOpacity>
-									)}
+								<LocationsList
+									locations={locations}
+									onLocationPress={onLocationPress}
 								/>
 							) : (
 								<Text>No locations found</Text>
@@ -236,12 +227,7 @@ export default function TabMapScreen() {
 							>
 								{selectedLocation?.categories &&
 									selectedLocation?.categories.map((category, index) => (
-										<View
-											key={index}
-											className="bg-gray50 border border-gray200 rounded-lg p-2"
-										>
-											<Text>{category}</Text>
-										</View>
+										<CategoryBadge key={index} category={category} />
 									))}
 							</ScrollView>
 							<Text>{selectedLocation?.description}</Text>
@@ -263,23 +249,13 @@ export default function TabMapScreen() {
 										>
 											<View className="flex-row items-stretch gap-2">
 												{selectedLocation?.highlights.map(
-													(highlight, index) => {
-														const emoji = getEmoji(highlight);
-														const text = emoji
-															? removeEmoji(highlight)
-															: highlight;
-
-														return (
-															<View
-																key={index}
-																className="bg-gray50 border border-gray200 rounded-lg p-4 flex flex-row items-center gap-2"
-																style={{ width: cardWidth, flex: 1 }}
-															>
-																{emoji && <Text>{emoji}</Text>}
-																<Text className="flex-1 flex-wrap">{text}</Text>
-															</View>
-														);
-													}
+													(highlight, index) => (
+														<InfoBox
+															key={index}
+															text={highlight}
+															width={cardWidth}
+														/>
+													)
 												)}
 											</View>
 										</ScrollView>
@@ -302,42 +278,27 @@ export default function TabMapScreen() {
 										>
 											<View className="flex-row items-stretch gap-2">
 												{selectedLocation?.tips.map((tip, index) => (
-													<View
-														key={index}
-														style={{ width: cardWidth, flex: 1 }}
-														className="bg-gray50 border border-gray200 rounded-lg p-4 flex flex-row items-center gap-2"
-													>
-														<Text>{getEmoji(tip)}</Text>
-														<Text className="flex-1 flex-wrap">
-															{removeEmoji(tip)}
-														</Text>
-													</View>
+													<InfoBox key={index} text={tip} width={cardWidth} />
 												))}
 											</View>
 										</ScrollView>
 									</View>
 								)}
 								{selectedLocation?.bestTimeToVisit && (
-									<View className="flex-col gap-2 bg-gray50 p-3 rounded-lg">
-										<Subtitle>Best Time to Visit</Subtitle>
-										<View className="flex-row gap-2 items-center">
-											<Text className="text-xl">{'🗓️'}</Text>
-											<Text className="flex-1 flex-wrap">
-												{selectedLocation?.bestTimeToVisit}
-											</Text>
-										</View>
-									</View>
+									<InfoBox
+										text={selectedLocation?.bestTimeToVisit}
+										width={cardWidth}
+										title="Best Time to Visit"
+										emoji={'🗓️'}
+									/>
 								)}
 								{selectedLocation?.openingHours && (
-									<View className="flex-col gap-2 bg-gray50 p-3 rounded-lg">
-										<Subtitle>Opening Hours</Subtitle>
-										<View className="flex-row gap-2 items-center">
-											<Text className="text-xl">{'🕒'}</Text>
-											<Text className="flex-1 flex-wrap">
-												{selectedLocation?.openingHours}
-											</Text>
-										</View>
-									</View>
+									<InfoBox
+										text={selectedLocation?.openingHours}
+										width={cardWidth}
+										title="Opening Hours"
+										emoji={'🕒'}
+									/>
 								)}
 							</View>
 						</View>
