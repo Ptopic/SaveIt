@@ -1,4 +1,5 @@
 import useGetUserInfo from '@/api/auth/hooks/useGetUserInfo';
+import { LOCATIONS } from '@/api/constants';
 import useGetAllImportsOnScroll from '@/api/imports/hooks/useGetAllImportsOnScroll';
 import Search from '@/components/Search';
 import Subtitle from '@/components/Subtitle';
@@ -11,6 +12,7 @@ import { config } from '@/shared/config';
 import { BookmarkIcon, SearchIcon } from '@/shared/svgs';
 import { getDeviceWidth } from '@/utils/device';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -25,6 +27,8 @@ import io from 'socket.io-client';
 const socket = io(config.apiUrl);
 
 export default function TabOneScreen() {
+	const queryClient = useQueryClient();
+
 	const IMPORTS_PAGE_SIZE = '6';
 
 	const width = getDeviceWidth();
@@ -70,6 +74,7 @@ export default function TabOneScreen() {
 	const onRefresh = async () => {
 		setRefreshing(true);
 		refetchImports();
+		queryClient.invalidateQueries({ queryKey: [LOCATIONS], exact: false });
 		setRefreshing(false);
 	};
 

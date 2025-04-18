@@ -28,6 +28,7 @@ import { Link, router } from 'expo-router';
 import React, { useMemo, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
+	ScrollView,
 	StyleSheet,
 	TouchableOpacity,
 	View,
@@ -112,53 +113,58 @@ const ImportDetailsScreen = () => {
 							<View className="h-[300px] w-[80%] bg-gray100 rounded-[15px]" />
 						</View>
 					)}
-					{importData?.title && <Title>{importData.title}</Title>}
-					<View className="flex-row gap-2">
-						{importData?.videoUrl && (
-							<Link
-								href={importData.videoUrl as any}
+					<ScrollView
+						showsVerticalScrollIndicator={false}
+						contentContainerStyle={{ gap: 16 }}
+					>
+						{importData?.title && <Title>{importData.title}</Title>}
+						<View className="flex-row gap-2">
+							{importData?.videoUrl && (
+								<Link
+									href={importData.videoUrl as any}
+									className="bg-gray100 rounded-full px-4 py-2"
+								>
+									<SocialMediaIcon
+										socialMediaType={importData.socialMediaType}
+										displayText={false}
+										iconSize={20}
+										color={getTailwindHexColor('black')}
+									/>
+								</Link>
+							)}
+
+							<TouchableOpacity
 								className="bg-gray100 rounded-full px-4 py-2"
+								activeOpacity={1}
+								onPress={() => setImportActionsModalVisible(true)}
 							>
-								<SocialMediaIcon
-									socialMediaType={importData.socialMediaType}
-									displayText={false}
-									iconSize={20}
+								<ThreeDotsIcon
+									height={20}
+									width={20}
 									color={getTailwindHexColor('black')}
 								/>
-							</Link>
+							</TouchableOpacity>
+						</View>
+						{importData && (
+							<View>
+								{displayImportType(
+									importData?.type as ImportType,
+									importData,
+									handleItemPress
+								)}
+							</View>
 						)}
 
-						<TouchableOpacity
-							className="bg-gray100 rounded-full px-4 py-2"
-							activeOpacity={1}
-							onPress={() => setImportActionsModalVisible(true)}
-						>
-							<ThreeDotsIcon
-								height={20}
-								width={20}
-								color={getTailwindHexColor('black')}
-							/>
-						</TouchableOpacity>
-					</View>
-					{importData && (
-						<View>
-							{displayImportType(
-								importData?.type as ImportType,
-								importData,
-								handleItemPress
-							)}
-						</View>
-					)}
-
-					{importData?.status === 'Importing' && (
-						<View className="flex-col gap-2 bg-gray100 rounded-lg p-4">
-							<Subtitle>This import is being processed...</Subtitle>
-							<Text>
-								This might take a few minutes. You will get a notification once
-								its processed.
-							</Text>
-						</View>
-					)}
+						{importData?.status === 'Importing' && (
+							<View className="flex-col gap-2 bg-gray100 rounded-lg p-4">
+								<Subtitle>This import is being processed...</Subtitle>
+								<Text>
+									This might take a few minutes. You will get a notification
+									once its processed.
+								</Text>
+							</View>
+						)}
+					</ScrollView>
 				</View>
 			)}
 			<ModalComponent

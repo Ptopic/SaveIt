@@ -35,7 +35,11 @@ export class ImportsService {
 
 		const postText = transcript.text + '\n' + urlMetadata.description;
 
-		const contentType = await detectContentType(urlMetadata.description, null);
+		// TODO: Use hashtags to detect content type - If that produces bugs use transcribed text and hashtags
+		const contentType = await detectContentType(
+			urlMetadata.description + '\n' + transcript.text.slice(0, 100),
+			[frames[0]]
+		);
 
 		const prompt = getAnalyzePromptByContentType(
 			postText,
@@ -79,7 +83,7 @@ export class ImportsService {
 		const postText = urlMetadata.description;
 
 		// TODO: Use hashtags to detect content type - If that produces bugs use transcribed text and hashtags
-		const contentType = await detectContentType(postText, null);
+		const contentType = await detectContentType(postText, [images[0]]);
 
 		console.log(contentType);
 

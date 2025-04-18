@@ -70,9 +70,11 @@ const AddModal = ({
 				onSuccess: () => {
 					queryClient.invalidateQueries({
 						queryKey: [IMPORTS],
+						exact: false,
 					});
 					queryClient.invalidateQueries({
 						queryKey: [LOCATIONS],
+						exact: false,
 					});
 				},
 			}
