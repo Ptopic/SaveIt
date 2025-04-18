@@ -1,10 +1,10 @@
 import useGetAllCollectionsOnScroll from '@/api/collection/hooks/useGetAllCollectionsOnScroll';
 import CollectionCard from '@/components/CollectionCard';
 import ScreenHeader from '@/components/ScreenHeader';
+import { getDeviceWidth } from '@/utils/device';
 import React, { useCallback } from 'react';
 import {
 	ActivityIndicator,
-	Dimensions,
 	SafeAreaView,
 	ScrollView,
 	Text,
@@ -14,7 +14,7 @@ import {
 const index = () => {
 	const COLLECTIONS_PAGE_SIZE = '6';
 
-	const { width } = Dimensions.get('window');
+	const width = getDeviceWidth();
 
 	const cardWidth = (width - 40) / 2;
 

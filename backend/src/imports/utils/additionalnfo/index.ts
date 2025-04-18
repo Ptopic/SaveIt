@@ -68,13 +68,13 @@ async function getPlaceAdditionalInfo(
 				return {
 					cordinates: place.lat + ',' + place.lon,
 					address: place.display_name,
-					phone: place.extratags.phone,
-					email: place.extratags.email,
-					website: place.extratags.website,
+					phone: place.extratags?.phone,
+					email: place.extratags?.email,
+					website: place.extratags?.website,
 					openingHours: place?.extratags?.opening_hours,
-					indoor_seating: place.extratags.indoor_seating,
-					outdoor_seating: place.extratags.outdoor_seating,
-					wheelchair: place.extratags.wheelchair,
+					indoor_seating: place.extratags?.indoor_seating,
+					outdoor_seating: place.extratags?.outdoor_seating,
+					wheelchair: place.extratags?.wheelchair,
 				};
 			});
 

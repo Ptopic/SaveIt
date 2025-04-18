@@ -9,11 +9,11 @@ import ImportCard from '@/feature/home/ImportCard';
 import useDebounce from '@/hooks/useDebounce';
 import { config } from '@/shared/config';
 import { BookmarkIcon, SearchIcon } from '@/shared/svgs';
+import { getDeviceWidth } from '@/utils/device';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	ActivityIndicator,
-	Dimensions,
 	RefreshControl,
 	SafeAreaView,
 	ScrollView,
@@ -27,7 +27,7 @@ const socket = io(config.apiUrl);
 export default function TabOneScreen() {
 	const IMPORTS_PAGE_SIZE = '6';
 
-	const { width } = Dimensions.get('window');
+	const width = getDeviceWidth();
 
 	const cardWidth = (width - 40) / 2;
 

@@ -35,9 +35,7 @@ export class ImportsService {
 
 		const postText = transcript.text + '\n' + urlMetadata.description;
 
-		// TODO: Use hashtags to detect content type - If that produces bugs use transcribed text and hashtags
 		const contentType = await detectContentType(urlMetadata.description, null);
-		console.log(contentType);
 
 		const prompt = getAnalyzePromptByContentType(
 			postText,
@@ -177,7 +175,36 @@ export class ImportsService {
 	}
 
 	async getImport(id: string, userId: string) {
-		return await this.prisma.import.findUnique({ where: { id, userId } });
+		const importData = await this.prisma.import.findUnique({
+			where: { id, userId },
+			include: {
+				places: {
+					include: {
+						importLocation: {
+							include: {
+								categories: {
+									select: {
+										category: true,
+									},
+								},
+								highlights: {
+									select: {
+										highlight: true,
+									},
+								},
+								tips: {
+									select: {
+										tip: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+
+		return importData;
 	}
 
 	async deleteImport(id: string, userId: string) {

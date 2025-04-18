@@ -9,14 +9,15 @@ import CategoryBadge from '@/feature/map/CategoryBadge';
 import InfoBox from '@/feature/map/InfoBox';
 import LocationsList from '@/feature/map/LocationsList';
 import useDebounce from '@/hooks/useDebounce';
-import { CloseIcon } from '@/shared/svgs';
+import { ArrowLeftIcon, CloseIcon } from '@/shared/svgs';
+import { getDeviceWidth } from '@/utils/device';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Location from 'expo-location';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
-	Dimensions,
 	ScrollView,
 	StyleSheet,
 	TouchableOpacity,
@@ -26,11 +27,24 @@ import MapView, { Marker, Region } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const { width } = Dimensions.get('window');
+const width = getDeviceWidth();
 
 const cardWidth = width - 30;
 
 export default function TabMapScreen() {
+	const {
+		latitude: latitudeParam,
+		longitude: longitudeParam,
+		importId,
+	} = useLocalSearchParams();
+
+	const [latitude, setLatitude] = useState<string | null>(
+		latitudeParam as string | null
+	);
+	const [longitude, setLongitude] = useState<string | null>(
+		longitudeParam as string | null
+	);
+
 	const snapPoints = useMemo(() => ['25%', '50%', '70%'], []);
 	const locationSnapPoints = useMemo(() => ['25%', '70%'], []);
 	const insets = useSafeAreaInsets();
@@ -64,12 +78,21 @@ export default function TabMapScreen() {
 			}
 
 			let location = await Location.getCurrentPositionAsync({});
-			setLocation({
-				latitude: location.coords.latitude,
-				longitude: location.coords.longitude,
-				latitudeDelta: 0.025,
-				longitudeDelta: 0.025,
-			});
+			if (latitude && longitude) {
+				setLocation({
+					latitude: parseFloat(latitude as string),
+					longitude: parseFloat(longitude as string),
+					latitudeDelta: 0.025,
+					longitudeDelta: 0.025,
+				});
+			} else {
+				setLocation({
+					latitude: location.coords.latitude,
+					longitude: location.coords.longitude,
+					latitudeDelta: 0.025,
+					longitudeDelta: 0.025,
+				});
+			}
 		}
 
 		getCurrentLocation();
@@ -96,6 +119,22 @@ export default function TabMapScreen() {
 			}
 		}
 	}, [locations, debouncedSearchValue]);
+
+	useEffect(() => {
+		if (locations && location && latitude && longitude) {
+			bottomSheetRef.current?.close();
+			locationDetailsBottomSheetRef.current?.snapToIndex(1);
+
+			const locationWithCoordinates = locations.find(
+				(location) => location.coordinates === `${latitude},${longitude}`
+			);
+
+			setLatitude(null);
+			setLongitude(null);
+
+			setSelectedLocation(locationWithCoordinates || null);
+		}
+	}, [locations, location, latitude, longitude]);
 
 	const onLocationPress = (location: ILocation) => {
 		bottomSheetRef.current?.close();
@@ -153,14 +192,35 @@ export default function TabMapScreen() {
 			)}
 			{errorMsg && <ErrorText error={errorMsg} />}
 
-			<View className="absolute right-[20]" style={{ top: insets.top + 15 }}>
-				<TouchableOpacity
-					onPress={recenterMap}
-					className="bg-black p-3 rounded-md"
-				>
-					<Icon name="location-arrow" size={24} color="white" />
-				</TouchableOpacity>
-			</View>
+			{importId && (
+				<View className="absolute left-[20]" style={{ top: insets.top + 15 }}>
+					<TouchableOpacity
+						onPress={() => {
+							router.push(`/import/${importId}` as any);
+						}}
+						className="bg-white p-3 rounded-full"
+						activeOpacity={1}
+					>
+						<ArrowLeftIcon
+							height={24}
+							width={24}
+							color={getTailwindHexColor('black')}
+						/>
+					</TouchableOpacity>
+				</View>
+			)}
+
+			{!importId && (
+				<View className="absolute right-[20]" style={{ top: insets.top + 15 }}>
+					<TouchableOpacity
+						onPress={recenterMap}
+						className="bg-black p-3 rounded-md"
+						activeOpacity={1}
+					>
+						<Icon name="location-arrow" size={24} color="white" />
+					</TouchableOpacity>
+				</View>
+			)}
 
 			<BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
 				<BottomSheetView className="flex-1 px-[15] pb-[15]">

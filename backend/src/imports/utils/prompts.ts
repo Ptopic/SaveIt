@@ -64,7 +64,8 @@ export const getBaseAnalyzePrompt = (
      - RESTAURANT CATEGORIZATION: If the content focuses on a specific restaurant, cafe, or food venue, categorize as "Restaurant" (not "Place")
      - DEFAULT TO "PLACE" FOR LOCATION CONTENT: When in doubt about content showing a physical location, categorize as "Place" rather than "Other"
      - Only use "Other" if the content truly doesn't fit any specific category
-  
+     - **USE CAPITAL LETTERS FOR CONTENT TYPES AS SPECIFIED IN RULES: Always use capitalized content type names like "Name" for Place, "Cuisine" for Restaurant, etc.**
+
   3. MULTIPLE ITEMS HANDLING:
      - IDENTIFY: Scan transcript/description for multiple distinct items of the same type
      - SEPARATE: Create individual entries for each distinct item mentioned
@@ -112,7 +113,7 @@ export const getBaseAnalyzePrompt = (
      - For multiple items: verify each item has complete information
      - For multiple items: confirm no items were skipped or merged
 
-  4. TRANSLATION:
+  8. TRANSLATION:
      - Ensure all extracted information is translated to English.
   `;
 

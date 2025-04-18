@@ -18,7 +18,7 @@ const InfoBox = ({ text, width, title, emoji }: IProps) => {
 	return (
 		<View
 			className={twMerge(
-				'bg-gray50 border border-gray200 rounded-lg py-4 px-2 flex flex-col gap-3',
+				'bg-gray50 border border-gray200 justify-center rounded-lg py-4 px-2 flex flex-col gap-3',
 				title && 'p-2'
 			)}
 			style={{ width, flex: 1 }}

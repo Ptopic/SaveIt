@@ -100,6 +100,12 @@ export async function askOpenRouter(prompt: string, images?: string[]) {
 		};
 	} catch (error) {
 		console.error('Error fetching AI response:', error);
+		if (error.response) {
+			console.log(
+				'Full response:',
+				JSON.stringify(error.response.data, null, 2)
+			);
+		}
 		throw error;
 	}
 }

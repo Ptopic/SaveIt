@@ -7,6 +7,11 @@ import Subtitle from '@/components/Subtitle';
 import Text from '@/components/Text';
 import Title from '@/components/Title';
 import FilterBadge from '@/feature/home/FilterBadge/FilterBadge';
+import { ImportType } from '@/feature/home/FilterBadge/types';
+import {
+	displayImportType,
+	displayImportTypeModal,
+} from '@/feature/import/utils';
 import { blurhash } from '@/shared/contants';
 import {
 	ArrowLeftIcon,
@@ -15,14 +20,14 @@ import {
 	TrashIcon,
 } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
-	ScrollView,
 	StyleSheet,
 	TouchableOpacity,
 	View,
@@ -32,6 +37,22 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 type ImportDetailsRouteProp = RouteProp<{ params: { id: string } }, 'params'>;
 
 const ImportDetailsScreen = () => {
+	const [selectedItem, setSelectedItem] = useState<any | null>(null);
+
+	const itemDetailsBottomSheetRef = useRef<BottomSheet>(null);
+
+	const itemDetailsSnapPoints = useMemo(() => ['80%'], []);
+
+	const handleItemPress = (item: any) => {
+		setSelectedItem(item);
+		itemDetailsBottomSheetRef.current?.snapToIndex(1);
+	};
+
+	const handleCloseModal = () => {
+		setSelectedItem(null);
+		itemDetailsBottomSheetRef.current?.close();
+	};
+
 	const queryClient = useQueryClient();
 	const route = useRoute<ImportDetailsRouteProp>();
 	const { id } = route.params;
@@ -61,7 +82,7 @@ const ImportDetailsScreen = () => {
 		<SafeAreaView className="flex-1 p-5 gap-2">
 			<TouchableOpacity
 				className="flex-row items-center gap-2"
-				onPress={() => router.back()}
+				onPress={() => router.push('/' as any)}
 			>
 				<ArrowLeftIcon
 					height={24}
@@ -119,12 +140,14 @@ const ImportDetailsScreen = () => {
 							/>
 						</TouchableOpacity>
 					</View>
-					{importData?.summary && (
-						<ScrollView className="h-[30%]">
-							<Text className="body-small-regular text-gray500">
-								{JSON.stringify(importData.summary, null, 2)}
-							</Text>
-						</ScrollView>
+					{importData && (
+						<View>
+							{displayImportType(
+								importData?.type as ImportType,
+								importData,
+								handleItemPress
+							)}
+						</View>
 					)}
 
 					{importData?.status === 'Importing' && (
@@ -178,6 +201,20 @@ const ImportDetailsScreen = () => {
 					</TouchableOpacity>
 				</View>
 			</ModalComponent>
+			<BottomSheet
+				ref={itemDetailsBottomSheetRef}
+				index={-1}
+				snapPoints={itemDetailsSnapPoints}
+			>
+				<BottomSheetView className="flex-1 px-[15] h-full pb-[15] flex-col gap-4">
+					{selectedItem &&
+						displayImportTypeModal(
+							importData?.type as ImportType,
+							selectedItem,
+							handleCloseModal
+						)}
+				</BottomSheetView>
+			</BottomSheet>
 		</SafeAreaView>
 	);
 };

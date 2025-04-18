@@ -54,7 +54,9 @@ export class ImportsController {
 	async getImport(@Param('id') id: string, @Req() req: Request) {
 		const userId = req.user.userId;
 
-		return await this.importsService.getImport(id, userId);
+		const importData = await this.importsService.getImport(id, userId);
+
+		return importData;
 	}
 
 	@Post('/test')
@@ -156,6 +158,7 @@ export class ImportsController {
 
 			return createdImport;
 		} catch (error) {
+			console.log(error);
 			await this.importsService.deleteImport(startingImport.id, userId);
 
 			await this.notificationsService.sendNotification(
