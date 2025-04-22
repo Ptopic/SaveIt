@@ -15,7 +15,7 @@ export async function getAdditionalInfoByContentType(
 		case 'Place':
 			return getPlaceAdditionalInfo(result, userId, importId);
 		case 'Restaurant':
-			return getRestaurantAdditionalInfo(result);
+			return getRestaurantAdditionalInfo(result, userId, importId);
 		case 'Software':
 			return getSoftwareAdditionalInfo(result);
 		case 'Film/Show':
@@ -49,8 +49,6 @@ async function getPlaceAdditionalInfo(
 	let queries = [];
 
 	const placeDetails = [];
-
-	console.log(placesArray);
 
 	for (const place of placesArray) {
 		const name = removeEmojiFromText(place?.Name) || '';
@@ -201,95 +199,209 @@ async function getPlaceAdditionalInfo(
 			}
 		}
 	}
-
-	// const queries = [
-	// 	`${name}, ${city}, ${country}`,
-	// 	`${name}, ${city}`,
-	// 	`${name}, ${country}`,
-	// 	`${name}`,
-	// ];
-
-	// for (const query of queries) {
-	// 	const response = await axios.get(
-	// 		`${process.env.NOMINATIM_URL}/search?q=${query}&format=json&limit=1&addressdetails=1&namedetails=1&extratags=1`
-	// 	);
-
-	// 	const placeDetails = response.data.map((place) => {
-	// 		return {
-	// 			cordinates: place.lat + ',' + place.lon,
-	// 			address: place.display_name,
-	// 			phone: place.extratags?.phone,
-	// 			email: place.extratags?.email,
-	// 			website: place.extratags?.website,
-	// 			openingHours: place?.extratags?.opening_hours,
-	// 			indoor_seating: place.extratags?.indoor_seating,
-	// 			outdoor_seating: place.extratags?.outdoor_seating,
-	// 			wheelchair: place.extratags?.wheelchair,
-	// 		};
-	// 	});
-
-	// 	if (placeDetails.length > 0) {
-	// 		const createdPlace = await prisma.place.create({
-	// 			data: {
-	// 				name: name,
-	// 				description: place.Description,
-	// 				emoji: emoji,
-	// 				importId: importId,
-	// 			},
-	// 		});
-
-	// 		const importLocation = await prisma.importLocation.create({
-	// 			data: {
-	// 				name: name,
-	// 				city: city,
-	// 				country: place.Country,
-	// 				flag: place.Flag,
-	// 				coordinates: placeDetails[0]?.cordinates,
-	// 				emoji: emoji,
-	// 				address: placeDetails[0]?.address,
-	// 				bestTimeToVisit: place['Best time to visit'],
-	// 				description: place.Description,
-	// 				openingHours: placeDetails[0]?.openingHours,
-	// 				phone: placeDetails[0]?.phone,
-	// 				email: placeDetails[0]?.email,
-	// 				website: placeDetails[0]?.website,
-	// 				indoor_seating: placeDetails[0]?.indoor_seating,
-	// 				outdoor_seating: placeDetails[0]?.outdoor_seating,
-	// 				wheelchair: placeDetails[0]?.wheelchair,
-	// 				placeId: createdPlace.id,
-	// 				userId: userId,
-	// 			},
-	// 		});
-
-	// 		await prisma.importLocationTip.createMany({
-	// 			data: place.Tips.map((tip) => ({
-	// 				tip: tip,
-	// 				importLocationId: importLocation.id,
-	// 			})),
-	// 		});
-
-	// 		await prisma.importLocationHighlight.createMany({
-	// 			data: place.Highlights.map((highlight) => ({
-	// 				highlight: highlight,
-	// 				importLocationId: importLocation.id,
-	// 			})),
-	// 		});
-
-	// 		await prisma.importLocationCategory.createMany({
-	// 			data: place.Categories.map((category) => ({
-	// 				category: category,
-	// 				importLocationId: importLocation.id,
-	// 			})),
-	// 		});
-
-	// 		break;
-	// 	}
-	// }
-	// }
 }
 
-function getRestaurantAdditionalInfo(result: any) {
-	return result;
+async function getRestaurantAdditionalInfo(
+	result: any,
+	userId: string,
+	importId: string
+) {
+	const restaurants = result.summary;
+
+	const restaurantsArray = Array.isArray(restaurants)
+		? restaurants
+		: [restaurants];
+
+	let queries = [];
+
+	const restaurantDetails = [];
+
+	for (const restaurant of restaurantsArray) {
+		const name = removeEmojiFromText(restaurant?.Name) || '';
+		const city = restaurant?.City || '';
+		const country = restaurant?.Country || '';
+
+		const query = `${name}, ${city || country}`;
+
+		const cachedLocation = await prisma.location.findFirst({
+			where: {
+				name: name,
+				city: city,
+				country: country,
+			},
+		});
+
+		if (cachedLocation) {
+			restaurantDetails.push(cachedLocation);
+			continue;
+		}
+
+		queries.push(query);
+	}
+
+	if (queries.length > 0) {
+		const scrapedRestaurantDetails = await getOutscraperData(queries);
+		restaurantDetails.push(...scrapedRestaurantDetails);
+	}
+
+	for (const [index, restaurant] of restaurantsArray.entries()) {
+		const emoji = restaurant?.Name?.match(/[^\p{L}\p{N}\s]/gu)?.[0] || '';
+		const name = emoji
+			? removeEmojiFromText(restaurant?.Name)
+			: restaurant?.Name;
+		const city = restaurant?.City || '';
+
+		if (restaurantDetails[index] !== null) {
+			// Define type for scrapedRestaurantData
+			type RestaurantData = {
+				name?: string;
+				placeId?: string;
+				googleId?: string;
+				address?: string;
+				coordinates?: string;
+				popularTimes?: any;
+				website?: string;
+				phone?: string;
+				type?: string;
+				description?: string;
+				typicalTimeSpent?: string;
+				reviewsTags?: any;
+				reviewsAverage?: number;
+				reviewsCount?: number;
+				photo?: string;
+				openingHours?: string;
+				businessStatus?: string;
+				priceRange?: string;
+				locationLink?: string;
+			};
+
+			let scrapedRestaurantData: RestaurantData = {};
+			let restaurantDetail;
+
+			// Check if the detail is a cached location or scraped data
+			if (restaurantDetails[index].id) {
+				// This is a cached location
+				const cachedLocation = restaurantDetails[index];
+				scrapedRestaurantData = {
+					description: cachedLocation.description,
+					photo: cachedLocation.photo,
+					coordinates: cachedLocation.coordinates,
+					placeId: cachedLocation.placeId,
+					googleId: cachedLocation.googleId,
+					typicalTimeSpent: cachedLocation.typicalTimeSpent,
+					businessStatus: cachedLocation.businessStatus,
+					locationLink: cachedLocation.locationLink,
+					type: cachedLocation.type,
+					priceRange: cachedLocation.priceRange,
+					address: cachedLocation.address,
+					openingHours: cachedLocation.openingHours,
+					phone: cachedLocation.phone,
+					website: cachedLocation.website,
+					reviewsCount: cachedLocation.reviewsCount,
+					reviewsAverage: cachedLocation.reviewsAverage,
+				};
+			} else {
+				// This is scraped data
+				restaurantDetail = restaurantDetails[index][0];
+				scrapedRestaurantData = {
+					name: restaurantDetail?.name,
+					placeId: restaurantDetail?.place_id,
+					googleId: restaurantDetail?.google_id,
+					address: restaurantDetail?.full_address,
+					coordinates:
+						restaurantDetail?.latitude + ',' + restaurantDetail?.longitude,
+					popularTimes: restaurantDetail?.popular_times,
+					website: restaurantDetail?.site,
+					phone: restaurantDetail?.phone,
+					type: restaurantDetail?.type,
+					description: restaurantDetail?.description,
+					typicalTimeSpent: restaurantDetail?.typical_time_spent,
+					reviewsTags: restaurantDetail?.reviews_tags,
+					reviewsAverage: restaurantDetail?.rating,
+					reviewsCount: restaurantDetail?.reviews,
+					photo: restaurantDetail?.photo,
+					openingHours: restaurantDetail?.working_hours
+						? Object.entries(restaurantDetail.working_hours)
+								.map(([day, hours]) => `${day}: ${hours}`)
+								.join('; ')
+						: null,
+					businessStatus: restaurantDetail?.business_status,
+					priceRange: restaurantDetail?.range,
+					locationLink: restaurantDetail?.location_link,
+				};
+			}
+
+			const createdRestaurant = await prisma.restaurant.create({
+				data: {
+					name: name,
+					description:
+						scrapedRestaurantData?.description || restaurant.Description,
+					emoji: emoji,
+					photo: scrapedRestaurantData?.photo,
+					importId: importId,
+				},
+			});
+
+			const cachedLocation = await prisma.location.findFirst({
+				where: {
+					name: name,
+					city: city,
+					country: restaurant.Country,
+				},
+			});
+
+			let location;
+
+			if (!cachedLocation) {
+				location = await prisma.location.create({
+					data: {
+						name: name,
+						city: city,
+						country: restaurant.Country,
+						emoji: emoji,
+						flag: restaurant.Flag,
+						coordinates: scrapedRestaurantData?.coordinates,
+						placeId: scrapedRestaurantData?.placeId,
+						googleId: scrapedRestaurantData?.googleId,
+						typicalTimeSpent: scrapedRestaurantData?.typicalTimeSpent,
+						businessStatus: scrapedRestaurantData?.businessStatus,
+						locationLink: scrapedRestaurantData?.locationLink,
+						type: scrapedRestaurantData?.type,
+						priceRange: scrapedRestaurantData?.priceRange,
+						address: scrapedRestaurantData?.address,
+						bestTimeToVisit: restaurant['Best time to visit'],
+						description:
+							scrapedRestaurantData?.description || restaurant.Description,
+						openingHours: scrapedRestaurantData?.openingHours,
+						phone: scrapedRestaurantData?.phone,
+						website: scrapedRestaurantData?.website,
+						reviewsCount: scrapedRestaurantData?.reviewsCount,
+						reviewsAverage: scrapedRestaurantData?.reviewsAverage,
+						photo: scrapedRestaurantData?.photo,
+					},
+				});
+			} else {
+				location = cachedLocation;
+			}
+
+			const importLocation = await prisma.importLocation.create({
+				data: {
+					locationId: location.id,
+					restaurantId: createdRestaurant.id,
+					userId: userId,
+				},
+			});
+
+			if (restaurant['Must-try dishes']) {
+				await prisma.importLocationMustTryDish.createMany({
+					data: restaurant['Must-try dishes'].map((dish) => ({
+						dish: dish,
+						importLocationId: importLocation.id,
+					})),
+				});
+			}
+		}
+	}
 }
 
 function getSoftwareAdditionalInfo(result: any) {

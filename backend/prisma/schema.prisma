@@ -66,7 +66,8 @@ model Import {
   collection   Collection? @relation(fields: [collectionId], references: [id])
   collectionId String?
 
-  places Place[]
+  places      Place[]
+  restaurants Restaurant[]
 }
 
 model Place {
@@ -82,7 +83,25 @@ model Place {
   import   Import @relation(fields: [importId], references: [id])
   importId String
 
-  importLocation ImportLocation?
+  importLocationId String?
+  ImportLocation   ImportLocation[]
+}
+
+model Restaurant {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String?
+  description String?
+  emoji       String?
+  photo       String?
+
+  import   Import @relation(fields: [importId], references: [id])
+  importId String
+
+  importLocationId String?
+  ImportLocation   ImportLocation[]
 }
 
 model Location {
@@ -90,29 +109,29 @@ model Location {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name            String?
-  placeId         String?
-  googleId        String?
-  city            String?
-  country         String?
-  flag            String?
-  emoji           String?
-  coordinates     String?
-  address         String?
-  bestTimeToVisit String?
+  name             String?
+  placeId          String?
+  googleId         String?
+  city             String?
+  country          String?
+  flag             String?
+  emoji            String?
+  coordinates      String?
+  address          String?
+  bestTimeToVisit  String?
   typicalTimeSpent String?
-  businessStatus  String?
-  locationLink    String?
-  type            String?
-  description     String?
-  openingHours    String?
-  phone           String?
-  website         String?
-  reviewsCount    Int?
-  reviewsAverage  Float?
-  priceRange      String?
-  photo           String?
-  ImportLocation  ImportLocation[]
+  businessStatus   String?
+  locationLink     String?
+  type             String?
+  description      String?
+  openingHours     String?
+  phone            String?
+  website          String?
+  reviewsCount     Int?
+  reviewsAverage   Float?
+  priceRange       String?
+  photo            String?
+  ImportLocation   ImportLocation[]
 }
 
 model ImportLocation {
@@ -123,15 +142,19 @@ model ImportLocation {
   location   Location @relation(fields: [locationId], references: [id])
   locationId String
 
-  place   Place  @relation(fields: [placeId], references: [id])
-  placeId String @unique
+  place   Place?  @relation(fields: [placeId], references: [id])
+  placeId String?
+
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  tips       ImportLocationTip[]
-  highlights ImportLocationHighlight[]
-  categories ImportLocationCategory[]
+  tips          ImportLocationTip[]
+  highlights    ImportLocationHighlight[]
+  categories    ImportLocationCategory[]
+  mustTryDishes ImportLocationMustTryDish[]
 }
 
 model ImportLocationTip {
@@ -162,6 +185,17 @@ model ImportLocationCategory {
   updatedAt DateTime @updatedAt
 
   category String
+
+  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocationId String
+}
+
+model ImportLocationMustTryDish {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dish String
 
   importLocation   ImportLocation @relation(fields: [importLocationId], references: [id])
   importLocationId String

@@ -37,9 +37,8 @@ export class ImportsService {
 
 		// TODO: Use hashtags to detect content type - If that produces bugs use transcribed text and hashtags
 		const contentType = await detectContentType(
-			urlMetadata['description'] +
-				'\n' +
-				transcript.text.slice(0, 100)[frames[0]]
+			urlMetadata['description'] + '\n' + transcript.text.slice(0, 100),
+			[frames[0]]
 		);
 		// const contentType = await detectContentType(
 		// 	urlMetadata['description'] + '\n' + transcript.text.slice(0, 100),
@@ -192,7 +191,7 @@ export class ImportsService {
 			include: {
 				places: {
 					include: {
-						importLocation: {
+						ImportLocation: {
 							include: {
 								location: true,
 								categories: {
@@ -208,6 +207,20 @@ export class ImportsService {
 								tips: {
 									select: {
 										tip: true,
+									},
+								},
+							},
+						},
+					},
+				},
+				restaurants: {
+					include: {
+						ImportLocation: {
+							include: {
+								location: true,
+								mustTryDishes: {
+									select: {
+										dish: true,
 									},
 								},
 							},
@@ -256,10 +269,28 @@ export class ImportsService {
 				place: {
 					importId: id,
 				},
+				restaurant: {
+					importId: id,
+				},
 			},
 		});
 
+		await this.prisma.importLocationMustTryDish.deleteMany({
+			where: {
+				importLocation: {
+					restaurant: {
+						importId: id,
+					},
+				},
+			},
+		});
 		await this.prisma.place.deleteMany({
+			where: {
+				importId: id,
+			},
+		});
+
+		await this.prisma.restaurant.deleteMany({
 			where: {
 				importId: id,
 			},

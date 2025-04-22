@@ -299,11 +299,56 @@ const getPlaceAnalyzePrompt = () => {
 const getRestaurantAnalyzePrompt = () => {
 	const prompt = `
   RESTAURANT ANALYSIS RULES:
-  * Name: [🍽️ Exact name of the restaurant]
-  * Cuisine: [Relevant food emoji BEFORE cuisine type: 🍕 (Italian), 🍣 (Japanese), 🌮 (Mexican), etc.]
-  * Location: [COUNTRY FLAG emoji + 📍 followed by city name - e.g. "🇫🇷 📍 Paris". Always include the country flag emoji based on location]
+  * Name: [Use a cuisine-related emoji BEFORE restaurant name based on the restaurant's style of food. Choose from these cuisine emojis:
+    - 🍝 (Italian/pasta)
+    - 🍣 (Japanese/sushi)
+    - 🍔 (American/burgers)
+    - 🌮 (Mexican/tacos)
+    - 🍜 (Chinese/noodles)
+    - 🥘 (Spanish/paella)
+    - 🍕 (Pizza)
+    - 🥩 (Steakhouse/grill)
+    - 🍚 (Asian/rice dishes)
+    - 🥗 (Salad/health food)
+    - 🍛 (Indian/curry)
+    - 🍤 (Seafood)
+    - 🥐 (French/bakery)
+    - 🧆 (Middle Eastern/falafel)
+    - 🍦 (Dessert/ice cream)
+    - 🥪 (Sandwich/deli)
+    - 🍗 (Chicken/wings)
+    - 🍖 (BBQ/meat)
+    - 🥟 (Dumplings/dim sum)
+    - 🧀 (Cheese/fondue)
+    - 🍮 (Dessert/custard)
+    - 🍩 (Donuts/pastries)
+    - 🍱 (Bento/Asian fusion)
+    - 🍲 (Stew/hotpot)
+    - 🍹 (Cocktail bar)
+    - 🍺 (Brewery/pub)
+    - 🍷 (Wine bar)
+    - 🍵 (Tea house)
+    - ☕ (Coffee shop)
+    
+    If no specific cuisine emoji matches, use 🍽️ as default]
+  * City: [city name - e.g. "Rome" or "New York"]
+  * Country: [country name - e.g. "Italy" or "United States"]
+  * Flag: [COUNTRY FLAG emoji - e.g. "🇮🇹" or "🇺🇸"]
+  * Cuisine: [Relevant flag emoji BEFORE cuisine type: 🇮🇹 (Italian), 🇯🇵 (Japanese), 🇲🇽 (Mexican), etc.]
   * Must-try dishes: [Bullet list with relevant food emojis BEFORE each dish]
-  * Price range: [💰 Budget indicator]
+  * Description: [Brief 1-2 sentence description]
+  * Categories: [Bullet list of specific attributes or features of the restaurant, such as ambiance, type of cuisine, special services, etc.]
+   
+  CITY NAME RULES:
+  - Prioritize major city/region names
+  - Use widely recognized names
+  - Include single primary city name
+  
+  ADDRESS SEARCH INSTRUCTIONS:
+  1. Identify exact place name
+  2. Search multiple sources
+  3. Include full address details
+  4. Use null if not found
   `;
 
 	return prompt;
