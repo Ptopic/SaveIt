@@ -77,6 +77,7 @@ model Place {
   name String?
   description String?
   emoji String?
+  photo String?
   
   import   Import @relation(fields: [importId], references: [id])
   importId String
@@ -100,11 +101,10 @@ model ImportLocation {
   description     String?
   openingHours    String?
   phone           String?
-  email           String?
   website         String?
-  indoor_seating  String?
-  outdoor_seating String?
-  wheelchair      String?
+  reviews_count   Int?
+  reviews_average Float?
+  photo           String?
 
   place   Place @relation(fields: [placeId], references: [id])
   placeId String @unique

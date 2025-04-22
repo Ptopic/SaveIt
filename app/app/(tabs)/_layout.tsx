@@ -48,7 +48,7 @@ export default function TabLayout() {
 
 	const onAppRefocused = () => {
 		queryClient.invalidateQueries({
-			queryKey: [IMPORTS],
+			queryKey: [IMPORTS, '6', '', ''],
 		});
 		queryClient.invalidateQueries({
 			queryKey: [LOCATIONS],

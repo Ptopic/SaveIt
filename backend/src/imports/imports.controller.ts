@@ -8,16 +8,15 @@ import {
 	Query,
 	Req,
 } from '@nestjs/common';
-import axios from 'axios';
 import { Request } from 'express';
 import { JwtAuth } from 'src/auth/decorators/jwt-auth.decorator';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ImportsService } from './imports.service';
 import { getAdditionalInfoByContentType } from './utils/additionalnfo';
-import { detectPostType } from './utils/detectType.js';
-import { getSlideshowImages } from './utils/image';
-import { cleanDescription, getMetaData } from './utils/video.js';
+import { detectPostType, expandTikTokUrl } from './utils/detectType.js';
+import { getGoogleMapsDetails } from './utils/maps';
+import { cleanDescription, getMetaDataScript } from './utils/video.js';
 
 @Controller('imports')
 export class ImportsController {
@@ -61,25 +60,11 @@ export class ImportsController {
 
 	@Post('/test')
 	async test(@Query('query') query: string) {
-		const response = await axios.get(
-			`${process.env.NOMINATIM_URL}/search?q=${query}&format=json&limit=1&addressdetails=1&namedetails=1&extratags=1`,
-			{
-				headers: {
-					'Accept-Language': 'en',
-				},
-			}
-		);
-
-		const placesCordinates = response.data.map((place) => {
-			return {
-				cordinates: place.lat + ',' + place.lon,
-			};
-		});
-
-		console.log(response.data);
+		const placesCordinates = await getGoogleMapsDetails([query]);
 
 		return placesCordinates[0].cordinates;
 	}
+
 	@Post('/transcribe')
 	@JwtAuth()
 	async transcribe(@Body() body: { url: string }, @Req() req: Request) {
@@ -115,26 +100,34 @@ export class ImportsController {
 		let result;
 
 		try {
-			const urlMetadata = await getMetaData(url);
+			const expandedUrl = await expandTikTokUrl(url);
+
+			const postType = await detectPostType(expandedUrl);
+
+			const urlMetadata = await getMetaDataScript(expandedUrl, postType.type);
+
+			// console.log(urlMetadata);
 
 			if (!url) throw new Error('URL is missing');
 
-			const postType = await detectPostType(url);
-
 			console.log(postType);
 
-			if (urlMetadata.description) {
-				urlMetadata.description = cleanDescription(urlMetadata.description);
+			if (urlMetadata['description']) {
+				urlMetadata['description'] = cleanDescription(
+					urlMetadata['description']
+				);
 			}
 
 			if (postType.type === 'video') {
 				result = await this.importsService.transcribeVideo(url, urlMetadata);
 			} else {
-				const images = await getSlideshowImages(url);
+				// const images = await getSlideshowImages(url);
 
-				if (!Array.isArray(images)) {
-					throw new Error('Failed to fetch slideshow images');
-				}
+				// if (!Array.isArray(images)) {
+				// 	throw new Error('Failed to fetch slideshow images');
+				// }
+
+				const images = urlMetadata['images'];
 
 				result = await this.importsService.transcribeSlideshow(
 					images,

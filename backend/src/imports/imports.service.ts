@@ -33,13 +33,18 @@ export class ImportsService {
 
 		fs.unlinkSync(audioPath as fs.PathLike);
 
-		const postText = transcript.text + '\n' + urlMetadata.description;
+		const postText = transcript.text + '\n' + urlMetadata['description'];
 
 		// TODO: Use hashtags to detect content type - If that produces bugs use transcribed text and hashtags
 		const contentType = await detectContentType(
-			urlMetadata.description + '\n' + transcript.text.slice(0, 100),
-			[frames[0]]
+			urlMetadata['description'] +
+				'\n' +
+				transcript.text.slice(0, 100)[frames[0]]
 		);
+		// const contentType = await detectContentType(
+		// 	urlMetadata['description'] + '\n' + transcript.text.slice(0, 100),
+		// 	null
+		// );
 
 		const prompt = getAnalyzePromptByContentType(
 			postText,
@@ -55,10 +60,12 @@ export class ImportsService {
 
 		const address = analysis.json?.locationData?.address || null;
 
+		console.log(urlMetadata['cover']);
+
 		return {
 			title: analysis.json?.title,
-			description: urlMetadata.description,
-			thumbnail: urlMetadata.thumbnail,
+			description: urlMetadata['description'],
+			thumbnail: urlMetadata['cover'],
 			text: transcript.text,
 			duration: transcript.duration,
 			type: contentType,
@@ -84,6 +91,7 @@ export class ImportsService {
 
 		// TODO: Use hashtags to detect content type - If that produces bugs use transcribed text and hashtags
 		const contentType = await detectContentType(postText, [images[0]]);
+		// const contentType = await detectContentType(postText, null);
 
 		console.log(contentType);
 
@@ -101,8 +109,8 @@ export class ImportsService {
 
 		return {
 			title: analysis.json.title,
-			description: urlMetadata.description,
-			thumbnail: urlMetadata.thumbnail,
+			description: urlMetadata['description'],
+			thumbnail: urlMetadata['cover'],
 			// text: imagesText.join('\n'),
 			type: contentType,
 			summary: analysis.json.summary,
