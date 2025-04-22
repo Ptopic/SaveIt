@@ -21,7 +21,7 @@ const InfoBox = ({ text, width, title, emoji }: IProps) => {
 				'bg-gray50 border border-gray200 justify-center rounded-lg py-4 px-2 flex flex-col gap-3',
 				title && 'p-2'
 			)}
-			style={{ width, flex: 1 }}
+			style={{ width }}
 		>
 			{title && <Subtitle>{title}</Subtitle>}
 			{title && <View className="bg-gray300 w-full h-[1px]" />}

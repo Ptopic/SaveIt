@@ -157,24 +157,23 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 								showsVerticalScrollIndicator={false}
 								showsHorizontalScrollIndicator={false}
 								decelerationRate="fast"
-								snapToInterval={cardWidth + 15}
+								snapToInterval={cardWidth + 10}
 								snapToAlignment="start"
 								contentContainerStyle={{
-									alignItems: 'flex-start',
+									alignItems: 'center',
+									justifyContent: 'center',
 									gap: 10,
 								}}
 							>
-								<View className="flex-row items-stretch gap-2">
-									{place.importLocation?.highlights.map(
-										(placeHighlight, index) => (
-											<InfoBox
-												key={index}
-												text={placeHighlight.highlight as string}
-												width={cardWidth}
-											/>
-										)
-									)}
-								</View>
+								{place.importLocation?.highlights.map(
+									(placeHighlight, index) => (
+										<InfoBox
+											key={index}
+											text={placeHighlight.highlight as string}
+											width={cardWidth}
+										/>
+									)
+								)}
 							</ScrollView>
 						</View>
 					)}
@@ -186,22 +185,21 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 								showsVerticalScrollIndicator={false}
 								showsHorizontalScrollIndicator={false}
 								decelerationRate="fast"
-								snapToInterval={cardWidth + 15}
+								snapToInterval={cardWidth + 10}
 								snapToAlignment="start"
 								contentContainerStyle={{
-									alignItems: 'flex-start',
+									alignItems: 'center',
+									justifyContent: 'center',
 									gap: 10,
 								}}
 							>
-								<View className="flex-row items-stretch gap-2">
-									{place.importLocation?.tips.map((placeTip, index) => (
-										<InfoBox
-											key={index}
-											text={placeTip.tip as string}
-											width={cardWidth}
-										/>
-									))}
-								</View>
+								{place.importLocation?.tips.map((placeTip, index) => (
+									<InfoBox
+										key={index}
+										text={placeTip.tip as string}
+										width={cardWidth}
+									/>
+								))}
 							</ScrollView>
 						</View>
 					)}

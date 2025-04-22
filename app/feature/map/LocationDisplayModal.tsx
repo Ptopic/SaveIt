@@ -155,18 +155,17 @@ const LocationDisplayModal = ({
 								showsVerticalScrollIndicator={false}
 								showsHorizontalScrollIndicator={false}
 								decelerationRate="fast"
-								snapToInterval={cardWidth + 15}
+								snapToInterval={cardWidth + 10}
 								snapToAlignment="start"
 								contentContainerStyle={{
-									alignItems: 'flex-start',
+									alignItems: 'center',
+									justifyContent: 'center',
 									gap: 10,
 								}}
 							>
-								<View className="flex-row items-stretch gap-2">
-									{selectedLocation?.highlights.map((highlight, index) => (
-										<InfoBox key={index} text={highlight} width={cardWidth} />
-									))}
-								</View>
+								{selectedLocation?.highlights.map((highlight, index) => (
+									<InfoBox key={index} text={highlight} width={cardWidth} />
+								))}
 							</ScrollView>
 						</View>
 					)}
@@ -178,18 +177,17 @@ const LocationDisplayModal = ({
 								showsVerticalScrollIndicator={false}
 								showsHorizontalScrollIndicator={false}
 								decelerationRate="fast"
-								snapToInterval={cardWidth + 15}
+								snapToInterval={cardWidth + 10}
 								snapToAlignment="start"
 								contentContainerStyle={{
-									alignItems: 'flex-start',
+									alignItems: 'center',
+									justifyContent: 'center',
 									gap: 10,
 								}}
 							>
-								<View className="flex-row items-stretch gap-2">
-									{selectedLocation?.tips.map((tip, index) => (
-										<InfoBox key={index} text={tip} width={cardWidth} />
-									))}
-								</View>
+								{selectedLocation?.tips.map((tip, index) => (
+									<InfoBox key={index} text={tip} width={cardWidth} />
+								))}
 							</ScrollView>
 						</View>
 					)}
