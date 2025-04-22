@@ -115,6 +115,8 @@ export const getBaseAnalyzePrompt = (
 
   8. TRANSLATION:
      - Ensure all extracted information is translated to English.
+
+  9. REMOVE DUPLICATES: Ensure that each item in the response is unique. Do not include duplicate entries for the same item.
   `;
 
 	return prompt;

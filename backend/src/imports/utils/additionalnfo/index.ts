@@ -48,16 +48,37 @@ async function getPlaceAdditionalInfo(
 
 	let queries = [];
 
+	const placeDetails = [];
+
+	console.log(placesArray);
+
 	for (const place of placesArray) {
 		const name = removeEmojiFromText(place?.Name) || '';
 		const city = place?.City || '';
 		const country = place?.Country || '';
 
 		const query = `${name}, ${city || country}`;
+
+		const cachedLocation = await prisma.location.findFirst({
+			where: {
+				name: name,
+				city: city,
+				country: country,
+			},
+		});
+
+		if (cachedLocation) {
+			placeDetails.push(cachedLocation);
+			continue;
+		}
+
 		queries.push(query);
 	}
 
-	const placeDetails = await getOutscraperData(queries);
+	if (queries.length > 0) {
+		const scrapedPlaceDetails = await getOutscraperData(queries);
+		placeDetails.push(...scrapedPlaceDetails);
+	}
 
 	for (const [index, place] of placesArray.entries()) {
 		const emoji = place?.Name?.match(/[^\p{L}\p{N}\s]/gu)?.[0] || '';
@@ -93,8 +114,6 @@ async function getPlaceAdditionalInfo(
 				locationLink: placeDetail?.location_link,
 			};
 
-			// TODO: Cache scraped place data
-
 			const createdPlace = await prisma.place.create({
 				data: {
 					name: name,
@@ -105,32 +124,46 @@ async function getPlaceAdditionalInfo(
 				},
 			});
 
-			const location = await prisma.location.create({
-				data: {
+			const cachedLocation = await prisma.location.findFirst({
+				where: {
 					name: name,
 					city: city,
 					country: place.Country,
-					emoji: emoji,
-					flag: place.Flag,
-					coordinates: scrapedPlaceData?.coordinates,
-					placeId: scrapedPlaceData?.placeId,
-					googleId: scrapedPlaceData?.googleId,
-					typicalTimeSpent: scrapedPlaceData?.typicalTimeSpent,
-					businessStatus: scrapedPlaceData?.businessStatus,
-					locationLink: scrapedPlaceData?.locationLink,
-					type: scrapedPlaceData?.type,
-					priceRange: scrapedPlaceData?.priceRange,
-					address: scrapedPlaceData?.address,
-					bestTimeToVisit: place['Best time to visit'],
-					description: scrapedPlaceData?.description || place.Description,
-					openingHours: scrapedPlaceData?.openingHours,
-					phone: scrapedPlaceData?.phone,
-					website: scrapedPlaceData?.website,
-					reviewsCount: scrapedPlaceData?.reviewsCount,
-					reviewsAverage: scrapedPlaceData?.reviewsAverage,
-					photo: scrapedPlaceData?.photo,
 				},
 			});
+
+			let location;
+
+			if (!cachedLocation) {
+				location = await prisma.location.create({
+					data: {
+						name: name,
+						city: city,
+						country: place.Country,
+						emoji: emoji,
+						flag: place.Flag,
+						coordinates: scrapedPlaceData?.coordinates,
+						placeId: scrapedPlaceData?.placeId,
+						googleId: scrapedPlaceData?.googleId,
+						typicalTimeSpent: scrapedPlaceData?.typicalTimeSpent,
+						businessStatus: scrapedPlaceData?.businessStatus,
+						locationLink: scrapedPlaceData?.locationLink,
+						type: scrapedPlaceData?.type,
+						priceRange: scrapedPlaceData?.priceRange,
+						address: scrapedPlaceData?.address,
+						bestTimeToVisit: place['Best time to visit'],
+						description: scrapedPlaceData?.description || place.Description,
+						openingHours: scrapedPlaceData?.openingHours,
+						phone: scrapedPlaceData?.phone,
+						website: scrapedPlaceData?.website,
+						reviewsCount: scrapedPlaceData?.reviewsCount,
+						reviewsAverage: scrapedPlaceData?.reviewsAverage,
+						photo: scrapedPlaceData?.photo,
+					},
+				});
+			} else {
+				location = cachedLocation;
+			}
 
 			const importLocation = await prisma.importLocation.create({
 				data: {
