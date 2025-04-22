@@ -42,6 +42,28 @@ export async function getMetaData(url) {
 	}
 }
 
+export const getMetaDataScript = async (url, postType) => {
+	url = url.replace('/photo', '/video');
+
+	const command = `python src/imports/utils/tiktok.py "${url}" "${postType}"`;
+
+	return new Promise((resolve, reject) => {
+		exec(command, (error, stdout, stderr) => {
+			if (error) {
+				console.error('Error running script:', error);
+				return reject(error);
+			}
+			try {
+				const result = JSON.parse(stdout);
+				resolve(result);
+			} catch (parseError) {
+				console.error('Error parsing JSON:', parseError);
+				reject(parseError);
+			}
+		});
+	});
+};
+
 export const detectContentType = async (postText, images?: string[]) => {
 	try {
 		const prompt = detectContentTypePrompt(postText);

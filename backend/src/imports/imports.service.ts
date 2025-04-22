@@ -194,6 +194,7 @@ export class ImportsService {
 					include: {
 						importLocation: {
 							include: {
+								location: true,
 								categories: {
 									select: {
 										category: true,

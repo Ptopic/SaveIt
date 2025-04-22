@@ -63,8 +63,8 @@ model Import {
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  collection     Collection?      @relation(fields: [collectionId], references: [id])
-  collectionId   String?
+  collection   Collection? @relation(fields: [collectionId], references: [id])
+  collectionId String?
 
   places Place[]
 }
@@ -74,15 +74,45 @@ model Place {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String?
+  name        String?
   description String?
-  emoji String?
-  photo String?
-  
+  emoji       String?
+  photo       String?
+
   import   Import @relation(fields: [importId], references: [id])
   importId String
 
   importLocation ImportLocation?
+}
+
+model Location {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name            String?
+  placeId         String?
+  googleId        String?
+  city            String?
+  country         String?
+  flag            String?
+  emoji           String?
+  coordinates     String?
+  address         String?
+  bestTimeToVisit String?
+  typicalTimeSpent String?
+  businessStatus  String?
+  locationLink    String?
+  type            String?
+  description     String?
+  openingHours    String?
+  phone           String?
+  website         String?
+  reviewsCount    Int?
+  reviewsAverage  Float?
+  priceRange      String?
+  photo           String?
+  ImportLocation  ImportLocation[]
 }
 
 model ImportLocation {
@@ -90,23 +120,10 @@ model ImportLocation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name            String?
-  city            String?
-  country         String?
-  flag            String?
-  coordinates     String?
-  emoji           String?
-  address         String?
-  bestTimeToVisit String?
-  description     String?
-  openingHours    String?
-  phone           String?
-  website         String?
-  reviews_count   Int?
-  reviews_average Float?
-  photo           String?
+  location   Location @relation(fields: [locationId], references: [id])
+  locationId String
 
-  place   Place @relation(fields: [placeId], references: [id])
+  place   Place  @relation(fields: [placeId], references: [id])
   placeId String @unique
 
   user   User   @relation(fields: [userId], references: [id])

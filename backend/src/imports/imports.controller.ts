@@ -15,7 +15,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ImportsService } from './imports.service';
 import { getAdditionalInfoByContentType } from './utils/additionalnfo';
 import { detectPostType, expandTikTokUrl } from './utils/detectType.js';
-import { getGoogleMapsDetails } from './utils/maps';
+import { getOutscraperData } from './utils/outscraper';
 import { cleanDescription, getMetaDataScript } from './utils/video.js';
 
 @Controller('imports')
@@ -59,10 +59,14 @@ export class ImportsController {
 	}
 
 	@Post('/test')
-	async test(@Query('query') query: string) {
-		const placesCordinates = await getGoogleMapsDetails([query]);
+	async test(@Query('query1') query1: string, @Query('query2') query2: string) {
+		const placeDetails = await getOutscraperData([query1, query2]);
 
-		return placesCordinates[0].cordinates;
+		for (const place of placeDetails) {
+			console.log(place[0]);
+		}
+
+		return placeDetails;
 	}
 
 	@Post('/transcribe')
@@ -105,8 +109,6 @@ export class ImportsController {
 			const postType = await detectPostType(expandedUrl);
 
 			const urlMetadata = await getMetaDataScript(expandedUrl, postType.type);
-
-			// console.log(urlMetadata);
 
 			if (!url) throw new Error('URL is missing');
 

@@ -19,20 +19,39 @@ export interface IImport {
 	updatedAt: string;
 }
 
-export interface IPlaceLocation {
+export interface ILocation {
 	id: string;
 	createdAt: string;
 	updatedAt: string;
 	name: string;
+	placeId: string;
+	googleId: string;
 	city: string;
 	country: string;
 	flag: string;
-	coordinates: string;
 	emoji: string;
+	coordinates: string;
 	address: string;
 	bestTimeToVisit: string;
-	openingHours: string;
+	typicalTimeSpent: string;
+	businessStatus: string;
+	locationLink: string;
+	type: string;
 	description: string;
+	openingHours: string;
+	phone: string;
+	website: string;
+	reviewsCount: number;
+	reviewsAverage: number;
+	priceRange: string;
+	photo: string;
+}
+
+export interface IPlaceLocation {
+	id: string;
+	createdAt: string;
+	updatedAt: string;
+	location: ILocation;
 	tips: {
 		tip: string;
 	}[];

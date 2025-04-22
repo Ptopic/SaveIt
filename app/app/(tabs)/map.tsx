@@ -2,15 +2,12 @@ import useGetAllLocations from '@/api/locations/hooks/useGetAllLocations';
 import { ILocation } from '@/api/locations/types';
 import ErrorText from '@/components/ErrorText';
 import Search from '@/components/Search';
-import Subtitle from '@/components/Subtitle';
 import Text from '@/components/Text';
 import Title from '@/components/Title';
-import CategoryBadge from '@/feature/map/CategoryBadge';
-import InfoBox from '@/feature/map/InfoBox';
+import LocationDisplayModal from '@/feature/map/LocationDisplayModal';
 import LocationsList from '@/feature/map/LocationsList';
 import useDebounce from '@/hooks/useDebounce';
-import { ArrowLeftIcon, CloseIcon } from '@/shared/svgs';
-import { getDeviceWidth } from '@/utils/device';
+import { ArrowLeftIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Location from 'expo-location';
@@ -18,7 +15,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
-	ScrollView,
 	StyleSheet,
 	TouchableOpacity,
 	View,
@@ -26,10 +22,6 @@ import {
 import MapView, { Marker, Region } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-const width = getDeviceWidth();
-
-const cardWidth = width - 30;
 
 export default function TabMapScreen() {
 	const {
@@ -256,113 +248,12 @@ export default function TabMapScreen() {
 				snapPoints={locationSnapPoints}
 			>
 				<BottomSheetView className="flex-1 px-[15] pb-[15] flex-col gap-4">
-					<ScrollView showsVerticalScrollIndicator={false}>
-						<View className="flex-row justify-between items-center">
-							<View className="w-12 h-12 rounded-full bg-gray50 border border-gray200 items-center justify-center">
-								<Text className="text-lg">{selectedLocation?.emoji}</Text>
-							</View>
-							<TouchableOpacity
-								className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
-								onPress={() => {
-									onLocationDetailsClose();
-								}}
-							>
-								<CloseIcon
-									width={20}
-									height={20}
-									color={getTailwindHexColor('red400')}
-								/>
-							</TouchableOpacity>
-						</View>
-						<View className="flex-1 flex-col gap-2">
-							<Title>{selectedLocation?.name}</Title>
-							<Text>
-								{selectedLocation?.flag + ' ' + selectedLocation?.city}
-							</Text>
-							<Text className="text-gray500">{selectedLocation?.address}</Text>
-							<ScrollView
-								horizontal
-								showsHorizontalScrollIndicator={false}
-								contentContainerStyle={{ gap: 10 }}
-							>
-								{selectedLocation?.categories &&
-									selectedLocation?.categories.map((category, index) => (
-										<CategoryBadge key={index} category={category} />
-									))}
-							</ScrollView>
-							<Text>{selectedLocation?.description}</Text>
-							<View className="flex-col gap-4">
-								{selectedLocation?.highlights && (
-									<View className="flex-col gap-2">
-										<Subtitle>Highlights</Subtitle>
-										<ScrollView
-											horizontal
-											showsVerticalScrollIndicator={false}
-											showsHorizontalScrollIndicator={false}
-											decelerationRate="fast"
-											snapToInterval={cardWidth + 15}
-											snapToAlignment="start"
-											contentContainerStyle={{
-												alignItems: 'flex-start',
-												gap: 10,
-											}}
-										>
-											<View className="flex-row items-stretch gap-2">
-												{selectedLocation?.highlights.map(
-													(highlight, index) => (
-														<InfoBox
-															key={index}
-															text={highlight}
-															width={cardWidth}
-														/>
-													)
-												)}
-											</View>
-										</ScrollView>
-									</View>
-								)}
-								{selectedLocation?.tips && (
-									<View className="flex-col gap-2">
-										<Subtitle>Tips</Subtitle>
-										<ScrollView
-											horizontal
-											showsVerticalScrollIndicator={false}
-											showsHorizontalScrollIndicator={false}
-											decelerationRate="fast"
-											snapToInterval={cardWidth + 15}
-											snapToAlignment="start"
-											contentContainerStyle={{
-												alignItems: 'flex-start',
-												gap: 10,
-											}}
-										>
-											<View className="flex-row items-stretch gap-2">
-												{selectedLocation?.tips.map((tip, index) => (
-													<InfoBox key={index} text={tip} width={cardWidth} />
-												))}
-											</View>
-										</ScrollView>
-									</View>
-								)}
-								{selectedLocation?.bestTimeToVisit && (
-									<InfoBox
-										text={selectedLocation?.bestTimeToVisit}
-										width={cardWidth}
-										title="Best Time to Visit"
-										emoji={'🗓️'}
-									/>
-								)}
-								{selectedLocation?.openingHours && (
-									<InfoBox
-										text={selectedLocation?.openingHours}
-										width={cardWidth}
-										title="Opening Hours"
-										emoji={'🕒'}
-									/>
-								)}
-							</View>
-						</View>
-					</ScrollView>
+					{selectedLocation && (
+						<LocationDisplayModal
+							selectedLocation={selectedLocation}
+							onLocationDetailsClose={onLocationDetailsClose}
+						/>
+					)}
 				</BottomSheetView>
 			</BottomSheet>
 		</View>

@@ -1,10 +1,7 @@
-import { IPlace } from '@/api/imports/types';
-import Button from '@/components/Button';
+import { ILocation } from '@/api/locations/types';
 import Subtitle from '@/components/Subtitle';
 import Text from '@/components/Text';
 import Title from '@/components/Title';
-import CategoryBadge from '@/feature/map/CategoryBadge';
-import InfoBox from '@/feature/map/InfoBox';
 import {
 	CloseIcon,
 	LinkIcon,
@@ -14,34 +11,35 @@ import {
 } from '@/shared/svgs';
 import { getDeviceWidth } from '@/utils/device';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
-import { router } from 'expo-router';
-import React from 'react';
 import { Linking, ScrollView, TouchableOpacity, View } from 'react-native';
+import CategoryBadge from './CategoryBadge';
+import InfoBox from './InfoBox';
 
 interface IProps {
-	place: IPlace;
-	handleCloseModal: () => void;
+	selectedLocation: ILocation;
+	onLocationDetailsClose: () => void;
 }
 
-const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
-	const width = getDeviceWidth();
+const width = getDeviceWidth();
 
-	const cardWidth = width - 30;
+const cardWidth = width - 30;
 
-	const buttonsWidth = width / 3 - 10;
+const buttonsWidth = width / 3 - 10;
 
-	const placeLocationData = place.importLocation?.location;
-
+const LocationDisplayModal = ({
+	selectedLocation,
+	onLocationDetailsClose,
+}: IProps) => {
 	return (
 		<ScrollView showsVerticalScrollIndicator={false}>
 			<View className="flex-row justify-between items-center">
 				<View className="w-12 h-12 rounded-full bg-gray50 border border-gray200 items-center justify-center">
-					<Text className="text-lg">{place?.emoji}</Text>
+					<Text className="text-lg">{selectedLocation?.emoji}</Text>
 				</View>
 				<TouchableOpacity
 					className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
 					onPress={() => {
-						handleCloseModal();
+						onLocationDetailsClose();
 					}}
 				>
 					<CloseIcon
@@ -52,23 +50,23 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 				</TouchableOpacity>
 			</View>
 			<View className="flex-1 flex-col gap-2">
-				<Title>{place.name}</Title>
+				<Title>{selectedLocation?.name}</Title>
 				<Text>
-					{placeLocationData?.flag}{' '}
-					{placeLocationData?.city || placeLocationData?.country}
+					{selectedLocation?.flag}{' '}
+					{selectedLocation?.city || selectedLocation?.country}
 				</Text>
-				<Text className="text-gray500">{placeLocationData?.address}</Text>
+				<Text className="text-gray500">{selectedLocation?.address}</Text>
 				<ScrollView
 					horizontal
 					showsHorizontalScrollIndicator={false}
 					contentContainerStyle={{ gap: 10 }}
 				>
-					{place.importLocation?.categories &&
-						place.importLocation?.categories.map((placeCategory, index) => (
-							<CategoryBadge key={index} category={placeCategory.category} />
+					{selectedLocation?.categories &&
+						selectedLocation?.categories.map((category, index) => (
+							<CategoryBadge key={index} category={category} />
 						))}
 				</ScrollView>
-				{placeLocationData?.reviewsAverage && (
+				{selectedLocation?.reviewsAverage && (
 					<View className="flex-row items-center gap-2">
 						<StarIcon
 							width={16}
@@ -77,32 +75,32 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 						/>
 						<View className="flex flex-row gap-2 items-center">
 							<Text className="body-medium-bold">
-								{placeLocationData?.reviewsAverage}
+								{selectedLocation?.reviewsAverage}
 							</Text>
-							{placeLocationData?.reviewsCount && (
+							{selectedLocation?.reviewsCount && (
 								<Text className="text-gray500">
-									{placeLocationData?.reviewsCount} reviews
+									{selectedLocation?.reviewsCount} reviews
 								</Text>
 							)}
 						</View>
 					</View>
 				)}
-				{placeLocationData?.priceRange && (
+				{selectedLocation?.priceRange && (
 					<View className="flex-row items-center gap-2">
 						<Text className="body-medium-regular">Price range:</Text>
 						<Text className="text-green400 text-medium-regular">
-							{placeLocationData?.priceRange}
+							{selectedLocation?.priceRange}
 						</Text>
 					</View>
 				)}
-				{placeLocationData?.description && (
-					<Text>{placeLocationData?.description}</Text>
+				{selectedLocation?.description && (
+					<Text>{selectedLocation?.description}</Text>
 				)}
 				<View className="flex-row items-center gap-2">
-					{placeLocationData.locationLink && (
+					{selectedLocation.locationLink && (
 						<TouchableOpacity
 							onPress={() => {
-								Linking.openURL(placeLocationData.locationLink);
+								Linking.openURL(selectedLocation.locationLink);
 							}}
 							style={{ width: buttonsWidth }}
 							className="flex flex-col gap-2 items-center bg-gray100 rounded-md justify-center px-2 py-3"
@@ -115,10 +113,10 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 							<Text className="text-black">GMaps</Text>
 						</TouchableOpacity>
 					)}
-					{placeLocationData.phone && (
+					{selectedLocation.phone && (
 						<TouchableOpacity
 							onPress={() => {
-								Linking.openURL(`tel:${placeLocationData.phone}`);
+								Linking.openURL(`tel:${selectedLocation.phone}`);
 							}}
 							style={{ width: buttonsWidth }}
 							className="flex flex-col gap-2 items-center bg-gray100 rounded-md justify-center px-2 py-3"
@@ -131,10 +129,10 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 							<Text className="text-black">Call</Text>
 						</TouchableOpacity>
 					)}
-					{placeLocationData.website && (
+					{selectedLocation.website && (
 						<TouchableOpacity
 							onPress={() => {
-								Linking.openURL(placeLocationData.website);
+								Linking.openURL(selectedLocation.website);
 							}}
 							style={{ width: buttonsWidth }}
 							className="flex flex-col gap-2 items-center bg-gray100 rounded-md justify-center px-2 py-3"
@@ -149,7 +147,7 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 					)}
 				</View>
 				<View className="flex-col gap-4">
-					{place.importLocation?.highlights && (
+					{selectedLocation?.highlights && (
 						<View className="flex-col gap-2">
 							<Subtitle>Highlights</Subtitle>
 							<ScrollView
@@ -165,20 +163,14 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 								}}
 							>
 								<View className="flex-row items-stretch gap-2">
-									{place.importLocation?.highlights.map(
-										(placeHighlight, index) => (
-											<InfoBox
-												key={index}
-												text={placeHighlight.highlight as string}
-												width={cardWidth}
-											/>
-										)
-									)}
+									{selectedLocation?.highlights.map((highlight, index) => (
+										<InfoBox key={index} text={highlight} width={cardWidth} />
+									))}
 								</View>
 							</ScrollView>
 						</View>
 					)}
-					{place.importLocation?.tips && (
+					{selectedLocation?.tips && (
 						<View className="flex-col gap-2">
 							<Subtitle>Tips</Subtitle>
 							<ScrollView
@@ -194,45 +186,29 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 								}}
 							>
 								<View className="flex-row items-stretch gap-2">
-									{place.importLocation?.tips.map((placeTip, index) => (
-										<InfoBox
-											key={index}
-											text={placeTip.tip as string}
-											width={cardWidth}
-										/>
+									{selectedLocation?.tips.map((tip, index) => (
+										<InfoBox key={index} text={tip} width={cardWidth} />
 									))}
 								</View>
 							</ScrollView>
 						</View>
 					)}
-					{placeLocationData?.bestTimeToVisit && (
+					{selectedLocation?.bestTimeToVisit && (
 						<InfoBox
-							text={placeLocationData?.bestTimeToVisit}
+							text={selectedLocation?.bestTimeToVisit}
 							width={cardWidth}
 							title="Best Time to Visit"
 							emoji={'🗓️'}
 						/>
 					)}
-					{placeLocationData?.openingHours && (
+					{selectedLocation?.openingHours && (
 						<InfoBox
-							text={placeLocationData?.openingHours}
+							text={selectedLocation?.openingHours}
 							width={cardWidth}
 							title="Opening Hours"
 							emoji={'🕒'}
 						/>
 					)}
-					<Button
-						text="View on Map"
-						onPress={() => {
-							router.push(
-								`/map?latitude=${
-									placeLocationData?.coordinates.split(',')[0]
-								}&longitude=${
-									placeLocationData?.coordinates.split(',')[1]
-								}&importId=${place.importId}`
-							);
-						}}
-					/>
 				</View>
 			</View>
 			<View className="h-[20px]" />
@@ -240,4 +216,4 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 	);
 };
 
-export default PlaceDetailsModal;
+export default LocationDisplayModal;
