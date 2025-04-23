@@ -30,7 +30,7 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 
 	const buttonsWidth = width / 3 - 10;
 
-	const placeLocationData = place.importLocation?.location;
+	const placeLocationData = place.importLocation[0];
 
 	return (
 		<ScrollView showsVerticalScrollIndicator={false}>
@@ -54,21 +54,24 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 			<View className="flex-1 flex-col gap-2">
 				<Title>{place.name}</Title>
 				<Text>
-					{placeLocationData?.flag}{' '}
-					{placeLocationData?.city || placeLocationData?.country}
+					{placeLocationData.location?.flag}{' '}
+					{placeLocationData.location?.city ||
+						placeLocationData.location?.country}
 				</Text>
-				<Text className="text-gray500">{placeLocationData?.address}</Text>
+				<Text className="text-gray500">
+					{placeLocationData.location?.address}
+				</Text>
 				<ScrollView
 					horizontal
 					showsHorizontalScrollIndicator={false}
 					contentContainerStyle={{ gap: 10 }}
 				>
-					{place.importLocation?.categories &&
-						place.importLocation?.categories.map((placeCategory, index) => (
+					{placeLocationData?.categories &&
+						placeLocationData?.categories.map((placeCategory, index) => (
 							<CategoryBadge key={index} category={placeCategory.category} />
 						))}
 				</ScrollView>
-				{placeLocationData?.reviewsAverage && (
+				{placeLocationData.location?.reviewsAverage && (
 					<View className="flex-row items-center gap-2">
 						<StarIcon
 							width={16}
@@ -77,32 +80,32 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 						/>
 						<View className="flex flex-row gap-2 items-center">
 							<Text className="body-medium-bold">
-								{placeLocationData?.reviewsAverage}
+								{placeLocationData.location?.reviewsAverage}
 							</Text>
-							{placeLocationData?.reviewsCount && (
+							{placeLocationData.location?.reviewsCount && (
 								<Text className="text-gray500">
-									{placeLocationData?.reviewsCount} reviews
+									{placeLocationData.location?.reviewsCount} reviews
 								</Text>
 							)}
 						</View>
 					</View>
 				)}
-				{placeLocationData?.priceRange && (
+				{placeLocationData.location?.priceRange && (
 					<View className="flex-row items-center gap-2">
 						<Text className="body-medium-regular">Price range:</Text>
 						<Text className="text-green400 text-medium-regular">
-							{placeLocationData?.priceRange}
+							{placeLocationData.location?.priceRange}
 						</Text>
 					</View>
 				)}
-				{placeLocationData?.description && (
-					<Text>{placeLocationData?.description}</Text>
+				{placeLocationData.location?.description && (
+					<Text>{placeLocationData.location?.description}</Text>
 				)}
 				<View className="flex-row items-center gap-2">
-					{placeLocationData.locationLink && (
+					{placeLocationData.location?.locationLink && (
 						<TouchableOpacity
 							onPress={() => {
-								Linking.openURL(placeLocationData.locationLink);
+								Linking.openURL(placeLocationData.location.locationLink);
 							}}
 							style={{ width: buttonsWidth }}
 							className="flex flex-col gap-2 items-center bg-gray100 rounded-md justify-center px-2 py-3"
@@ -115,10 +118,10 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 							<Text className="text-black">GMaps</Text>
 						</TouchableOpacity>
 					)}
-					{placeLocationData.phone && (
+					{placeLocationData.location?.phone && (
 						<TouchableOpacity
 							onPress={() => {
-								Linking.openURL(`tel:${placeLocationData.phone}`);
+								Linking.openURL(`tel:${placeLocationData.location.phone}`);
 							}}
 							style={{ width: buttonsWidth }}
 							className="flex flex-col gap-2 items-center bg-gray100 rounded-md justify-center px-2 py-3"
@@ -131,10 +134,10 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 							<Text className="text-black">Call</Text>
 						</TouchableOpacity>
 					)}
-					{placeLocationData.website && (
+					{placeLocationData.location?.website && (
 						<TouchableOpacity
 							onPress={() => {
-								Linking.openURL(placeLocationData.website);
+								Linking.openURL(placeLocationData.location.website);
 							}}
 							style={{ width: buttonsWidth }}
 							className="flex flex-col gap-2 items-center bg-gray100 rounded-md justify-center px-2 py-3"
@@ -149,35 +152,36 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 					)}
 				</View>
 				<View className="flex-col gap-4">
-					{place.importLocation?.highlights && (
-						<View className="flex-col gap-2">
-							<Subtitle>Highlights</Subtitle>
-							<ScrollView
-								horizontal
-								showsVerticalScrollIndicator={false}
-								showsHorizontalScrollIndicator={false}
-								decelerationRate="fast"
-								snapToInterval={cardWidth + 10}
-								snapToAlignment="start"
-								contentContainerStyle={{
-									alignItems: 'center',
-									justifyContent: 'center',
-									gap: 10,
-								}}
-							>
-								{place.importLocation?.highlights.map(
-									(placeHighlight, index) => (
-										<InfoBox
-											key={index}
-											text={placeHighlight.highlight as string}
-											width={cardWidth}
-										/>
-									)
-								)}
-							</ScrollView>
-						</View>
-					)}
-					{place.importLocation?.tips && (
+					{placeLocationData?.highlights &&
+						placeLocationData?.highlights.length > 0 && (
+							<View className="flex-col gap-2">
+								<Subtitle>Highlights</Subtitle>
+								<ScrollView
+									horizontal
+									showsVerticalScrollIndicator={false}
+									showsHorizontalScrollIndicator={false}
+									decelerationRate="fast"
+									snapToInterval={cardWidth + 10}
+									snapToAlignment="start"
+									contentContainerStyle={{
+										alignItems: 'center',
+										justifyContent: 'center',
+										gap: 10,
+									}}
+								>
+									{placeLocationData?.highlights.map(
+										(placeHighlight, index) => (
+											<InfoBox
+												key={index}
+												text={placeHighlight.highlight as string}
+												width={cardWidth}
+											/>
+										)
+									)}
+								</ScrollView>
+							</View>
+						)}
+					{placeLocationData?.tips && placeLocationData?.tips.length > 0 && (
 						<View className="flex-col gap-2">
 							<Subtitle>Tips</Subtitle>
 							<ScrollView
@@ -193,7 +197,7 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 									gap: 10,
 								}}
 							>
-								{place.importLocation?.tips.map((placeTip, index) => (
+								{placeLocationData?.tips.map((placeTip, index) => (
 									<InfoBox
 										key={index}
 										text={placeTip.tip as string}
@@ -203,17 +207,17 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 							</ScrollView>
 						</View>
 					)}
-					{placeLocationData?.bestTimeToVisit && (
+					{placeLocationData.location?.bestTimeToVisit && (
 						<InfoBox
-							text={placeLocationData?.bestTimeToVisit}
+							text={placeLocationData.location?.bestTimeToVisit}
 							width={cardWidth}
 							title="Best Time to Visit"
 							emoji={'🗓️'}
 						/>
 					)}
-					{placeLocationData?.openingHours && (
+					{placeLocationData.location?.openingHours && (
 						<InfoBox
-							text={placeLocationData?.openingHours}
+							text={placeLocationData.location?.openingHours}
 							width={cardWidth}
 							title="Opening Hours"
 							emoji={'🕒'}
@@ -224,9 +228,9 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 						onPress={() => {
 							router.push(
 								`/map?latitude=${
-									placeLocationData?.coordinates.split(',')[0]
+									placeLocationData.location?.coordinates.split(',')[0]
 								}&longitude=${
-									placeLocationData?.coordinates.split(',')[1]
+									placeLocationData.location?.coordinates.split(',')[1]
 								}&importId=${place.importId}`
 							);
 						}}

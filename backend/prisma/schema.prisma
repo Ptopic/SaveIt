@@ -84,7 +84,7 @@ model Place {
   importId String
 
   importLocationId String?
-  ImportLocation   ImportLocation[]
+  importLocation   ImportLocation[]
 }
 
 model Restaurant {
@@ -101,7 +101,7 @@ model Restaurant {
   importId String
 
   importLocationId String?
-  ImportLocation   ImportLocation[]
+  importLocation   ImportLocation[]
 }
 
 model Location {
@@ -131,7 +131,7 @@ model Location {
   reviewsAverage   Float?
   priceRange       String?
   photo            String?
-  ImportLocation   ImportLocation[]
+  importLocation   ImportLocation[]
 }
 
 model ImportLocation {

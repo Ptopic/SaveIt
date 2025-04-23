@@ -24,7 +24,8 @@ export interface ILocation {
 	reviewsAverage: number;
 	priceRange: string;
 	photo: string;
-	tips: string[];
-	highlights: string[];
-	categories: string[];
+	tips: string[] | null;
+	highlights: string[] | null;
+	categories: string[] | null;
+	mustTryDishes: string[] | null;
 }

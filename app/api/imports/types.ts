@@ -69,7 +69,8 @@ export interface IPlace {
 	description: string;
 	emoji: string;
 	importId: string;
-	importLocation: IPlaceLocation;
+	photo: string;
+	importLocation: IPlaceLocation[];
 }
 export interface ICreateImportRequest {
 	url: string;

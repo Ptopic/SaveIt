@@ -191,7 +191,7 @@ export class ImportsService {
 			include: {
 				places: {
 					include: {
-						ImportLocation: {
+						importLocation: {
 							include: {
 								location: true,
 								categories: {
@@ -215,7 +215,7 @@ export class ImportsService {
 				},
 				restaurants: {
 					include: {
-						ImportLocation: {
+						importLocation: {
 							include: {
 								location: true,
 								mustTryDishes: {

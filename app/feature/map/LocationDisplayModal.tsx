@@ -30,6 +30,7 @@ const LocationDisplayModal = ({
 	selectedLocation,
 	onLocationDetailsClose,
 }: IProps) => {
+	console.log(selectedLocation);
 	return (
 		<ScrollView showsVerticalScrollIndicator={false}>
 			<View className="flex-row justify-between items-center">
@@ -97,7 +98,7 @@ const LocationDisplayModal = ({
 					<Text>{selectedLocation?.description}</Text>
 				)}
 				<View className="flex-row items-center gap-2">
-					{selectedLocation.locationLink && (
+					{selectedLocation?.locationLink && (
 						<TouchableOpacity
 							onPress={() => {
 								Linking.openURL(selectedLocation.locationLink);
@@ -113,7 +114,7 @@ const LocationDisplayModal = ({
 							<Text className="text-black">GMaps</Text>
 						</TouchableOpacity>
 					)}
-					{selectedLocation.phone && (
+					{selectedLocation?.phone && (
 						<TouchableOpacity
 							onPress={() => {
 								Linking.openURL(`tel:${selectedLocation.phone}`);
@@ -129,7 +130,7 @@ const LocationDisplayModal = ({
 							<Text className="text-black">Call</Text>
 						</TouchableOpacity>
 					)}
-					{selectedLocation.website && (
+					{selectedLocation?.website && (
 						<TouchableOpacity
 							onPress={() => {
 								Linking.openURL(selectedLocation.website);
@@ -147,29 +148,30 @@ const LocationDisplayModal = ({
 					)}
 				</View>
 				<View className="flex-col gap-4">
-					{selectedLocation?.highlights && (
-						<View className="flex-col gap-2">
-							<Subtitle>Highlights</Subtitle>
-							<ScrollView
-								horizontal
-								showsVerticalScrollIndicator={false}
-								showsHorizontalScrollIndicator={false}
-								decelerationRate="fast"
-								snapToInterval={cardWidth + 10}
-								snapToAlignment="start"
-								contentContainerStyle={{
-									alignItems: 'center',
-									justifyContent: 'center',
-									gap: 10,
-								}}
-							>
-								{selectedLocation?.highlights.map((highlight, index) => (
-									<InfoBox key={index} text={highlight} width={cardWidth} />
-								))}
-							</ScrollView>
-						</View>
-					)}
-					{selectedLocation?.tips && (
+					{selectedLocation?.highlights &&
+						selectedLocation?.highlights.length > 0 && (
+							<View className="flex-col gap-2">
+								<Subtitle>Highlights</Subtitle>
+								<ScrollView
+									horizontal
+									showsVerticalScrollIndicator={false}
+									showsHorizontalScrollIndicator={false}
+									decelerationRate="fast"
+									snapToInterval={cardWidth + 10}
+									snapToAlignment="start"
+									contentContainerStyle={{
+										alignItems: 'center',
+										justifyContent: 'center',
+										gap: 10,
+									}}
+								>
+									{selectedLocation?.highlights.map((highlight, index) => (
+										<InfoBox key={index} text={highlight} width={cardWidth} />
+									))}
+								</ScrollView>
+							</View>
+						)}
+					{selectedLocation?.tips && selectedLocation?.tips.length > 0 && (
 						<View className="flex-col gap-2">
 							<Subtitle>Tips</Subtitle>
 							<ScrollView
@@ -191,6 +193,29 @@ const LocationDisplayModal = ({
 							</ScrollView>
 						</View>
 					)}
+					{selectedLocation?.mustTryDishes &&
+						selectedLocation?.mustTryDishes.length > 0 && (
+							<View className="flex-col gap-2">
+								<Subtitle>Must Try Dishes</Subtitle>
+								<ScrollView
+									horizontal
+									showsVerticalScrollIndicator={false}
+									showsHorizontalScrollIndicator={false}
+									decelerationRate="fast"
+									snapToInterval={cardWidth + 10}
+									snapToAlignment="start"
+									contentContainerStyle={{
+										alignItems: 'center',
+										justifyContent: 'center',
+										gap: 10,
+									}}
+								>
+									{selectedLocation?.mustTryDishes.map((dish, index) => (
+										<InfoBox key={index} text={dish} width={cardWidth} />
+									))}
+								</ScrollView>
+							</View>
+						)}
 					{selectedLocation?.bestTimeToVisit && (
 						<InfoBox
 							text={selectedLocation?.bestTimeToVisit}

@@ -10,14 +10,14 @@ interface IProps {
 }
 
 const PlaceCard = ({ place, width, onPress }: IProps) => {
-	return place.importLocation.location.photo ? (
+	return place?.photo ? (
 		<TouchableOpacity
 			onPress={onPress}
 			activeOpacity={1}
 			className="rounded-lg overflow-hidden"
 		>
 			<ImageBackground
-				source={{ uri: place.importLocation.location.photo }}
+				source={{ uri: place.photo }}
 				style={{ width: width, height: 200 }}
 				className="rounded-lg overflow-hidden"
 			>

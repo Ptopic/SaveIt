@@ -8,7 +8,7 @@ export class LocationsService {
 	async getAllLocations(userId: string, searchQuery?: string) {
 		const locations = await this.prisma.location.findMany({
 			where: {
-				ImportLocation: {
+				importLocation: {
 					some: {
 						userId,
 					},
@@ -19,7 +19,7 @@ export class LocationsService {
 					{ city: { contains: searchQuery, mode: 'insensitive' } },
 					{ country: { contains: searchQuery, mode: 'insensitive' } },
 					{
-						ImportLocation: {
+						importLocation: {
 							some: {
 								categories: {
 									some: {
@@ -32,11 +32,12 @@ export class LocationsService {
 				],
 			},
 			include: {
-				ImportLocation: {
+				importLocation: {
 					include: {
 						highlights: true,
 						tips: true,
 						categories: true,
+						mustTryDishes: true,
 					},
 				},
 			},
@@ -51,16 +52,20 @@ export class LocationsService {
 			if (!seenIdentifiers.has(identifier)) {
 				seenIdentifiers.add(identifier);
 
-				const allHighlights = location.ImportLocation.flatMap((importLoc) =>
+				const allHighlights = location.importLocation.flatMap((importLoc) =>
 					importLoc.highlights.map((highlight) => highlight.highlight)
 				);
 
-				const allTips = location.ImportLocation.flatMap((importLoc) =>
+				const allTips = location.importLocation.flatMap((importLoc) =>
 					importLoc.tips.map((tip) => tip.tip)
 				);
 
-				const allCategories = location.ImportLocation.flatMap((importLoc) =>
+				const allCategories = location.importLocation.flatMap((importLoc) =>
 					importLoc.categories.map((category) => category.category)
+				);
+
+				const allMustTryDishes = location.importLocation.flatMap((importLoc) =>
+					importLoc.mustTryDishes.map((dish) => dish.dish)
 				);
 
 				uniqueLocations.push({
@@ -68,6 +73,7 @@ export class LocationsService {
 					highlights: allHighlights,
 					tips: allTips,
 					categories: allCategories,
+					mustTryDishes: allMustTryDishes,
 				});
 			}
 		}
@@ -83,6 +89,7 @@ export class LocationsService {
 				highlights: true,
 				tips: true,
 				categories: true,
+				mustTryDishes: true,
 			},
 		});
 	}
@@ -95,6 +102,7 @@ export class LocationsService {
 				highlights: true,
 				tips: true,
 				categories: true,
+				mustTryDishes: true,
 			},
 		});
 	}
