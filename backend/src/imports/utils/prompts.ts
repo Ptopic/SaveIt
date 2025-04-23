@@ -66,14 +66,207 @@ export const getBaseAnalyzePrompt = (
      - Only use "Other" if the content truly doesn't fit any specific category
      - **USE CAPITAL LETTERS FOR CONTENT TYPES AS SPECIFIED IN RULES: Always use capitalized content type names like "Name" for Place, "Cuisine" for Restaurant, etc.**
 
-  3. MULTIPLE ITEMS HANDLING:
-     - IDENTIFY: Scan transcript/description for multiple distinct items of the same type
-     - SEPARATE: Create individual entries for each distinct item mentioned
-     - PROCESS: Apply content-specific search and analysis rules to EACH item individually
-     - EXAMPLE: If video mentions "5 must-read books", create 5 separate book entries with full details
-     - MAINTAIN QUALITY: Apply same thorough analysis to each item, not just the first few
-     - ORDER: Preserve the order of items as mentioned in the content
-     - COMPLETENESS: Process ALL items mentioned, don't truncate the list
+  3. MULTIPLE ITEMS AND DUPLICATE PREVENTION - CRITICAL:
+     A. LOCATION HIERARCHY RULES:
+        1. REQUIRED FIELDS (CRITICAL):
+           - Every place MUST have these fields:
+             * Name: [Place emoji + name]
+             * City: [City name or null - see city rules below]
+             * Country: [Full country name]
+             * Flag: [Country flag emoji - MANDATORY]
+             * Description: [Brief description]
+           
+           FLAG EMOJI RULES:
+           - Flag field is MANDATORY for all entries
+           - Use the correct country flag emoji
+           - Common flags (MUST use these exact emojis):
+             * 🇮🇹 Italy
+             * 🇫🇷 France
+             * 🇪🇸 Spain
+             * 🇩🇪 Germany
+             * 🇬🇧 United Kingdom
+             * 🇺🇸 United States
+             * 🇯🇵 Japan
+             * 🇨🇳 China
+             * 🇰🇷 South Korea
+             * 🇮🇳 India
+             * 🇧🇷 Brazil
+             * 🇲🇽 Mexico
+             * 🇨🇦 Canada
+             * 🇦🇺 Australia
+             * 🇳🇿 New Zealand
+           
+           EXAMPLES:
+           ✅ CORRECT:
+           {
+             "Name": "🍕 Spontini",
+             "City": "Milan",
+             "Country": "Italy",
+             "Flag": "🇮🇹",
+             "Description": "Popular pizza place in Milan"
+           }
+           
+           ❌ INCORRECT:
+           {
+             "Name": "🍕 Spontini",
+             "City": "Milan",
+             "Country": "Italy"
+             // WRONG! Missing Flag field
+           }
+
+        2. CITY FIELD RULES:
+           - City field should ONLY be filled when the place is within a specific city
+           - For standalone places (lakes, regions, etc.), leave City as null
+           - For places within cities, City should be the containing city name
+           
+           EXAMPLES:
+           ✅ CORRECT:
+           - Place in city:
+             {
+               "Name": "🗼 Eiffel Tower",
+               "City": "Paris",
+               "Country": "France",
+               "Flag": "🇫🇷"
+             }
+           
+           - Standalone place:
+             {
+               "Name": "🌊 Lake Como",
+               "City": null,
+               "Country": "Italy",
+               "Flag": "🇮🇹"
+             }
+           
+           ❌ INCORRECT:
+           - Don't duplicate name as city:
+             {
+               "Name": "🌊 Lake Como",
+               "City": "Lake Como",  // WRONG! Don't use place name as city
+               "Country": "Italy",
+               "Flag": "🇮🇹"
+             }
+           
+           - Don't use region as city:
+             {
+               "Name": "🏰 Neuschwanstein Castle",
+               "City": "Bavaria",    // WRONG! Region is not a city
+               "Country": "Germany",
+               "Flag": "🇩🇪"
+             }
+
+        3. SEPARATE ENTRIES FOR:
+           - Individual attractions (museums, landmarks, villas, etc.)
+           - Specific towns or cities
+           - Distinct points of interest
+           - Each restaurant or venue
+           - Any location with its own address or coordinates
+        
+        4. GROUP AS HIGHLIGHTS ONLY:
+           - General viewpoints without specific locations
+           - Generic features of a place
+           - Non-specific recommendations
+           - Tips about the general area
+        
+        5. EXAMPLES:
+           ✅ CORRECT (Separate entries for distinct locations):
+           {
+             "summary": [
+               {
+                 "Name": "🌊 Lake Como",
+                 "City": null,
+                 "Country": "Italy",
+                 "Flag": "🇮🇹",
+                 "Description": "Beautiful lake in northern Italy",
+                 "Highlights": ["Stunning views", "Crystal clear waters"]
+               },
+               {
+                 "Name": "🏛️ Villa Carlotta",
+                 "City": "Tremezzo",
+                 "Country": "Italy",
+                 "Flag": "🇮🇹",
+                 "Description": "Historic villa with beautiful gardens"
+               },
+               {
+                 "Name": "🏛️ Villa Balbianello",
+                 "City": "Lenno",
+                 "Country": "Italy",
+                 "Flag": "🇮🇹",
+                 "Description": "Famous villa with spectacular views"
+               }
+             ]
+           }
+           
+           ❌ INCORRECT (Places as highlights):
+           {
+             "summary": [
+               {
+                 "Name": "🌊 Lake Como",
+                 "City": "Lake Como",
+                 "Country": "Italy",
+                 "Highlights": [
+                   "Villa Carlotta in Tremezzo",
+                   "Villa Balbianello in Lenno"
+                 ]
+               }
+             ]
+           }
+     
+     B. INITIAL SCAN:
+        - First scan ALL content (transcript/description/images) to identify ALL mentioned items
+        - Create a master list of unique items based on name, location, and key identifiers
+        - For locations: use name + city/country combination as unique identifier
+        - For other items: use name + key distinguishing features
+        - IMPORTANT: Identify distinct locations vs general highlights
+     
+     C. STRICT DUPLICATE DETECTION:
+        Check these criteria IN ORDER to identify duplicates:
+        1. EXACT MATCHES:
+           - Identical names (case-insensitive)
+           - Same name with different emojis
+           - Same coordinates/address
+        
+        2. SIMILAR NAMES:
+           - Different spellings (e.g., "St." vs "Saint")
+           - Translated names (e.g., "Florence" vs "Firenze")
+           - Common abbreviations (e.g., "NYC" vs "New York City")
+        
+        3. LOCATION MATCHES:
+           - Same physical location with different names
+           - Same address with different business names
+           - Same coordinates with different descriptions
+     
+     D. INFORMATION MERGING RULES:
+        When duplicates are found, merge information following these rules:
+        1. KEEP BEST INFORMATION:
+           - Most complete name/title
+           - Most detailed description
+           - Most accurate location data
+           - Most recent information
+        
+        2. COMBINE UNIQUE DETAILS:
+           - Merge unique highlights/features
+           - Combine non-redundant tips
+           - Aggregate distinct categories
+           - Keep all valid alternative names
+        
+        3. RESOLVE CONFLICTS:
+           - Use most commonly reported data
+           - For conflicts, keep most authoritative source
+           - For equal authority, keep most detailed
+           - For equal detail, keep most recent
+     
+     E. FINAL OUTPUT STRUCTURE:
+        {
+          "title": "descriptive_title",
+          "summary": [
+            {
+              // SINGLE merged entry for each unique item
+              // All information combined following merge rules
+              // NO duplicate entries allowed
+              // Each distinct location as separate entry
+            }
+          ]
+        }
 
   4. INFORMATION EXTRACTION:
      - Extract information explicitly stated in the transcript/description
@@ -97,9 +290,6 @@ export const getBaseAnalyzePrompt = (
        "summary": [
            {
              ...item_specific_fields_following_type_guidelines
-           },
-           {
-             ...item_specific_fields_following_type_guidelines
            }
        ]
      }
@@ -111,12 +301,12 @@ export const getBaseAnalyzePrompt = (
      - Verify that null is used for ALL missing or unverified information
      - Check that response format matches content format (single object for video, array for slideshow)
      - For multiple items: verify each item has complete information
-     - For multiple items: confirm no items were skipped or merged
+     - For multiple items: confirm no duplicates exist in final output
+     - For locations: verify each distinct location is a separate entry
+     - CRITICAL: Verify every entry has a Flag field with the correct country flag emoji
 
   8. TRANSLATION:
      - Ensure all extracted information is translated to English.
-
-  9. REMOVE DUPLICATES: Ensure that each item in the response is unique. Do not include duplicate entries for the same item.
   `;
 
 	return prompt;
@@ -270,13 +460,61 @@ const getRecipeAnalyzePrompt = () => {
 const getPlaceAnalyzePrompt = () => {
 	const prompt = `
   PLACE ANALYSIS RULES:
-  * Name: [Appropriate emoji BEFORE place name: 🏰 (castle), 🏝️ (beach), 🏞️ (nature), 🏛️ (monument), etc., followed by exact name of the place/attraction/landmark. 
-    If you can't find an appropriate place emoji, try to find a contextual emoji based on:
-    - The place's main attraction or activity (🏄‍♀️ for surfing beaches, 🧗‍♀️ for climbing locations)
-    - Food or drink associated with the location (🍷 for wine regions, 🍺 for beer destinations)
-    - Historical significance (📜, 🏺 for ancient sites)
-    - Natural features (🌿, 💦, 🌸, etc.)
-    If no suitable emoji can be found, use 📍 (location pin) as default]
+  * Name: [PLACE EMOJI SELECTION - FOLLOW THIS STRICT ORDER:
+    1. PLACE TYPE EMOJIS (try these first):
+       - 🏰 Castle/Palace/Fort
+       - 🏛️ Museum/Monument/Historic Building
+       - ⛪ Church/Temple/Religious Site
+       - 🏝️ Beach/Island
+       - 🏞️ National Park/Nature Reserve
+       - 🗽 Landmark/Statue
+       - 🌋 Volcano/Mountain
+       - 🏔️ Mountain Range/Peak
+       - 🌊 Ocean/Sea/Lake
+       - 🌳 Park/Garden
+       - 🏟️ Stadium/Arena
+       - 🎪 Theme Park/Circus
+       - 🎭 Theater/Opera House
+       - 🏨 Hotel/Resort
+       - 🏖️ Beach Resort
+       - 🏺 Archaeological Site
+       - 🗿 Ancient Ruins
+       
+    2. ACTIVITY EMOJIS (if no place emoji matches):
+       - 🏄‍♀️ Surfing Spot
+       - 🏊‍♀️ Swimming Location
+       - 🧗‍♀️ Climbing Area
+       - 🚶‍♀️ Hiking Trail
+       - ⛷️ Ski Resort
+       - 🛍️ Shopping District
+       - 🎨 Art Gallery
+       - 🎢 Amusement Park
+       - ⛳ Golf Course
+       - 🎣 Fishing Spot
+       
+    3. CONTEXTUAL EMOJIS (if no activity emoji matches):
+       - 🌸 Garden/Flower Park
+       - 🦁 Zoo/Safari
+       - 🐠 Aquarium
+       - 🌺 Botanical Garden
+       - 🍷 Winery/Vineyard
+       - 🌿 Nature Area
+       - 💦 Waterfall/Spring
+       - ❄️ Ice/Snow Feature
+       - 🌅 Sunset Viewpoint
+       - 🎵 Music Venue
+       
+    4. SEASONAL/EVENT EMOJIS:
+       - 🎄 Christmas Market/Event
+       - 🎋 Festival Site
+       - 🎡 Fair/Carnival Ground
+       - 🎪 Circus/Show Venue
+       
+    5. DEFAULT EMOJI:
+       - 📍 ONLY use if none of the above categories match
+       
+    IMPORTANT: You MUST try emojis from each category in order before using 📍.
+    NEVER skip categories or default to 📍 without checking all options first.]
   * City: [city name - e.g. "Rome" or "New York"]
   * Country: [country name - e.g. "Italy" or "United States"]
   * Flag: [COUNTRY FLAG emoji - e.g. "🇮🇹" or "🇺🇸"]

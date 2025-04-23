@@ -38,6 +38,8 @@ export class LocationsService {
 						tips: true,
 						categories: true,
 						mustTryDishes: true,
+						place: true,
+						restaurant: true,
 					},
 				},
 			},
@@ -68,8 +70,16 @@ export class LocationsService {
 					importLoc.mustTryDishes.map((dish) => dish.dish)
 				);
 
+				const emoji = location.importLocation.reduce((acc, importLoc) => {
+					if (acc) return acc;
+					if (importLoc.place?.emoji) return importLoc.place.emoji;
+					if (importLoc.restaurant?.emoji) return importLoc.restaurant.emoji;
+					return null;
+				}, null);
+
 				uniqueLocations.push({
 					...location,
+					emoji,
 					highlights: allHighlights,
 					tips: allTips,
 					categories: allCategories,
@@ -90,6 +100,8 @@ export class LocationsService {
 				tips: true,
 				categories: true,
 				mustTryDishes: true,
+				place: true,
+				restaurant: true,
 			},
 		});
 	}
@@ -103,6 +115,8 @@ export class LocationsService {
 				tips: true,
 				categories: true,
 				mustTryDishes: true,
+				place: true,
+				restaurant: true,
 			},
 		});
 	}

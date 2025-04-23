@@ -115,7 +115,6 @@ model Location {
   city             String?
   country          String?
   flag             String?
-  emoji            String?
   coordinates      String?
   address          String?
   bestTimeToVisit  String?

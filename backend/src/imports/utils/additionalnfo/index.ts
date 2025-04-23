@@ -84,7 +84,7 @@ async function getPlaceAdditionalInfo(
 		const city = place?.City || '';
 
 		if (placeDetails[index] !== null) {
-			const placeDetail = placeDetails[index][0];
+			const placeDetail = placeDetails[index];
 
 			const scrapedPlaceData = {
 				name: placeDetail?.name,
@@ -138,7 +138,6 @@ async function getPlaceAdditionalInfo(
 						name: name,
 						city: city,
 						country: place.Country,
-						emoji: emoji,
 						flag: place.Flag,
 						coordinates: scrapedPlaceData?.coordinates,
 						placeId: scrapedPlaceData?.placeId,
@@ -252,35 +251,10 @@ async function getRestaurantAdditionalInfo(
 		const city = restaurant?.City || '';
 
 		if (restaurantDetails[index] !== null) {
-			// Define type for scrapedRestaurantData
-			type RestaurantData = {
-				name?: string;
-				placeId?: string;
-				googleId?: string;
-				address?: string;
-				coordinates?: string;
-				popularTimes?: any;
-				website?: string;
-				phone?: string;
-				type?: string;
-				description?: string;
-				typicalTimeSpent?: string;
-				reviewsTags?: any;
-				reviewsAverage?: number;
-				reviewsCount?: number;
-				photo?: string;
-				openingHours?: string;
-				businessStatus?: string;
-				priceRange?: string;
-				locationLink?: string;
-			};
-
-			let scrapedRestaurantData: RestaurantData = {};
+			let scrapedRestaurantData;
 			let restaurantDetail;
 
-			// Check if the detail is a cached location or scraped data
 			if (restaurantDetails[index].id) {
-				// This is a cached location
 				const cachedLocation = restaurantDetails[index];
 				scrapedRestaurantData = {
 					description: cachedLocation.description,
@@ -301,7 +275,6 @@ async function getRestaurantAdditionalInfo(
 					reviewsAverage: cachedLocation.reviewsAverage,
 				};
 			} else {
-				// This is scraped data
 				restaurantDetail = restaurantDetails[index][0];
 				scrapedRestaurantData = {
 					name: restaurantDetail?.name,
@@ -358,7 +331,6 @@ async function getRestaurantAdditionalInfo(
 						name: name,
 						city: city,
 						country: restaurant.Country,
-						emoji: emoji,
 						flag: restaurant.Flag,
 						coordinates: scrapedRestaurantData?.coordinates,
 						placeId: scrapedRestaurantData?.placeId,
