@@ -270,7 +270,13 @@ const getRecipeAnalyzePrompt = () => {
 const getPlaceAnalyzePrompt = () => {
 	const prompt = `
   PLACE ANALYSIS RULES:
-  * Name: [Appropriate emoji BEFORE place name: 🏰 (castle), 🏝️ (beach), 🏞️ (nature), 🏛️ (monument), etc., followed by exact name of the place/attraction/landmark]
+  * Name: [Appropriate emoji BEFORE place name: 🏰 (castle), 🏝️ (beach), 🏞️ (nature), 🏛️ (monument), etc., followed by exact name of the place/attraction/landmark. 
+    If you can't find an appropriate place emoji, try to find a contextual emoji based on:
+    - The place's main attraction or activity (🏄‍♀️ for surfing beaches, 🧗‍♀️ for climbing locations)
+    - Food or drink associated with the location (🍷 for wine regions, 🍺 for beer destinations)
+    - Historical significance (📜, 🏺 for ancient sites)
+    - Natural features (🌿, 💦, 🌸, etc.)
+    If no suitable emoji can be found, use 📍 (location pin) as default]
   * City: [city name - e.g. "Rome" or "New York"]
   * Country: [country name - e.g. "Italy" or "United States"]
   * Flag: [COUNTRY FLAG emoji - e.g. "🇮🇹" or "🇺🇸"]
