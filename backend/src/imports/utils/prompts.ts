@@ -8,7 +8,7 @@ export const detectContentTypePrompt = (description: string) => {
    - Recipe: Food preparation, cooking instructions, dishes
    - Place: Travel destinations, landmarks, cities, countries, tourist attractions, parks, beaches, museums, historical sites, natural wonders, or any specific location being showcased or recommended
    - Film/Show: Movies, TV series, documentaries, streaming content
-   - Restaurant: Dining establishments, cafes, food venues
+   - Restaurant: Food venues, dining establishments, cafes, food spots, places to eat, food recommendations, food guides, restaurant reviews, food tours, food markets, food halls, street food locations
    - Book: Literature, publications, reading materials
    - Product: Consumer goods, items for purchase, merchandise
 
@@ -19,9 +19,9 @@ export const detectContentTypePrompt = (description: string) => {
    1. ACCURACY FIRST: If you cannot verify the content type with high confidence, explicitly state "Other" rather than providing a potentially incorrect content type.
    
    2. CONTENT TYPE DETERMINATION - EXTREMELY IMPORTANT:
-      - PLACE CATEGORIZATION: If the content mentions, shows, discusses, or recommends ANY specific physical location that people can visit (city, landmark, attraction, beach, park, museum, etc.), it MUST be categorized as "Place" - even if the location is only briefly mentioned
-      - RESTAURANT CATEGORIZATION: If the content focuses on a specific restaurant, cafe, or food venue, categorize as "Restaurant" (not "Place")
-      - DEFAULT TO "PLACE" FOR LOCATION CONTENT: When in doubt about content showing a physical location, categorize as "Place" rather than "Other"
+      - RESTAURANT CATEGORIZATION: If the content focuses on food venues, dining spots, places to eat, food recommendations, restaurant reviews, or any food-related locations, it MUST be categorized as "Restaurant" (not "Place")
+      - PLACE CATEGORIZATION: If the content mentions, shows, discusses, or recommends ANY specific physical location that people can visit (city, landmark, attraction, beach, park, museum, etc.), AND IS NOT PRIMARILY ABOUT FOOD OR DINING, it should be categorized as "Place"
+      - DEFAULT TO "RESTAURANT" FOR FOOD LOCATIONS: When in doubt about content showing food venues or dining recommendations, categorize as "Restaurant" rather than "Place"
       - Only use "Other" if the content truly doesn't fit any specific category
    
    Provide your analysis in this exact JSON format:
@@ -70,11 +70,57 @@ export const getBaseAnalyzePrompt = (
      A. LOCATION HIERARCHY RULES:
         1. REQUIRED FIELDS (CRITICAL):
            - Every place MUST have these fields:
-             * Name: [Place emoji + name]
+             * Name: [Place emoji + name - see name cleaning rules below]
              * City: [City name or null - see city rules below]
              * Country: [Full country name]
              * Flag: [Country flag emoji - MANDATORY]
              * Description: [Brief description]
+           
+           NAME CLEANING RULES (CRITICAL):
+           - Remove city name from place name if it matches the City field
+           - Remove country name from place name if it matches the Country field
+           - Keep only the distinctive part of the name
+           
+           EXAMPLES:
+           ✅ CORRECT:
+           {
+             "Name": "🍺 Levels",           // City name removed
+             "City": "Prague",
+             "Country": "Czech Republic",
+             "Flag": "🇨🇿"
+           }
+           
+           {
+             "Name": "🏰 Matsumoto Castle", // Just the castle name
+             "City": "Matsumoto",
+             "Country": "Japan",
+             "Flag": "🇯🇵"
+           }
+           
+           ❌ INCORRECT:
+           {
+             "Name": "🍺 Levels Prague",     // WRONG! City name redundant
+             "City": "Prague",
+             "Country": "Czech Republic",
+             "Flag": "🇨🇿"
+           }
+           
+           {
+             "Name": "🏰 Matsumoto Castle Matsumoto", // WRONG! City name redundant
+             "City": "Matsumoto",
+             "Country": "Japan",
+             "Flag": "🇯🇵"
+           }
+           
+           NAME CLEANING STEPS:
+           1. First identify the City and Country for the place
+           2. Look for these exact words in the place name
+           3. Remove them if they appear at start or end of name
+           4. Keep them ONLY if they're part of a proper noun
+              Examples of when to keep:
+              - "New York Pizza" in Rome (keep "New York" as it's part of dish name)
+              - "Paris Cafe" in London (keep "Paris" as it's part of brand name)
+              - "Tokyo Sushi" in Milan (keep "Tokyo" as it's part of restaurant name)
            
            FLAG EMOJI RULES:
            - Flag field is MANDATORY for all entries
@@ -304,6 +350,7 @@ export const getBaseAnalyzePrompt = (
      - For multiple items: confirm no duplicates exist in final output
      - For locations: verify each distinct location is a separate entry
      - CRITICAL: Verify every entry has a Flag field with the correct country flag emoji
+     - CRITICAL: Verify all place names have been cleaned of redundant city/country names
 
   8. TRANSLATION:
      - Ensure all extracted information is translated to English.

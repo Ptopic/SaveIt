@@ -17,5 +17,9 @@ export const getOutscraperData = async (queries: string[]) => {
 
 	const data = await response.json();
 
+	// for (const place of data.data) {
+	// 	console.log(place);
+	// }
+
 	return data.data;
 };

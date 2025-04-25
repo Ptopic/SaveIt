@@ -75,7 +75,10 @@ async function getPlaceAdditionalInfo(
 
 	if (queries.length > 0) {
 		const scrapedPlaceDetails = await getOutscraperData(queries);
-		placeDetails.push(...scrapedPlaceDetails);
+		const flattenedPlaceDetails = scrapedPlaceDetails.map(
+			(details) => details[0]
+		);
+		placeDetails.push(...flattenedPlaceDetails);
 	}
 
 	for (const [index, place] of placesArray.entries()) {
@@ -240,7 +243,10 @@ async function getRestaurantAdditionalInfo(
 
 	if (queries.length > 0) {
 		const scrapedRestaurantDetails = await getOutscraperData(queries);
-		restaurantDetails.push(...scrapedRestaurantDetails);
+		const flattenedRestaurantDetails = scrapedRestaurantDetails.map(
+			(details) => details[0]
+		);
+		restaurantDetails.push(...flattenedRestaurantDetails);
 	}
 
 	for (const [index, restaurant] of restaurantsArray.entries()) {

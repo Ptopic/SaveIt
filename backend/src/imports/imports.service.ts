@@ -264,6 +264,16 @@ export class ImportsService {
 			},
 		});
 
+		await this.prisma.importLocationMustTryDish.deleteMany({
+			where: {
+				importLocation: {
+					restaurant: {
+						importId: id,
+					},
+				},
+			},
+		});
+
 		await this.prisma.importLocation.deleteMany({
 			where: {
 				OR: [
@@ -281,15 +291,6 @@ export class ImportsService {
 			},
 		});
 
-		await this.prisma.importLocationMustTryDish.deleteMany({
-			where: {
-				importLocation: {
-					restaurant: {
-						importId: id,
-					},
-				},
-			},
-		});
 		await this.prisma.place.deleteMany({
 			where: {
 				importId: id,
