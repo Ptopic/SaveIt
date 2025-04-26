@@ -13,6 +13,7 @@ import {
 	displayImportTypeModal,
 } from '@/feature/import/utils';
 import { blurhash } from '@/shared/contants';
+import { IMPORTS_PAGE_SIZE, LOCATIONS_PAGE_SIZE } from '@/shared/pagination';
 import {
 	ArrowLeftIcon,
 	PencilIcon,
@@ -66,10 +67,13 @@ const ImportDetailsScreen = () => {
 	const { mutate: deleteImport } = useDeleteImport({
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: [IMPORTS, '6', '', ''],
+				queryKey: [IMPORTS, IMPORTS_PAGE_SIZE, '', ''],
 				exact: true,
 			});
-			queryClient.invalidateQueries({ queryKey: [LOCATIONS], exact: false });
+			queryClient.invalidateQueries({
+				queryKey: [LOCATIONS, LOCATIONS_PAGE_SIZE, ''],
+				exact: true,
+			});
 			router.back();
 		},
 	});

@@ -5,7 +5,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class LocationsService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async getAllLocations(userId: string, searchQuery?: string) {
+	async getAllLocations(
+		userId: string,
+		page: string,
+		pageSize: string,
+		searchQuery?: string
+	) {
 		const locations = await this.prisma.location.findMany({
 			where: {
 				importLocation: {
@@ -46,6 +51,19 @@ export class LocationsService {
 						place: true,
 						restaurant: true,
 					},
+				},
+			},
+			skip: parseInt(page) * parseInt(pageSize),
+			take: parseInt(pageSize),
+			orderBy: {
+				createdAt: 'desc',
+			},
+		});
+
+		const totalLocations = await this.prisma.location.count({
+			where: {
+				importLocation: {
+					some: { userId },
 				},
 			},
 		});
@@ -101,7 +119,7 @@ export class LocationsService {
 			}
 		}
 
-		return uniqueLocations;
+		return { locations: uniqueLocations, totalLocations };
 	}
 
 	async getLocationById(id: string) {

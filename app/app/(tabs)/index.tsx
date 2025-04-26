@@ -9,6 +9,7 @@ import FiltersToolbar from '@/feature/home/FiltersToolbar';
 import ImportCard from '@/feature/home/ImportCard';
 import useDebounce from '@/hooks/useDebounce';
 import { config } from '@/shared/config';
+import { IMPORTS_PAGE_SIZE, LOCATIONS_PAGE_SIZE } from '@/shared/pagination';
 import { BookmarkIcon, SearchIcon } from '@/shared/svgs';
 import { getDeviceWidth } from '@/utils/device';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
@@ -28,8 +29,6 @@ const socket = io(config.apiUrl);
 
 export default function TabOneScreen() {
 	const queryClient = useQueryClient();
-
-	const IMPORTS_PAGE_SIZE = '6';
 
 	const width = getDeviceWidth();
 
@@ -74,7 +73,10 @@ export default function TabOneScreen() {
 	const onRefresh = async () => {
 		setRefreshing(true);
 		refetchImports();
-		queryClient.invalidateQueries({ queryKey: [LOCATIONS], exact: false });
+		queryClient.invalidateQueries({
+			queryKey: [LOCATIONS, LOCATIONS_PAGE_SIZE, ''],
+			exact: true,
+		});
 		setRefreshing(false);
 	};
 
