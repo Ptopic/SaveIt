@@ -7,6 +7,7 @@ import Title from '@/components/Title';
 import LocationDisplayModal from '@/feature/map/LocationDisplayModal';
 import LocationsList from '@/feature/map/LocationsList';
 import useDebounce from '@/hooks/useDebounce';
+import { LOCATIONS_PAGE_SIZE } from '@/shared/pagination';
 import { ArrowLeftIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
@@ -35,8 +36,6 @@ export default function TabMapScreen() {
 		longitude: longitudeParam,
 		importId,
 	} = useLocalSearchParams();
-
-	const LOCATIONS_PAGE_SIZE = '15';
 
 	const [latitude, setLatitude] = useState<string | null>(
 		latitudeParam as string | null
