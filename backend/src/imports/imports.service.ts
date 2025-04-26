@@ -37,7 +37,7 @@ export class ImportsService {
 
 		// TODO: Use hashtags to detect content type - If that produces bugs use transcribed text and hashtags
 		const contentType = await detectContentType(
-			urlMetadata['description'] + '\n' + transcript.text.slice(0, 100),
+			urlMetadata['description'] + '\n' + transcript.text.slice(0, 200),
 			[frames[0]]
 		);
 		// const contentType = await detectContentType(
