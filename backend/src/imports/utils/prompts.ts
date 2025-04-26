@@ -59,14 +59,77 @@ export const getBaseAnalyzePrompt = (
   CRITICAL INSTRUCTIONS:
   1. ACCURACY FIRST: If you cannot verify information with high confidence, you MUST set the value as null.
   
-  2. CONTENT TYPE DETERMINATION - EXTREMELY IMPORTANT:
+  2. RESPONSE STRUCTURE - EXTREMELY IMPORTANT:
+     a) SUMMARY MUST ALWAYS BE AN ARRAY:
+        - For both single and multiple items, summary must be an array of objects
+        - NEVER return summary as an object with named keys
+        - Each item must be a separate object in the array
+        
+        ✅ CORRECT FORMAT:
+        {
+          "type": "Restaurant",
+          "title": "3 Must-Try Restaurants in Paris",
+          "summary": [
+            {
+              "Name": "🥪 Carretera de Cochon",
+              "City": "Paris",
+              "Country": "France",
+              "Flag": "🇫🇷",
+              // ... other fields
+            },
+            {
+              "Name": "🥩 La Renommée",
+              "City": "Paris",
+              // ... other fields
+            }
+          ]
+        }
+
+        ❌ INCORRECT FORMAT - NEVER USE THIS:
+        {
+          "type": "Restaurant",
+          "title": "3 Must-Try Restaurants in Paris",
+          "summary": {
+            "🥪 Carretera de Cochon": {
+              "Name": "🥪 Carretera de Cochon",
+              // ... other fields
+            },
+            "🥩 La Renommée": {
+              // ... other fields
+            }
+          }
+        }
+
+        ❌ INCORRECT FORMAT - NEVER USE THIS EVEN FOR SINGLE ITEMS:
+        {
+          "type": "Restaurant",
+          "title": "Amazing Restaurant in Paris",
+          "summary": {
+            "Name": "🥪 Carretera de Cochon",
+            // ... other fields
+          }
+        }
+
+        ✅ CORRECT FORMAT FOR SINGLE ITEMS:
+        {
+          "type": "Restaurant",
+          "title": "Amazing Restaurant in Paris",
+          "summary": [
+            {
+              "Name": "🥪 Carretera de Cochon",
+              // ... other fields
+            }
+          ]
+        }
+  
+  3. CONTENT TYPE DETERMINATION - EXTREMELY IMPORTANT:
      - PLACE CATEGORIZATION: If the content mentions, shows, discusses, or recommends ANY specific physical location that people can visit (city, landmark, attraction, beach, park, museum, etc.), it MUST be categorized as "Place" - even if the location is only briefly mentioned
      - RESTAURANT CATEGORIZATION: If the content focuses on a specific restaurant, cafe, or food venue, categorize as "Restaurant" (not "Place")
      - DEFAULT TO "PLACE" FOR LOCATION CONTENT: When in doubt about content showing a physical location, categorize as "Place" rather than "Other"
      - Only use "Other" if the content truly doesn't fit any specific category
      - **USE CAPITAL LETTERS FOR CONTENT TYPES AS SPECIFIED IN RULES: Always use capitalized content type names like "Name" for Place, "Cuisine" for Restaurant, etc.**
 
-  3. MULTIPLE ITEMS AND DUPLICATE PREVENTION - CRITICAL:
+  4. MULTIPLE ITEMS AND DUPLICATE PREVENTION - CRITICAL:
      A. LOCATION HIERARCHY RULES:
         1. REQUIRED FIELDS (CRITICAL):
            - Every place MUST have these fields:
@@ -314,7 +377,7 @@ export const getBaseAnalyzePrompt = (
           ]
         }
 
-  4. INFORMATION EXTRACTION:
+  5. INFORMATION EXTRACTION:
      - Extract information explicitly stated in the transcript/description
      - For any missing information, ACTIVELY SEARCH the web to find accurate data
      - Follow the detailed search instructions in the category-specific rules below
@@ -322,14 +385,14 @@ export const getBaseAnalyzePrompt = (
      - NEVER use text placeholders like "Not available", "Unknown", "Not mentioned" - use null instead
      - NEVER invent or assume information not present in the source or verifiable through search
 
-  5. WEB SEARCH GUIDELINES:
+  6. WEB SEARCH GUIDELINES:
      - Prioritize official sources (publisher sites, official business pages, etc.)
      - Cross-reference information across multiple reliable sources
      - For conflicting information, use the most commonly reported data or null
      - Ensure all searched information is current and accurate
      - If information varies by region/edition/version, specify which one
      
-  6. MULTIPLE ITEMS RESPONSE FORMAT:
+  7. MULTIPLE ITEMS RESPONSE FORMAT:
      When multiple items are detected, structure the response as:
      {
        "title": "descriptive_title_for_collection",
@@ -340,7 +403,7 @@ export const getBaseAnalyzePrompt = (
        ]
      }
   
-  7. FINAL VERIFICATION CHECKLIST:
+  8. FINAL VERIFICATION CHECKLIST:
      - Double-check that any content about a physical location is categorized as "Place"
      - Ensure all place-related content is categorized as "Place"
      - Confirm that all information is either from the transcript or verified through search
@@ -352,7 +415,7 @@ export const getBaseAnalyzePrompt = (
      - CRITICAL: Verify every entry has a Flag field with the correct country flag emoji
      - CRITICAL: Verify all place names have been cleaned of redundant city/country names
 
-  8. TRANSLATION:
+  9. TRANSLATION:
      - Ensure all extracted information is translated to English.
   `;
 
