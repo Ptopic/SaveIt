@@ -84,6 +84,22 @@ export class ImportsController {
 			},
 		});
 
+		const importWithSameUrl = await this.prisma.import.findFirst({
+			where: {
+				videoUrl: url,
+			},
+		});
+
+		if (importWithSameUrl) {
+			await this.notificationsService.sendNotification(
+				user.pushNotificationId,
+				'Content Already Imported',
+				'❌ You have already imported this content'
+			);
+
+			throw new Error('Content already imported');
+		}
+
 		const socialMediaType = url.includes('instagram')
 			? 'instagram'
 			: url.includes('tiktok')
