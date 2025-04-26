@@ -219,18 +219,20 @@ const PlaceOrRestaurantDisplay = ({ data }: IProps) => {
 						emoji={'🕒'}
 					/>
 				)}
-				<Button
-					text="View on Map"
-					onPress={() => {
-						router.push(
-							`/map?latitude=${
-								data.location?.coordinates.split(',')[0]
-							}&longitude=${
-								data.location?.coordinates.split(',')[1]
-							}&importId=${data.importId}`
-						);
-					}}
-				/>
+				{data.location?.coordinates && (
+					<Button
+						text="View on Map"
+						onPress={() => {
+							router.push(
+								`/map?latitude=${
+									data.location?.coordinates.split(',')[0]
+								}&longitude=${
+									data.location?.coordinates.split(',')[1]
+								}&importId=${data.importId}`
+							);
+						}}
+					/>
+				)}
 			</View>
 		</View>
 	);

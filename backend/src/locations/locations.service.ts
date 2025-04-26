@@ -26,6 +26,11 @@ export class LocationsService {
 										category: { contains: searchQuery, mode: 'insensitive' },
 									},
 								},
+								location: {
+									coordinates: {
+										not: null,
+									},
+								},
 							},
 						},
 					},
@@ -49,48 +54,50 @@ export class LocationsService {
 		const seenIdentifiers = new Set();
 
 		for (const location of locations) {
-			const [latitude, longitude] = location.coordinates.split(',');
-			const identifier = `${location.name}-${latitude}-${longitude}`;
-			if (!seenIdentifiers.has(identifier)) {
-				seenIdentifiers.add(identifier);
+			if (location.coordinates) {
+				const [latitude, longitude] = location.coordinates.split(',');
+				const identifier = `${location.name}-${latitude}-${longitude}`;
+				if (!seenIdentifiers.has(identifier)) {
+					seenIdentifiers.add(identifier);
 
-				const allHighlights = location.importLocation.flatMap((importLoc) =>
-					importLoc.highlights.map((highlight) => highlight.highlight)
-				);
+					const allHighlights = location.importLocation.flatMap((importLoc) =>
+						importLoc.highlights.map((highlight) => highlight.highlight)
+					);
 
-				const allTips = location.importLocation.flatMap((importLoc) =>
-					importLoc.tips.map((tip) => tip.tip)
-				);
+					const allTips = location.importLocation.flatMap((importLoc) =>
+						importLoc.tips.map((tip) => tip.tip)
+					);
 
-				const allCategories = location.importLocation.flatMap((importLoc) =>
-					importLoc.categories.map((category) => category.category)
-				);
+					const allCategories = location.importLocation.flatMap((importLoc) =>
+						importLoc.categories.map((category) => category.category)
+					);
 
-				const allMustTryDishes = location.importLocation.flatMap((importLoc) =>
-					importLoc.mustTryDishes.map((dish) => dish.dish)
-				);
+					const allMustTryDishes = location.importLocation.flatMap(
+						(importLoc) => importLoc.mustTryDishes.map((dish) => dish.dish)
+					);
 
-				const place =
-					location.importLocation.find((importLoc) => importLoc.place)?.place ||
-					null;
-				const restaurant =
-					location.importLocation.find((importLoc) => importLoc.restaurant)
-						?.restaurant || null;
+					const place =
+						location.importLocation.find((importLoc) => importLoc.place)
+							?.place || null;
+					const restaurant =
+						location.importLocation.find((importLoc) => importLoc.restaurant)
+							?.restaurant || null;
 
-				const emoji = place?.emoji || restaurant?.emoji || null;
+					const emoji = place?.emoji || restaurant?.emoji || null;
 
-				const { importLocation, ...locationBase } = location;
+					const { importLocation, ...locationBase } = location;
 
-				uniqueLocations.push({
-					...locationBase,
-					emoji,
-					highlights: allHighlights,
-					tips: allTips,
-					categories: allCategories,
-					mustTryDishes: allMustTryDishes,
-					place,
-					restaurant,
-				});
+					uniqueLocations.push({
+						...locationBase,
+						emoji,
+						highlights: allHighlights,
+						tips: allTips,
+						categories: allCategories,
+						mustTryDishes: allMustTryDishes,
+						place,
+						restaurant,
+					});
+				}
 			}
 		}
 

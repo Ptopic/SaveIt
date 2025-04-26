@@ -94,7 +94,10 @@ async function getPlaceAdditionalInfo(
 				placeId: placeDetail?.place_id,
 				googleId: placeDetail?.google_id,
 				address: placeDetail?.full_address,
-				coordinates: placeDetail?.latitude + ',' + placeDetail?.longitude,
+				coordinates:
+					placeDetail?.latitude && placeDetail?.longitude
+						? `${placeDetail.latitude},${placeDetail.longitude}`
+						: null,
 				popularTimes: placeDetail?.popular_times,
 				website: placeDetail?.site,
 				phone: placeDetail?.phone,
@@ -288,7 +291,9 @@ async function getRestaurantAdditionalInfo(
 					googleId: restaurantDetail?.google_id,
 					address: restaurantDetail?.full_address,
 					coordinates:
-						restaurantDetail?.latitude + ',' + restaurantDetail?.longitude,
+						restaurantDetail?.latitude && restaurantDetail?.longitude
+							? `${restaurantDetail.latitude},${restaurantDetail.longitude}`
+							: null,
 					popularTimes: restaurantDetail?.popular_times,
 					website: restaurantDetail?.site,
 					phone: restaurantDetail?.phone,
