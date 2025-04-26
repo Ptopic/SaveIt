@@ -65,7 +65,10 @@ const ImportDetailsScreen = () => {
 
 	const { mutate: deleteImport } = useDeleteImport({
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: [IMPORTS], exact: false });
+			queryClient.invalidateQueries({
+				queryKey: [IMPORTS, '6', '', ''],
+				exact: true,
+			});
 			queryClient.invalidateQueries({ queryKey: [LOCATIONS], exact: false });
 			router.back();
 		},
