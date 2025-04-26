@@ -1,10 +1,17 @@
 import { config } from '@/shared/config';
 import authenticatedRequest from '../authenticatedRequest';
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../constants';
 
-const getAllLocations = async (searchQuery: string = '') => {
+const getAllLocations = async (
+	page = DEFAULT_PAGE,
+	searchQuery = '',
+	pageSize = DEFAULT_PAGE_SIZE
+) => {
 	const url = new URL(`${config.apiUrl}/locations`);
 
+	url.searchParams.set('page', page);
 	url.searchParams.set('searchQuery', searchQuery);
+	url.searchParams.set('pageSize', pageSize);
 
 	return await authenticatedRequest(url.toString(), {
 		method: 'GET',

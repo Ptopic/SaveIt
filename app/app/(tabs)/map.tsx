@@ -1,4 +1,4 @@
-import useGetAllLocations from '@/api/locations/hooks/useGetAllLocations';
+import useGetAllLocationsOnScroll from '@/api/locations/hooks/useGetAllLocations';
 import { ILocation } from '@/api/locations/types';
 import ErrorText from '@/components/ErrorText';
 import Search from '@/components/Search';
@@ -12,7 +12,13 @@ import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import {
 	ActivityIndicator,
 	StyleSheet,
@@ -29,6 +35,8 @@ export default function TabMapScreen() {
 		longitude: longitudeParam,
 		importId,
 	} = useLocalSearchParams();
+
+	const LOCATIONS_PAGE_SIZE = '15';
 
 	const [latitude, setLatitude] = useState<string | null>(
 		latitudeParam as string | null
@@ -57,9 +65,23 @@ export default function TabMapScreen() {
 
 	const debouncedSearchValue = useDebounce(search, 600);
 
-	const { data: locations, isLoading } = useGetAllLocations({
+	const {
+		locations,
+		isLoading,
+		isFetchingNextPage,
+		hasNextPage,
+		fetchNextPage,
+		refetch: refetchLocations,
+	} = useGetAllLocationsOnScroll({
+		pageSize: LOCATIONS_PAGE_SIZE,
 		searchQuery: debouncedSearchValue,
 	});
+
+	const handleEndReached = useCallback(() => {
+		if (hasNextPage && !isFetchingNextPage) {
+			fetchNextPage();
+		}
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
 	useEffect(() => {
 		async function getCurrentLocation() {
@@ -233,6 +255,11 @@ export default function TabMapScreen() {
 								<LocationsList
 									locations={locations}
 									onLocationPress={onLocationPress}
+									hasNextPage={hasNextPage}
+									handleEndReached={handleEndReached}
+									refreshing={isFetchingNextPage}
+									onRefresh={refetchLocations}
+									isFetchingNextPage={isFetchingNextPage}
 								/>
 							) : (
 								<Text>No locations found</Text>
