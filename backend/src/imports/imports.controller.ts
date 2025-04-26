@@ -84,9 +84,12 @@ export class ImportsController {
 			},
 		});
 
+		const expandedUrl = await expandTikTokUrl(url);
+
 		const importWithSameUrl = await this.prisma.import.findFirst({
 			where: {
-				videoUrl: url,
+				videoUrl: expandedUrl,
+				userId,
 			},
 		});
 
@@ -114,14 +117,12 @@ export class ImportsController {
 			title: url,
 			duration: 0,
 			socialMediaType,
-			videoUrl: url,
+			videoUrl: expandedUrl,
 		});
 
 		let result;
 
 		try {
-			const expandedUrl = await expandTikTokUrl(url);
-
 			const postType = await detectPostType(expandedUrl);
 
 			const urlMetadata = await getMetaDataScript(expandedUrl, postType.type);
