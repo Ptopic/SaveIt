@@ -14,6 +14,7 @@ export interface IImport {
 	videoUrl: string;
 
 	places: IPlace[];
+	restaurants: IRestaurant[];
 
 	createdAt: string;
 	updatedAt: string;
@@ -63,6 +64,25 @@ export interface IPlaceLocation {
 	}[];
 }
 
+export interface IRestaurantLocation {
+	id: string;
+	createdAt: string;
+	updatedAt: string;
+	location: ILocation;
+	tips: {
+		tip: string;
+	}[];
+	highlights: {
+		highlight: string;
+	}[];
+	categories: {
+		category: string;
+	}[];
+	mustTryDishes: {
+		dish: string;
+	}[];
+}
+
 export interface IPlace {
 	id: string;
 	name: string;
@@ -71,6 +91,16 @@ export interface IPlace {
 	importId: string;
 	photo: string;
 	importLocation: IPlaceLocation[];
+}
+
+export interface IRestaurant {
+	id: string;
+	name: string;
+	description: string;
+	emoji: string;
+	importId: string;
+	photo: string;
+	importLocation: IRestaurantLocation[];
 }
 export interface ICreateImportRequest {
 	url: string;

@@ -1,8 +1,10 @@
 import { IImport } from '@/api/imports/types';
+import React from 'react';
 import { ImportType } from '../home/FilterBadge/types';
 import PlaceDisplay from './ImportTypeDIsplay/Place/PlacesDisplay';
+import RestaurantsDisplay from './ImportTypeDIsplay/Restaurant/RestaurantsDIsplay';
 import PlaceDetailsModal from './ImportTypeModal/Place/PlaceDetailsModal';
-
+import RestaurantDetailsModal from './ImportTypeModal/Restaurant/RestaurantDetailsModal';
 export const displayImportType = (
 	importType: ImportType,
 	importData: IImport,
@@ -10,7 +12,12 @@ export const displayImportType = (
 ) => {
 	switch (importType) {
 		case ImportType.RESTAURANT:
-			return 'Restaurant';
+			return (
+				<RestaurantsDisplay
+					restaurants={importData.restaurants}
+					handleItemPress={handleItemPress}
+				/>
+			);
 		case ImportType.PLACE:
 			return (
 				<PlaceDisplay
@@ -46,7 +53,12 @@ export const displayImportTypeModal = (
 ) => {
 	switch (importType) {
 		case ImportType.RESTAURANT:
-			return 'Restaurant';
+			return (
+				<RestaurantDetailsModal
+					restaurant={selectedItem}
+					handleCloseModal={handleCloseModal}
+				/>
+			);
 		case ImportType.PLACE:
 			return (
 				<PlaceDetailsModal

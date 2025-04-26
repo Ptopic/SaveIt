@@ -1,4 +1,4 @@
-import { IPlace, IRestaurant } from '@/api/imports/types';
+import { IRestaurant } from '@/api/imports/types';
 import PlaceOrRestaurantDisplay from '@/components/PlaceOrRestaurantDisplay';
 import Text from '@/components/Text';
 import { CloseIcon } from '@/shared/svgs';
@@ -7,21 +7,21 @@ import React from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 
 interface IProps {
-	place: IPlace | IRestaurant;
+	restaurant: IRestaurant;
 	handleCloseModal: () => void;
 }
 
-const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
-	const placeData = {
-		...place,
-		...place.importLocation[0],
+const RestaurantDetailsModal = ({ restaurant, handleCloseModal }: IProps) => {
+	const restaurantData = {
+		...restaurant,
+		...restaurant.importLocation[0],
 	};
 
 	return (
 		<ScrollView showsVerticalScrollIndicator={false}>
 			<View className="flex-row justify-between items-center">
 				<View className="w-12 h-12 rounded-full bg-gray50 border border-gray200 items-center justify-center">
-					<Text className="text-lg">{place?.emoji}</Text>
+					<Text className="text-lg">{restaurant?.emoji}</Text>
 				</View>
 				<TouchableOpacity
 					className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
@@ -36,10 +36,10 @@ const PlaceDetailsModal = ({ place, handleCloseModal }: IProps) => {
 					/>
 				</TouchableOpacity>
 			</View>
-			<PlaceOrRestaurantDisplay data={placeData} />
+			<PlaceOrRestaurantDisplay data={restaurantData} />
 			<View className="h-[20px]" />
 		</ScrollView>
 	);
 };
 
-export default PlaceDetailsModal;
+export default RestaurantDetailsModal;

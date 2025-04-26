@@ -70,20 +70,26 @@ export class LocationsService {
 					importLoc.mustTryDishes.map((dish) => dish.dish)
 				);
 
-				const emoji = location.importLocation.reduce((acc, importLoc) => {
-					if (acc) return acc;
-					if (importLoc.place?.emoji) return importLoc.place.emoji;
-					if (importLoc.restaurant?.emoji) return importLoc.restaurant.emoji;
-					return null;
-				}, null);
+				const place =
+					location.importLocation.find((importLoc) => importLoc.place)?.place ||
+					null;
+				const restaurant =
+					location.importLocation.find((importLoc) => importLoc.restaurant)
+						?.restaurant || null;
+
+				const emoji = place?.emoji || restaurant?.emoji || null;
+
+				const { importLocation, ...locationBase } = location;
 
 				uniqueLocations.push({
-					...location,
+					...locationBase,
 					emoji,
 					highlights: allHighlights,
 					tips: allTips,
 					categories: allCategories,
 					mustTryDishes: allMustTryDishes,
+					place,
+					restaurant,
 				});
 			}
 		}
