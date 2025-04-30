@@ -1,11 +1,8 @@
 **node_modules**
 # Keep environment variables out of version control
+**android**
 **.env**
 **.DS_Store**
-**ios**
-ios
-**android**
-android
 **expo**
 google login test
 backend-test
