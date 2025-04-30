@@ -1,4 +1,5 @@
 import { IMPORTS, LOCATIONS } from '@/api/constants';
+import useCreateImport from '@/api/imports/hooks/useCreateImport';
 import AddNewImportModal from '@/feature/AddNewImportModal';
 import {
 	BookmarkIcon,
@@ -8,29 +9,89 @@ import {
 	SearchIcon,
 	UserIcon,
 } from '@/shared/svgs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
 import { Tabs, usePathname } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus, Pressable } from 'react-native';
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
 	withTiming,
 } from 'react-native-reanimated';
+import ShareMenu from 'react-native-share-menu';
+import { useToast } from 'react-native-toast-notifications';
+
+type SharedItem = {
+	mimeType: string;
+	data: string | string[];
+	extraData?: {
+		url?: string;
+		[key: string]: any;
+	};
+};
 
 export default function TabLayout() {
+	const toast = useToast();
 	const pathname = usePathname();
 	const queryClient = useQueryClient();
+
+	const { mutate: createImport } = useCreateImport();
+
+	const handleShare = useCallback(
+		async (item: SharedItem | null | undefined) => {
+			if (!item) {
+				return;
+			}
+
+			const sharedUrl = item.extraData?.url || '';
+
+			const previousSharedUrl = await AsyncStorage.getItem('previousSharedUrl');
+
+			if (previousSharedUrl === sharedUrl && previousSharedUrl !== null) {
+				return;
+			}
+
+			if (
+				sharedUrl &&
+				(!sharedUrl.includes('https://') ||
+					(!sharedUrl.includes('tiktok') && !sharedUrl.includes('instagram')))
+			) {
+				toast.show('Please paste a valid link', { type: 'error' });
+				return;
+			}
+
+			createImport(
+				{ url: sharedUrl },
+				{
+					onSuccess: () => {
+						queryClient.invalidateQueries({
+							queryKey: [IMPORTS],
+							exact: false,
+						});
+						queryClient.invalidateQueries({
+							queryKey: [LOCATIONS],
+							exact: false,
+						});
+					},
+				}
+			);
+
+			await AsyncStorage.setItem('previousSharedUrl', sharedUrl);
+		},
+		[]
+	);
 
 	const appState = useRef(AppState.currentState);
 
 	useEffect(() => {
-		const handleAppStateChange = (nextAppState: AppStateStatus) => {
+		const handleAppStateChange = async (nextAppState: AppStateStatus) => {
 			if (
 				appState.current.match(/inactive|background/) &&
 				nextAppState === 'active'
 			) {
 				onAppRefocused();
+				await ShareMenu.getInitialShare(handleShare);
 			}
 
 			appState.current = nextAppState;
