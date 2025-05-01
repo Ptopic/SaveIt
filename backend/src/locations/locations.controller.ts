@@ -29,12 +29,22 @@ export class LocationsController {
 	}
 
 	@Get(':id')
+	@JwtAuth()
 	async getLocationById(@Param('id') id: string) {
 		return this.locationsService.getLocationById(id);
 	}
 
 	@Get('import/:importId')
-	async getLocationByImportId(@Param('importId') importId: string) {
-		return this.locationsService.getLocationByImportId(importId);
+	@JwtAuth()
+	async getLocationByImportIdAndCoordinates(
+		@Param('importId') importId: string,
+		@Query('latitude') latitude: string,
+		@Query('longitude') longitude: string
+	) {
+		return this.locationsService.getLocationByImportIdAndCoordinates(
+			importId,
+			latitude,
+			longitude
+		);
 	}
 }

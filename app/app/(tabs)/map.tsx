@@ -1,4 +1,5 @@
 import useGetAllLocationsOnScroll from '@/api/locations/hooks/useGetAllLocations';
+import useGetLocationByImportIdAndCoordinates from '@/api/locations/hooks/useGetLocationByImportIdAndCoordinates';
 import { ILocation } from '@/api/locations/types';
 import ErrorText from '@/components/ErrorText';
 import Search from '@/components/Search';
@@ -11,8 +12,9 @@ import { LOCATIONS_PAGE_SIZE } from '@/shared/pagination';
 import { ArrowLeftIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import * as Location from 'expo-location';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import React, {
 	useCallback,
 	useEffect,
@@ -30,12 +32,18 @@ import MapView, { Marker, Region } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+type MapRouteParams = RouteProp<
+	{ params: { latitude: string; longitude: string; importId: string } },
+	'params'
+>;
+
 export default function TabMapScreen() {
+	const route = useRoute<MapRouteParams>();
 	const {
 		latitude: latitudeParam,
 		longitude: longitudeParam,
 		importId,
-	} = useLocalSearchParams();
+	} = route.params;
 
 	const [latitude, setLatitude] = useState<string | null>(
 		latitudeParam as string | null
@@ -75,6 +83,13 @@ export default function TabMapScreen() {
 		pageSize: LOCATIONS_PAGE_SIZE,
 		searchQuery: debouncedSearchValue,
 	});
+
+	const { data: locationByImportIdAndCoordinates } =
+		useGetLocationByImportIdAndCoordinates(
+			importId as string,
+			latitudeParam as string,
+			longitudeParam as string
+		);
 
 	const handleEndReached = useCallback(() => {
 		if (hasNextPage && !isFetchingNextPage) {
@@ -134,20 +149,16 @@ export default function TabMapScreen() {
 	}, [locations, debouncedSearchValue]);
 
 	useEffect(() => {
-		if (locations && location && latitude && longitude) {
+		if (locationByImportIdAndCoordinates) {
 			bottomSheetRef.current?.close();
 			locationDetailsBottomSheetRef.current?.snapToIndex(1);
-
-			const locationWithCoordinates = locations.find(
-				(location) => location.coordinates === `${latitude},${longitude}`
-			);
 
 			setLatitude(null);
 			setLongitude(null);
 
-			setSelectedLocation(locationWithCoordinates || null);
+			setSelectedLocation(locationByImportIdAndCoordinates || null);
 		}
-	}, [locations, location, latitude, longitude]);
+	}, [locationByImportIdAndCoordinates]);
 
 	const onLocationPress = (location: ILocation) => {
 		bottomSheetRef.current?.close();

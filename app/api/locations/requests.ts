@@ -24,9 +24,13 @@ const getLocationById = async (id: string) => {
 	});
 };
 
-const getLocationsByImportId = async (importId: string) => {
+const getLocationsByImportIdAndCoordinates = async (
+	importId: string,
+	latitude: string,
+	longitude: string
+) => {
 	return await authenticatedRequest(
-		`${config.apiUrl}/locations/import/${importId}`,
+		`${config.apiUrl}/locations/import/${importId}?latitude=${latitude}&longitude=${longitude}`,
 		{
 			method: 'GET',
 		}
@@ -36,5 +40,5 @@ const getLocationsByImportId = async (importId: string) => {
 export default {
 	getAllLocations,
 	getLocationById,
-	getLocationsByImportId,
+	getLocationsByImportIdAndCoordinates,
 };

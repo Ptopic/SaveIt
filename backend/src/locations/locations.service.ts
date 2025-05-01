@@ -146,9 +146,16 @@ export class LocationsService {
 		});
 	}
 
-	async getLocationByImportId(importId: string) {
-		return this.prisma.importLocation.findMany({
-			where: { place: { importId } },
+	async getLocationByImportIdAndCoordinates(
+		importId: string,
+		latitude: string,
+		longitude: string
+	) {
+		const location = await this.prisma.importLocation.findFirst({
+			where: {
+				place: { importId },
+				location: { coordinates: { contains: `${latitude},${longitude}` } },
+			},
 			include: {
 				location: true,
 				highlights: true,
@@ -159,5 +166,50 @@ export class LocationsService {
 				restaurant: true,
 			},
 		});
+
+		if (!location) return null;
+
+		const allHighlights = location.highlights.map(
+			(highlight) => highlight.highlight
+		);
+		const allTips = location.tips.map((tip) => tip.tip);
+		const allCategories = location.categories.map(
+			(category) => category.category
+		);
+		const allMustTryDishes = location.mustTryDishes.map((dish) => dish.dish);
+
+		const formattedLocation = {
+			id: location.location.id,
+			createdAt: location.location.createdAt,
+			updatedAt: location.location.updatedAt,
+			name: location.location.name,
+			placeId: location.location.placeId,
+			googleId: location.location.googleId,
+			city: location.location.city,
+			country: location.location.country,
+			flag: location.location.flag,
+			coordinates: location.location.coordinates,
+			address: location.location.address,
+			bestTimeToVisit: location.location.bestTimeToVisit,
+			typicalTimeSpent: location.location.typicalTimeSpent,
+			businessStatus: location.location.businessStatus,
+			locationLink: location.location.locationLink,
+			type: location.location.type,
+			description: location.location.description,
+			openingHours: location.location.openingHours,
+			phone: location.location.phone,
+			website: location.location.website,
+			reviewsCount: location.location.reviewsCount,
+			reviewsAverage: location.location.reviewsAverage,
+			priceRange: location.location.priceRange,
+			photo: location.location.photo,
+			emoji: location.place?.emoji || location.restaurant?.emoji || null,
+			highlights: allHighlights,
+			tips: allTips,
+			categories: allCategories,
+			mustTryDishes: allMustTryDishes,
+		};
+
+		return formattedLocation;
 	}
 }
