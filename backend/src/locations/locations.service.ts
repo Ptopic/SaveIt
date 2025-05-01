@@ -65,7 +65,16 @@ export class LocationsService {
 		const totalLocations = await this.prisma.location.count({
 			where: {
 				importLocation: {
-					some: { userId },
+					some: {
+						userId,
+						location: {
+							coordinates: {
+								not: {
+									equals: null,
+								},
+							},
+						},
+					},
 				},
 			},
 		});
