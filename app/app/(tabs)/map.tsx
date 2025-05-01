@@ -191,6 +191,26 @@ export default function TabMapScreen() {
 					initialRegion={location}
 					showsUserLocation={true}
 				>
+					{selectedLocation !== null && (
+						<Marker
+							key={selectedLocation.id}
+							coordinate={{
+								latitude: parseFloat(
+									selectedLocation.coordinates.split(',')[0]
+								),
+								longitude: parseFloat(
+									selectedLocation.coordinates.split(',')[1]
+								),
+							}}
+						>
+							<TouchableOpacity
+								style={styles.markerContainer}
+								onPress={() => onLocationPress(selectedLocation)}
+							>
+								<Text style={styles.markerEmoji}>{selectedLocation.emoji}</Text>
+							</TouchableOpacity>
+						</Marker>
+					)}
 					{locations?.map((location) => {
 						const [lat, lon] = location.coordinates?.split(',') || [];
 						if (!lat || !lon) return null;
@@ -317,8 +337,5 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.3,
 		shadowRadius: 3,
 		elevation: 5,
-	},
-	markerEmoji: {
-		fontSize: 20,
 	},
 });
