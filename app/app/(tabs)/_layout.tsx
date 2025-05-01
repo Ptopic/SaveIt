@@ -35,7 +35,8 @@ export default function TabLayout() {
 	const toast = useToast();
 	const pathname = usePathname();
 	const queryClient = useQueryClient();
-
+	const [sharedUrlData, setSharedUrlData] = useState<string | null>(null);
+	const [isAppRefocused, setIsAppRefocused] = useState(false);
 	const { mutate: createImport } = useCreateImport();
 
 	const handleShare = useCallback(
@@ -52,6 +53,10 @@ export default function TabLayout() {
 				return;
 			}
 
+			if (sharedUrl === '' || sharedUrl === null) {
+				return;
+			}
+
 			if (
 				sharedUrl &&
 				(!sharedUrl.includes('https://') ||
@@ -61,21 +66,7 @@ export default function TabLayout() {
 				return;
 			}
 
-			createImport(
-				{ url: sharedUrl },
-				{
-					onSuccess: () => {
-						queryClient.invalidateQueries({
-							queryKey: [IMPORTS],
-							exact: false,
-						});
-						queryClient.invalidateQueries({
-							queryKey: [LOCATIONS],
-							exact: false,
-						});
-					},
-				}
-			);
+			setSharedUrlData(sharedUrl);
 
 			await AsyncStorage.setItem('previousSharedUrl', sharedUrl);
 		},
@@ -90,8 +81,8 @@ export default function TabLayout() {
 				appState.current.match(/inactive|background/) &&
 				nextAppState === 'active'
 			) {
-				onAppRefocused();
 				await ShareMenu.getInitialShare(handleShare);
+				setIsAppRefocused(true);
 			}
 
 			appState.current = nextAppState;
@@ -106,6 +97,39 @@ export default function TabLayout() {
 			subscription.remove();
 		};
 	}, []);
+
+	useEffect(() => {
+		if (isAppRefocused) {
+			queryClient.invalidateQueries({
+				queryKey: [IMPORTS, '6', '', ''],
+			});
+			queryClient.invalidateQueries({
+				queryKey: [LOCATIONS],
+			});
+			setIsAppRefocused(false); // Reset the flag after handling
+		}
+	}, [isAppRefocused, queryClient]);
+
+	useEffect(() => {
+		if (sharedUrlData !== null) {
+			createImport(
+				{ url: sharedUrlData },
+				{
+					onSuccess: () => {
+						queryClient.invalidateQueries({
+							queryKey: [IMPORTS],
+							exact: false,
+						});
+						queryClient.invalidateQueries({
+							queryKey: [LOCATIONS],
+							exact: false,
+						});
+					},
+				}
+			);
+		}
+		setSharedUrlData(null);
+	}, [sharedUrlData]);
 
 	const onAppRefocused = () => {
 		queryClient.invalidateQueries({

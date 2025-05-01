@@ -207,7 +207,7 @@ export default function TabMapScreen() {
 								style={styles.markerContainer}
 								onPress={() => onLocationPress(selectedLocation)}
 							>
-								<Text style={styles.markerEmoji}>{selectedLocation.emoji}</Text>
+								<Text>{selectedLocation.emoji}</Text>
 							</TouchableOpacity>
 						</Marker>
 					)}
@@ -227,7 +227,7 @@ export default function TabMapScreen() {
 									style={styles.markerContainer}
 									onPress={() => onLocationPress(location)}
 								>
-									<Text style={styles.markerEmoji}>{location.emoji}</Text>
+									<Text>{location.emoji}</Text>
 								</TouchableOpacity>
 							</Marker>
 						);
