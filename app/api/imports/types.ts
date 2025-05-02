@@ -15,6 +15,7 @@ export interface IImport {
 
 	places: IPlace[];
 	restaurants: IRestaurant[];
+	recipes: IRecipe[];
 
 	createdAt: string;
 	updatedAt: string;
@@ -101,6 +102,57 @@ export interface IRestaurant {
 	importId: string;
 	photo: string;
 	importLocation: IRestaurantLocation[];
+}
+
+export interface IRecipe {
+	id: string;
+	name: string;
+	description: string;
+	emoji: string;
+	type: string;
+	origin: string;
+	time: string;
+	difficulty: string;
+	spiceLevel: string;
+	diet: string;
+	highlights: {
+		highlight: string;
+	}[];
+	protein: number;
+	carbohydrates: number;
+	fat: number;
+	calories: number;
+	ingredients: {
+		emoji: string;
+		quantity: string;
+		ingredient: string;
+	}[];
+	steps: {
+		emoji: string;
+		step: string;
+	}[];
+	serves: number;
+	tips: {
+		tip: string;
+	}[];
+	creatorInsights: {
+		insight: string;
+	}[];
+	servingSuggestions: {
+		servingSuggestion: string;
+	}[];
+	substitutions: {
+		substitution: string;
+	}[];
+	equipment: {
+		equipment: string;
+	}[];
+	storage: {
+		storage: string;
+	}[];
+	didYouKnow: {
+		didYouKnow: string;
+	}[];
 }
 export interface ICreateImportRequest {
 	url: string;

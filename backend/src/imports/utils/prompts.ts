@@ -383,6 +383,7 @@ export const getBaseAnalyzePrompt = (
      - Follow the detailed search instructions in the category-specific rules below
      - For any field where information cannot be found or verified even after web search, use null
      - NEVER use text placeholders like "Not available", "Unknown", "Not mentioned" - use null instead
+     - **CRITICAL NULL VALUE RULE: ALWAYS represent missing or unverified information as the JSON value null. NEVER include any emojis or text alongside null. For example, if 'Serves' information is missing, the output MUST be "Serves": null, NOT "Serves": "🍽️ null" or "Serves": "null"**
      - NEVER invent or assume information not present in the source or verifiable through search
 
   6. WEB SEARCH GUIDELINES:
@@ -407,7 +408,7 @@ export const getBaseAnalyzePrompt = (
      - Double-check that any content about a physical location is categorized as "Place"
      - Ensure all place-related content is categorized as "Place"
      - Confirm that all information is either from the transcript or verified through search
-     - Verify that null is used for ALL missing or unverified information
+     - Verify that null is used for ALL missing or unverified information AND THAT NO EMOJIS PRECEDE null values
      - Check that response format matches content format (single object for video, array for slideshow)
      - For multiple items: verify each item has complete information
      - For multiple items: confirm no duplicates exist in final output
@@ -426,6 +427,8 @@ export const getBaseAnalyzePrompt = (
 const getRecipeAnalyzePrompt = () => {
 	const prompt = `
   RECIPE ANALYSIS RULES:
+  **IMPORTANT NOTE ON EMOJIS:** The object structure ({ emoji, ... }) is ONLY for the 'Ingredients' and 'Steps' arrays. For ALL OTHER fields (like Origin, Must-try dishes, Tips etc.), place the relevant emoji directly BEFORE the text content (e.g., "* Origin: 🇮🇹 Italian", "* Must-try dishes: ["🍕 Pizza Margherita", "🍝 Pasta Carbonara"]").
+
   * Name: [🍽️ Exact name of the recipe]
   * Main description: 1-2 sentences about what this dish is
   * Type: "Main course", "Dessert", "Breakfast", etc.
@@ -435,30 +438,35 @@ const getRecipeAnalyzePrompt = () => {
   * Spice level: If applicable
   * Diet: Vegetarian, Vegan, Gluten-free, etc. if applicable
   * Highlights: 2-3 key selling points or special features of this recipe
-  * Quick Tips: [3-5 bullet points of practical tips mentioned in the video:
-    - 💡 Preparation tips
-    - 💡 Cooking technique tips
-    - 💡 Ingredient selection tips
-    - 💡 Time-saving tips
-    - 💡 Flavor enhancement tips
-  ]
   * Nutrition Facts: [IMPORTANT - YOU MUST ALWAYS CALCULATE ESTIMATED NUTRITION FACTS:
     1. For EACH ingredient:
       - Look up standard nutrition values per serving/amount
       - Calculate based on recipe quantity
     2. Sum ALL ingredients to get recipe totals
     3. REQUIRED VALUES (do not skip any):
-      - 🥩 Total Protein (g) 
-      - 🥖 Total Carbohydrates (g)
-      - 🫚 Total Fat (g)
-      - 🔥 Total Calories
+      - Protein
+      - Carbohydrates
+      - Fat
+      - Calories
     4. If exact amounts unclear:
       - Use reasonable estimates based on similar recipes
       - Err on higher side for calories
     5. NEVER return null or skip nutrition facts
     6. Round to nearest whole number]
 
-  * Ingredients: [Bullet list of ingredients with quantities AND EMOJIS - place emoji BEFORE each ingredient name. Use these specific emojis for common ingredients:
+  * Ingredients: [**MUST BE AN ARRAY OF OBJECTS**. Each object represents one ingredient and MUST have these fields:
+    - emoji: [Single appropriate food emoji based on EMOJI SELECTION RULES below]
+    - quantity: [**CRITICAL:** String containing the quantity AND unit. Always include the unit (e.g., g, ml, cup, tbsp, pieces) if mentioned or inferable. Use "to taste" or similar if explicitly stated. Examples: \"100g\", \"1 cup\", \"1/2 tsp\", \"2 pieces\", \"to taste\"]
+    - ingredient: [String containing the ingredient name, e.g., \"tomatoes\", \"olive oil\"]
+
+    EXAMPLE:
+    \"Ingredients\": [
+      { \"emoji\": \"🍅\", \"quantity\": \"2 pieces\", \"ingredient\": \"tomatoes\" },
+      { \"emoji\": \"🫒\", \"quantity\": \"1 tbsp\", \"ingredient\": \"olive oil\" },
+      { \"emoji\": \"🧂\", \"quantity\": \"to taste\", \"ingredient\": \"salt\" }
+    ]
+
+    Use these specific emojis for common ingredients:
     - 🍅 tomato/tomatoes
     - 🥔 potato/potatoes
     - 🍗 chicken
@@ -550,10 +558,27 @@ const getRecipeAnalyzePrompt = () => {
   - "1 cup carrots" = 🥕🧊 (NEVER combine)
   - "1 tbsp soy sauce" = 🫗🥄 (NEVER combine)
     
-  * Steps: [Numbered list of preparation steps with relevant emojis BEFORE each step: 🔪 (cutting/chopping), 🍳 (frying/cooking), 🌡️ (temperature/heating), ⏲️ (timing), 🌀 (mixing/stirring), 🧊 (freezing/cooling), 🥣 (combining ingredients), 🔥 (baking/roasting), 💧 (washing/rinsing), 🧴 (marinating), etc.]
-  * Time: [⏱️ Prep/cooking time]
-  * Serves: [🍽️ Number of servings]
-  * Tips: [💡 2-3 cooking tips or variations specifically mentioned in the video]
+  * Steps: [**MUST BE AN ARRAY OF OBJECTS**. Each object represents one step and MUST have these fields:
+    - emoji: [Single relevant emoji for the step: 🔪 (cutting/chopping), 🍳 (frying/cooking), 🌡️ (temperature/heating), ⏲️ (timing), 🌀 (mixing/stirring), 🧊 (freezing/cooling), 🥣 (combining ingredients), 🔥 (baking/roasting), 💧 (washing/rinsing), 🧴 (marinating), etc.]
+    - step: [String containing the step description. **CRITICAL FORMATTING:**
+        1. Identify potential ingredient mentions within this step description.
+        2. Cross-reference each mention with the names listed in the main 'Ingredients' array of this recipe. Check for exact matches, plurals, or singular forms.
+        3. Wrap a word in single asterisks (*) **ONLY IF** it directly corresponds to an ingredient listed in the main 'Ingredients' array.
+        4. **DO NOT** wrap intermediate products (e.g., 'dough', 'batter', 'mixture', 'sauce'), general food terms ('vegetables', 'meat'), or the final dish name in asterisks unless they are explicitly listed as separate items in the main 'Ingredients' array.
+        5. Do NOT wrap the entire step text.
+        Example: If 'flour', 'sugar', 'eggs', and 'butter' are in the Ingredients list, format as: \"Mix the *flour* and *sugar*. Add *eggs* and melted *butter*. Pour the batter into the pan.\" (Note: 'batter' is not wrapped).
+      ]
+
+    EXAMPLE:
+    "Steps": [
+      { "emoji": "🔥", "step": "Preheat oven to 400°F (200°C)." },
+      { "emoji": "🔪", "step": "Chop the *onions* and *carrots*." },
+      { "emoji": "🌀", "step": "Mix *butter*, *sugar*, and *eggs* until creamy. Do not overmix the batter." }
+    ]
+  ]
+  * Time: [Prep/cooking time]
+  * Serves: [Number of servings]
+  * Tips: [💡 Combined list of practical tips mentioned in the video (including preparation, cooking, ingredient selection, time-saving, flavor enhancement, and general cooking tips or variations)]
   * Creator Insights: [👨‍🍳 Special techniques, personal touches, or unique approaches mentioned by the video creator]
   * Serving Suggestions: [🍴 How to serve/present the dish, garnishes, accompaniments]
   * Substitutions: [🔄 Common substitutions for ingredients mentioned in the video]
@@ -969,12 +994,15 @@ export const getAnalyzePromptByContentType = (
     "title": "clear and descriptive title",
     "summary": contentFormat === 'video' ? {
       // Single object containing the content type specific data
-      // e.g. for Place: name, location, highlights etc.
-      // for Restaurant: name, cuisine, location etc.
+      // e.g. for Recipe: name, description, origin, time, difficulty, diet, highlights, nutrition, ingredients, steps, serves, tips, creatorInsights, servingSuggestions, etc.
+      // Removed separate tips/quickTips, now uses combined 'tips' array
       ...typeSpecificPrompts[contentType].fields
     } : [
       // Array of objects for slideshow, each containing content type specific data
       {
+        // Updated structure example
+        // e.g. for Recipe: name, description, origin, time, difficulty, diet, highlights, nutrition, ingredients, steps, serves, tips, creatorInsights, servingSuggestions, etc.
+        // Removed separate tips/quickTips, now uses combined 'tips' array
         ...typeSpecificPrompts[contentType].fields
       }
     ]

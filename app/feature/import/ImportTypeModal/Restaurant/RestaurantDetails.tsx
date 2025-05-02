@@ -1,5 +1,5 @@
 import { IRestaurant } from '@/api/imports/types';
-import PlaceOrRestaurantDisplay from '@/components/PlaceOrRestaurantDisplay';
+import PlaceOrRestaurantDisplay from '@/components/ContentTypeDisplays/PlaceOrRestaurantDisplay';
 import Text from '@/components/Text';
 import { CloseIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
@@ -11,7 +11,7 @@ interface IProps {
 	handleCloseModal: () => void;
 }
 
-const RestaurantDetailsModal = ({ restaurant, handleCloseModal }: IProps) => {
+const RestaurantDetails = ({ restaurant, handleCloseModal }: IProps) => {
 	const restaurantData = {
 		...restaurant,
 		...restaurant.importLocation[0],
@@ -42,4 +42,4 @@ const RestaurantDetailsModal = ({ restaurant, handleCloseModal }: IProps) => {
 	);
 };
 
-export default RestaurantDetailsModal;
+export default RestaurantDetails;
