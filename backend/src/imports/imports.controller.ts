@@ -103,9 +103,9 @@ export class ImportsController {
 			throw new Error('Content already imported');
 		}
 
-		const socialMediaType = url.includes('instagram')
+		const socialMediaType = expandedUrl.includes('instagram')
 			? 'instagram'
-			: url.includes('tiktok')
+			: expandedUrl.includes('tiktok')
 				? 'tiktok'
 				: null;
 
@@ -138,7 +138,10 @@ export class ImportsController {
 			}
 
 			if (postType.type === 'video') {
-				result = await this.importsService.transcribeVideo(url, urlMetadata);
+				result = await this.importsService.transcribeVideo(
+					expandedUrl,
+					urlMetadata
+				);
 			} else {
 				// const images = await getSlideshowImages(url);
 

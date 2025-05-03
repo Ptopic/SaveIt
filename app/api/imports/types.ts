@@ -122,11 +122,7 @@ export interface IRecipe {
 	carbohydrates: number;
 	fat: number;
 	calories: number;
-	ingredients: {
-		emoji: string;
-		quantity: string;
-		ingredient: string;
-	}[];
+	ingredients: IRecipeIngredient[];
 	steps: {
 		emoji: string;
 		step: string;
@@ -154,6 +150,13 @@ export interface IRecipe {
 		didYouKnow: string;
 	}[];
 }
+
+export interface IRecipeIngredient {
+	emoji: string;
+	quantity: string;
+	ingredient: string;
+}
+
 export interface ICreateImportRequest {
 	url: string;
 }

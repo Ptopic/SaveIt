@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { getTailwindHexColor } from '@/utils/getTailwindColor';
+import { useEffect, useState } from 'react';
 import {
 	Dimensions,
 	GestureResponderEvent,
@@ -18,12 +19,18 @@ interface PopupState {
 	pressY: number;
 }
 
+interface ModalPosition {
+	left: number;
+	top: number;
+}
+
 export const renderStepIngredients = (
 	text: string,
 	ingredients: {
-		emoji: string;
+		emoji?: string;
 		quantity: string;
 		ingredient: string;
+		displayQuantity?: string;
 	}[]
 ) => {
 	if (!text) return null;
@@ -35,13 +42,18 @@ export const renderStepIngredients = (
 		pressY: 0,
 	});
 	const [measuredWidth, setMeasuredWidth] = useState(0);
+	const [modalPosition, setModalPosition] = useState<ModalPosition>({
+		left: 0,
+		top: 0,
+	});
 
 	const handleUnderlinePress = (
 		event: GestureResponderEvent,
 		ingredient: {
-			emoji: string;
+			emoji?: string;
 			quantity: string;
 			ingredient: string;
+			displayQuantity?: string;
 		} | null
 	) => {
 		const pressX = event.nativeEvent.pageX;
@@ -52,16 +64,18 @@ export const renderStepIngredients = (
 		setPopup({
 			visible: true,
 			content: (
-				<View className="flex-row gap-2 items-center">
-					<Text>{ingredient?.emoji}</Text>
-					<View className="flex-row gap-2 flex-wrap">
-						<Text className="font-bold">{ingredient?.quantity}</Text>
-						<Text>{ingredient?.ingredient}</Text>
-					</View>
+				<View className="flex-row items-start gap-2 pr-2">
+					{ingredient?.emoji && <Text>{ingredient.emoji}</Text>}
+					<Text>
+						<Text className="font-bold">
+							{ingredient?.displayQuantity || ingredient?.quantity}
+						</Text>{' '}
+						{ingredient?.ingredient}
+					</Text>
 				</View>
 			),
-			pressX: pressX,
-			pressY: pressY,
+			pressX,
+			pressY,
 		});
 	};
 
@@ -69,25 +83,43 @@ export const renderStepIngredients = (
 		setPopup({ ...popup, visible: false });
 	};
 
-	const screenWidth = Dimensions.get('window').width;
-	const yOffset = -30;
-	const padding = 10;
-	let finalLeft = popup.pressX;
-	let finalTop = popup.pressY + yOffset;
-
-	if (measuredWidth > 0) {
-		finalLeft = popup.pressX - measuredWidth / 2;
-
-		if (finalLeft < padding) {
-			finalLeft = padding;
-		} else if (finalLeft + measuredWidth > screenWidth - padding) {
-			finalLeft = screenWidth - measuredWidth - padding;
+	const handleLayout = (event: LayoutChangeEvent) => {
+		const { width } = event.nativeEvent.layout;
+		if (width > 0 && width !== measuredWidth) {
+			setMeasuredWidth(width);
 		}
-	}
+	};
 
-	if (finalTop < padding) {
-		finalTop = padding;
-	}
+	useEffect(() => {
+		if (popup.visible && measuredWidth > 0) {
+			const screenWidth = Dimensions.get('window').width;
+			const yOffset = -40;
+			const padding = 10;
+
+			let targetX = popup.pressX - measuredWidth / 2;
+			let targetY = popup.pressY + yOffset;
+
+			let finalLeft = targetX;
+			let finalTop = targetY;
+
+			if (finalLeft < padding) {
+				finalLeft = padding;
+			} else if (finalLeft + measuredWidth > screenWidth - padding) {
+				finalLeft = screenWidth - measuredWidth - padding;
+			}
+
+			if (finalTop < padding) {
+				finalTop = padding;
+			}
+
+			finalLeft = Math.max(padding, finalLeft);
+			finalTop = Math.max(padding, finalTop);
+
+			setModalPosition({ left: finalLeft, top: finalTop });
+		} else if (!popup.visible) {
+			setModalPosition({ left: 0, top: 0 });
+		}
+	}, [popup.visible, popup.pressX, popup.pressY, measuredWidth]);
 
 	const parts = text.split('*');
 
@@ -95,16 +127,16 @@ export const renderStepIngredients = (
 		<View className="flex-1">
 			<Text>
 				{parts.map((part, index) => {
-					const ingredient = ingredients.find((ingredient) =>
-						new RegExp(`\\b${part}\\b`).test(ingredient.ingredient)
+					const ingredientMatch = ingredients.find((ing) =>
+						new RegExp(`\\b${part}\\b`, 'i').test(ing.ingredient)
 					);
-					if (index % 2 === 1 && ingredient) {
+					if (index % 2 === 1 && ingredientMatch) {
 						return (
 							<RNText
 								key={index}
 								style={styles.underlinedText}
 								onPress={(e: GestureResponderEvent) =>
-									handleUnderlinePress(e, ingredient || null)
+									handleUnderlinePress(e, ingredientMatch)
 								}
 							>
 								<Text>{part}</Text>
@@ -121,25 +153,26 @@ export const renderStepIngredients = (
 				onRequestClose={closePopup}
 				animationType="fade"
 			>
-				<Pressable className="flex-1" onPress={closePopup}>
-					<View
-						onLayout={(event: LayoutChangeEvent) => {
-							const newWidth = event.nativeEvent.layout.width;
-							if (newWidth > 0 && newWidth !== measuredWidth) {
-								setMeasuredWidth(newWidth);
-							}
-						}}
-						style={[
-							styles.popupContainer,
-							{
-								left: finalLeft,
-								top: finalTop,
-							},
-						]}
-						onStartShouldSetResponder={() => true}
-					>
-						<Text>{popup.content}</Text>
-					</View>
+				<Pressable style={styles.modalOverlay} onPress={closePopup}>
+					{measuredWidth > 0 && (
+						<View
+							style={[
+								styles.popupContainer,
+								{
+									left: modalPosition.left,
+									top: modalPosition.top,
+								},
+							]}
+							onStartShouldSetResponder={() => true}
+						>
+							{popup.content}
+						</View>
+					)}
+					{!measuredWidth ? (
+						<View style={styles.measurementHelper} onLayout={handleLayout}>
+							{popup.content}
+						</View>
+					) : null}
 				</Pressable>
 			</Modal>
 		</View>
@@ -148,18 +181,34 @@ export const renderStepIngredients = (
 
 const styles = StyleSheet.create({
 	underlinedText: {
-		textDecorationLine: 'underline',
+		color: getTailwindHexColor('orange400'),
+	},
+	modalOverlay: {
+		flex: 1,
 	},
 	popupContainer: {
 		position: 'absolute',
 		backgroundColor: 'white',
 		paddingVertical: 8,
 		paddingHorizontal: 12,
-		borderRadius: 6,
+		borderRadius: 8,
 		shadowColor: '#000',
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.25,
 		shadowRadius: 3.84,
 		elevation: 5,
+		maxWidth: '80%',
+		zIndex: 10,
+	},
+	measurementHelper: {
+		position: 'absolute',
+		top: -9999,
+		left: -9999,
+		opacity: 0,
+		backgroundColor: 'white',
+		paddingVertical: 8,
+		paddingHorizontal: 12,
+		borderRadius: 8,
+		maxWidth: '80%',
 	},
 });

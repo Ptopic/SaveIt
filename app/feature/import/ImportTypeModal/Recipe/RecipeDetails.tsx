@@ -1,5 +1,6 @@
 import { IRecipe } from '@/api/imports/types';
 import RecipeDisplay from '@/components/ContentTypeDisplays/RecipeDisplay';
+import Title from '@/components/Title';
 import { CloseIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import React from 'react';
@@ -16,8 +17,9 @@ const RecipeDetails = ({ recipe, handleCloseModal }: IProps) => {
 	};
 
 	return (
-		<ScrollView showsVerticalScrollIndicator={false}>
-			<View className="flex-row justify-end items-center">
+		<View className="flex-1 bg-white">
+			<View className="flex-row justify-between items-center pb-4 gap-2 bg-white">
+				<Title>{recipeData.name}</Title>
 				<TouchableOpacity
 					className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
 					onPress={() => {
@@ -31,9 +33,13 @@ const RecipeDetails = ({ recipe, handleCloseModal }: IProps) => {
 					/>
 				</TouchableOpacity>
 			</View>
-			<RecipeDisplay data={recipeData} />
-			<View className="h-[20px]" />
-		</ScrollView>
+			<ScrollView
+				showsVerticalScrollIndicator={false}
+				contentContainerStyle={{ paddingBottom: 24 }}
+			>
+				<RecipeDisplay data={recipeData} />
+			</ScrollView>
+		</View>
 	);
 };
 

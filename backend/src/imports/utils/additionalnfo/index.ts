@@ -168,7 +168,8 @@ async function getPlaceAdditionalInfo(
 	const placeDetails = [];
 
 	for (const place of placesArray) {
-		const name = removeEmojiFromText(place?.Name) || '';
+		const emoji = place?.Name?.match(/[^\p{L}\p{N}\s]/gu)?.[0] || '';
+		const name = emoji ? removeEmojiFromText(place?.Name) : place?.Name;
 		const city = place?.City || '';
 		const country = place?.Country || '';
 
@@ -339,7 +340,10 @@ async function getRestaurantAdditionalInfo(
 	const restaurantDetails = [];
 
 	for (const restaurant of restaurantsArray) {
-		const name = removeEmojiFromText(restaurant?.Name) || '';
+		const emoji = restaurant?.Name?.match(/[^\p{L}\p{N}\s]/gu)?.[0] || '';
+		const name = emoji
+			? removeEmojiFromText(restaurant?.Name)
+			: restaurant?.Name;
 		const city = restaurant?.City || '';
 		const country = restaurant?.Country || '';
 

@@ -456,14 +456,15 @@ const getRecipeAnalyzePrompt = () => {
 
   * Ingredients: [**MUST BE AN ARRAY OF OBJECTS**. Each object represents one ingredient and MUST have these fields:
     - emoji: [Single appropriate food emoji based on EMOJI SELECTION RULES below]
-    - quantity: [**CRITICAL:** String containing the quantity AND unit. Always include the unit (e.g., g, ml, cup, tbsp, pieces) if mentioned or inferable. Use "to taste" or similar if explicitly stated. Examples: \"100g\", \"1 cup\", \"1/2 tsp\", \"2 pieces\", \"to taste\"]
+    - quantity: [**CRITICAL:** String containing the quantity AND unit. Always include the unit (e.g., g, ml, cup, tbsp, pieces) if mentioned or inferable. Use "to taste" or similar if explicitly stated. **FRACTION TO DECIMAL CONVERSION: ALWAYS represent fractions as decimals (e.g., "1/2" becomes "0.5", "1 1/4" becomes "1.25").** Examples: \"100g\", \"0.5 cup\", \"0.5 tsp\", \"2 pieces\", \"to taste\"]
     - ingredient: [String containing the ingredient name, e.g., \"tomatoes\", \"olive oil\"]
 
     EXAMPLE:
     \"Ingredients\": [
       { \"emoji\": \"🍅\", \"quantity\": \"2 pieces\", \"ingredient\": \"tomatoes\" },
       { \"emoji\": \"🫒\", \"quantity\": \"1 tbsp\", \"ingredient\": \"olive oil\" },
-      { \"emoji\": \"🧂\", \"quantity\": \"to taste\", \"ingredient\": \"salt\" }
+      { \"emoji\": \"🧂\", \"quantity\": \"to taste\", \"ingredient\": \"salt\" },
+      { \"emoji\": \"🥛\", \"quantity\": \"0.5 cup\", \"ingredient\": \"milk\" }
     ]
 
     Use these specific emojis for common ingredients:
