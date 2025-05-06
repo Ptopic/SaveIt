@@ -33,7 +33,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 type MapRouteParams = RouteProp<
-	{ params: { latitude: string; longitude: string; importId: string } },
+	{ params: { latitude?: string; longitude?: string; importId?: string } },
 	'params'
 >;
 
@@ -43,13 +43,13 @@ export default function TabMapScreen() {
 		latitude: latitudeParam,
 		longitude: longitudeParam,
 		importId,
-	} = route.params;
+	} = route.params || {};
 
 	const [latitude, setLatitude] = useState<string | null>(
-		latitudeParam as string | null
+		latitudeParam || null
 	);
 	const [longitude, setLongitude] = useState<string | null>(
-		longitudeParam as string | null
+		longitudeParam || null
 	);
 
 	const snapPoints = useMemo(() => ['25%', '50%', '70%'], []);
@@ -87,8 +87,8 @@ export default function TabMapScreen() {
 	const { data: locationByImportIdAndCoordinates } =
 		useGetLocationByImportIdAndCoordinates(
 			importId as string,
-			latitudeParam as string,
-			longitudeParam as string
+			latitude as string,
+			longitude as string
 		);
 
 	const handleEndReached = useCallback(() => {
@@ -105,18 +105,18 @@ export default function TabMapScreen() {
 				return;
 			}
 
-			let location = await Location.getCurrentPositionAsync({});
+			let currentLocation = await Location.getCurrentPositionAsync({});
 			if (latitude && longitude) {
 				setLocation({
-					latitude: parseFloat(latitude as string),
-					longitude: parseFloat(longitude as string),
+					latitude: parseFloat(latitude),
+					longitude: parseFloat(longitude),
 					latitudeDelta: 0.025,
 					longitudeDelta: 0.025,
 				});
-			} else {
+			} else if (currentLocation) {
 				setLocation({
-					latitude: location.coords.latitude,
-					longitude: location.coords.longitude,
+					latitude: currentLocation.coords.latitude,
+					longitude: currentLocation.coords.longitude,
 					latitudeDelta: 0.025,
 					longitudeDelta: 0.025,
 				});
@@ -124,7 +124,7 @@ export default function TabMapScreen() {
 		}
 
 		getCurrentLocation();
-	}, []);
+	}, [latitude, longitude]);
 
 	const recenterMap = () => {
 		if (location && mapRef.current) {
@@ -133,12 +133,13 @@ export default function TabMapScreen() {
 	};
 
 	useEffect(() => {
-		if (debouncedSearchValue !== '') {
-			if (locations?.[0]?.coordinates) {
+		if (debouncedSearchValue !== '' && locations?.[0]?.coordinates) {
+			const [lat, lon] = locations[0].coordinates.split(',');
+			if (lat && lon) {
 				mapRef.current?.animateToRegion(
 					{
-						latitude: parseFloat(locations[0].coordinates.split(',')[0]),
-						longitude: parseFloat(locations[0].coordinates.split(',')[1]),
+						latitude: parseFloat(lat),
+						longitude: parseFloat(lon),
 						latitudeDelta: 0.025,
 						longitudeDelta: 0.025,
 					},
