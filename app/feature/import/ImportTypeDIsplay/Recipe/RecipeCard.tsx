@@ -9,7 +9,6 @@ interface IProps {
 }
 
 const RecipeCard = ({ recipe, width, onPress }: IProps) => {
-	console.log(recipe.description);
 	return (
 		<TouchableOpacity
 			onPress={onPress}

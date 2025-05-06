@@ -1,5 +1,6 @@
 import { IImport } from '@/api/imports/types';
-import React from 'react';
+import { DisplayIngredient } from '@/types/recipe';
+import React, { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { ImportType } from '../home/FilterBadge/types';
 import PlaceDisplay from './ImportTypeDIsplay/Place/PlacesDisplay';
 import RecipesDisplay from './ImportTypeDIsplay/Recipe/RecipesDisplay';
@@ -56,7 +57,13 @@ export const displayImportType = (
 export const displayImportTypeModal = (
 	importType: ImportType,
 	selectedItem: any,
-	handleCloseModal: () => void
+	handleCloseModal: () => void,
+	setIsExternalModalVisible?: Dispatch<SetStateAction<boolean>>,
+	originalServes?: MutableRefObject<number>,
+	serves?: number,
+	setServes?: (serves: number) => void,
+	displayIngredients?: DisplayIngredient[],
+	setDisplayIngredients?: (displayIngredients: DisplayIngredient[]) => void
 ) => {
 	switch (importType) {
 		case ImportType.RESTAURANT:
@@ -78,6 +85,12 @@ export const displayImportTypeModal = (
 				<RecipeDetails
 					recipe={selectedItem}
 					handleCloseModal={handleCloseModal}
+					setIsExternalModalVisible={setIsExternalModalVisible}
+					originalServes={originalServes}
+					serves={serves}
+					setServes={setServes}
+					displayIngredients={displayIngredients}
+					setDisplayIngredients={setDisplayIngredients}
 				/>
 			);
 		case ImportType.PRODUCT:

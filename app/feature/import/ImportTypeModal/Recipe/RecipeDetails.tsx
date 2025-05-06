@@ -2,16 +2,32 @@ import { IRecipe } from '@/api/imports/types';
 import RecipeDisplay from '@/components/ContentTypeDisplays/RecipeDisplay';
 import Title from '@/components/Title';
 import { CloseIcon } from '@/shared/svgs';
+import { DisplayIngredient } from '@/types/recipe';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
-import React from 'react';
+import React, { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 
 interface IProps {
 	recipe: IRecipe;
 	handleCloseModal: () => void;
+	setIsExternalModalVisible?: Dispatch<SetStateAction<boolean>>;
+	originalServes?: MutableRefObject<number>;
+	serves?: number;
+	setServes?: (serves: number) => void;
+	displayIngredients?: DisplayIngredient[];
+	setDisplayIngredients?: (displayIngredients: DisplayIngredient[]) => void;
 }
 
-const RecipeDetails = ({ recipe, handleCloseModal }: IProps) => {
+const RecipeDetails = ({
+	recipe,
+	handleCloseModal,
+	setIsExternalModalVisible,
+	originalServes,
+	serves,
+	setServes,
+	displayIngredients,
+	setDisplayIngredients,
+}: IProps) => {
 	const recipeData = {
 		...recipe,
 	};
@@ -24,6 +40,7 @@ const RecipeDetails = ({ recipe, handleCloseModal }: IProps) => {
 					className="bg-red100 rounded-full w-[30] h-[30] justify-center items-center"
 					onPress={() => {
 						handleCloseModal();
+						setIsExternalModalVisible && setIsExternalModalVisible(false);
 					}}
 				>
 					<CloseIcon
@@ -37,7 +54,15 @@ const RecipeDetails = ({ recipe, handleCloseModal }: IProps) => {
 				showsVerticalScrollIndicator={false}
 				contentContainerStyle={{ paddingBottom: 24 }}
 			>
-				<RecipeDisplay data={recipeData} />
+				<RecipeDisplay
+					data={recipeData}
+					setIsExternalModalVisible={setIsExternalModalVisible}
+					originalServes={originalServes}
+					serves={serves}
+					setServes={setServes}
+					displayIngredients={displayIngredients}
+					setDisplayIngredients={setDisplayIngredients}
+				/>
 			</ScrollView>
 		</View>
 	);

@@ -31,7 +31,8 @@ export const renderStepIngredients = (
 		quantity: string;
 		ingredient: string;
 		displayQuantity?: string;
-	}[]
+	}[],
+	guide?: boolean
 ) => {
 	if (!text) return null;
 
@@ -139,11 +140,17 @@ export const renderStepIngredients = (
 									handleUnderlinePress(e, ingredientMatch)
 								}
 							>
-								<Text>{part}</Text>
+								<Text className={guide ? 'body-xlarge-regular' : ''}>
+									{part}
+								</Text>
 							</RNText>
 						);
 					}
-					return <Text key={index}>{part}</Text>;
+					return (
+						<Text key={index} className={guide ? 'body-xlarge-regular' : ''}>
+							{part}
+						</Text>
+					);
 				})}
 			</Text>
 

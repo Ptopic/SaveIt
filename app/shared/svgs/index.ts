@@ -10,6 +10,7 @@ export { default as EllipsisCircledIcon } from '@assets/icons/EllipsisCircled.sv
 export { default as GoogleIcon } from '@assets/icons/Google.svg';
 export { default as ImageIcon } from '@assets/icons/Image.svg';
 export { default as LinkIcon } from '@assets/icons/Link.svg';
+export { default as ListIcon } from '@assets/icons/List.svg';
 export { default as LockClosedIcon } from '@assets/icons/LockClosed.svg';
 export { default as LockOpenIcon } from '@assets/icons/LockOpen.svg';
 export { default as LogoutIcon } from '@assets/icons/Logout.svg';
@@ -19,6 +20,7 @@ export { default as MinusIcon } from '@assets/icons/Minus.svg';
 export { default as OpenInGoogleMapsIcon } from '@assets/icons/OpenInGoogleMaps.svg';
 export { default as PencilIcon } from '@assets/icons/Pencil.svg';
 export { default as PhoneIcon } from '@assets/icons/Phone.svg';
+export { default as PlayIcon } from '@assets/icons/Play.svg';
 export { default as PlusIcon } from '@assets/icons/Plus.svg';
 export { default as SearchIcon } from '@assets/icons/Search.svg';
 export { default as SettingsIcon } from '@assets/icons/Settings.svg';

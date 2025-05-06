@@ -123,10 +123,7 @@ export interface IRecipe {
 	fat: number;
 	calories: number;
 	ingredients: IRecipeIngredient[];
-	steps: {
-		emoji: string;
-		step: string;
-	}[];
+	steps: IRecipeStep[];
 	serves: number;
 	tips: {
 		tip: string;
@@ -149,6 +146,11 @@ export interface IRecipe {
 	didYouKnow: {
 		didYouKnow: string;
 	}[];
+}
+
+export interface IRecipeStep {
+	emoji: string;
+	step: string;
 }
 
 export interface IRecipeIngredient {

@@ -1,6 +1,7 @@
 import { IMPORTS, LOCATIONS } from '@/api/constants';
 import useDeleteImport from '@/api/imports/hooks/useDeleteImport';
 import useGetImport from '@/api/imports/hooks/useGetImport';
+import RecipeStepsGuideDisplay from '@/components/ContentTypeDisplays/RecipeStepsGuideDisplay';
 import ModalComponent from '@/components/ModalComponent';
 import SocialMediaIcon from '@/components/SocialMediaIcon';
 import Subtitle from '@/components/Subtitle';
@@ -20,13 +21,14 @@ import {
 	ThreeDotsIcon,
 	TrashIcon,
 } from '@/shared/svgs';
+import { DisplayIngredient } from '@/types/recipe';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
 	ScrollView,
@@ -39,6 +41,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 type ImportDetailsRouteProp = RouteProp<{ params: { id: string } }, 'params'>;
 
 const ImportDetailsScreen = () => {
+	const [isStepsGuideModalVisible, setIsStepsGuideModalVisible] =
+		useState(false);
+
 	const [selectedItem, setSelectedItem] = useState<any | null>(null);
 
 	const itemDetailsBottomSheetRef = useRef<BottomSheet>(null);
@@ -85,6 +90,21 @@ const ImportDetailsScreen = () => {
 	const handleDeleteImport = () => {
 		deleteImport(id);
 	};
+
+	// Recipe stuff
+	const originalServes = useRef(1);
+	const [serves, setServes] = useState(1);
+
+	const [displayIngredients, setDisplayIngredients] = useState<
+		DisplayIngredient[]
+	>([]);
+
+	useEffect(() => {
+		if (selectedItem === null || !importData?.recipes) return;
+
+		originalServes.current = selectedItem.serves;
+		setServes(selectedItem.serves);
+	}, [selectedItem]);
 
 	return (
 		<SafeAreaView className="flex-1 p-5 gap-2">
@@ -224,10 +244,36 @@ const ImportDetailsScreen = () => {
 						displayImportTypeModal(
 							importData?.type as ImportType,
 							selectedItem,
-							handleCloseModal
+							handleCloseModal,
+							setIsStepsGuideModalVisible,
+							originalServes,
+							serves,
+							setServes,
+							displayIngredients,
+							setDisplayIngredients
 						)}
 				</BottomSheetView>
 			</BottomSheet>
+			{importData?.type === 'Recipe' && selectedItem && (
+				<ModalComponent
+					modalVisible={isStepsGuideModalVisible}
+					setModalVisible={setIsStepsGuideModalVisible}
+					overlayStyle={styles.stepsGuideModalOverlay}
+					modalStyle={styles.stepsGuideModalContainer}
+					customAnimatedOverlayStyle={{
+						backgroundColor: 'white',
+					}}
+				>
+					<RecipeStepsGuideDisplay
+						steps={selectedItem.steps}
+						setIsStepsGuideModalVisible={setIsStepsGuideModalVisible}
+						displayIngredients={displayIngredients}
+						serves={serves}
+						setServes={setServes}
+						originalServes={originalServes.current}
+					/>
+				</ModalComponent>
+			)}
 		</SafeAreaView>
 	);
 };
@@ -248,5 +294,19 @@ const styles = StyleSheet.create({
 		paddingBottom: 40,
 		paddingHorizontal: 10,
 		backgroundColor: 'transparent',
+	},
+	stepsGuideModalContainer: {
+		width: '100%',
+		height: '100%',
+		maxHeight: '100%',
+		padding: 0,
+		flex: 1,
+		borderRadius: 0,
+		backgroundColor: 'white',
+	},
+	stepsGuideModalOverlay: {
+		flex: 1,
+		height: '100%',
+		backgroundColor: 'white',
 	},
 });

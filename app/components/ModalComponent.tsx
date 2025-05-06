@@ -6,6 +6,7 @@ import Animated, {
 	useSharedValue,
 	withTiming,
 } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ModalComponentProps {
 	modalVisible: boolean;
@@ -13,6 +14,7 @@ interface ModalComponentProps {
 	children: React.ReactNode;
 	overlayStyle?: ViewStyle;
 	modalStyle?: ViewStyle;
+	customAnimatedOverlayStyle?: ViewStyle;
 }
 
 const ModalComponent: React.FC<ModalComponentProps> = ({
@@ -21,6 +23,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 	children,
 	overlayStyle,
 	modalStyle,
+	customAnimatedOverlayStyle,
 }) => {
 	const overlayOpacity = useSharedValue(0);
 	const modalTranslateY = useSharedValue(300);
@@ -30,12 +33,13 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 	useEffect(() => {
 		if (modalVisible) {
 			setInternalVisible(true);
-			overlayOpacity.value = withTiming(1, { duration: 150 });
-			modalTranslateY.value = withTiming(0, { duration: 150 });
+			overlayOpacity.value = withTiming(1, { duration: 250 });
+			modalTranslateY.value = withTiming(0, { duration: 250 });
 		} else if (internalVisible) {
-			overlayOpacity.value = withTiming(0, { duration: 150 });
-			modalTranslateY.value = withTiming(150, { duration: 150 }, () => {
+			overlayOpacity.value = withTiming(0, { duration: 250 });
+			modalTranslateY.value = withTiming(250, { duration: 250 }, () => {
 				runOnJS(setInternalVisible)(false);
+				runOnJS(setModalVisible)(false);
 			});
 		}
 	}, [modalVisible]);
@@ -61,21 +65,23 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 		>
 			<Animated.View
 				className="absolute inset-0 bg-black/50"
-				style={[animatedOverlayStyle]}
+				style={[animatedOverlayStyle, customAnimatedOverlayStyle]}
 				onTouchEnd={handleClose}
 			/>
 
-			<View
-				className="flex-1 justify-center items-center"
-				style={[overlayStyle]}
-			>
-				<Animated.View
-					className="bg-white rounded-lg p-[20] w-[80%] max-h-[80%]"
-					style={[modalStyle, animatedModalStyle]}
+			<SafeAreaView style={{ flex: 1 }}>
+				<View
+					className="flex-1 justify-center items-center"
+					style={[overlayStyle]}
 				>
-					{children}
-				</Animated.View>
-			</View>
+					<Animated.View
+						className="bg-white rounded-lg p-[20] w-[80%] max-h-[80%]"
+						style={[modalStyle, animatedModalStyle]}
+					>
+						{children}
+					</Animated.View>
+				</View>
+			</SafeAreaView>
 		</Modal>
 	);
 };

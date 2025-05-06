@@ -7,69 +7,88 @@ import {
 	CarbsIcon,
 	FatIcon,
 	MinusIcon,
+	PlayIcon,
 	PlusIcon,
 	ProteinIcon,
 } from '@/shared/svgs';
+import { DisplayIngredient } from '@/types/recipe';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+	Dispatch,
+	MutableRefObject,
+	SetStateAction,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { DonutChart } from 'react-native-circular-chart';
 import Subtitle from '../Subtitle';
 import Text from '../Text';
 import { renderStepIngredients } from './utils';
 
-interface DisplayIngredient {
-	emoji?: string;
-	quantity: string;
-	ingredient: string;
-	displayQuantity: string;
-	originalNumericQuantity: number | null;
-}
-
 interface IProps {
 	data: IRecipe;
+	setIsExternalModalVisible?: Dispatch<SetStateAction<boolean>>;
+	originalServes?: MutableRefObject<number>;
+	serves?: number;
+	setServes?: (serves: number) => void;
+	displayIngredients?: DisplayIngredient[];
+	setDisplayIngredients?: (displayIngredients: DisplayIngredient[]) => void;
 }
 
-const RecipeDisplay = ({ data }: IProps) => {
+const RecipeDisplay = ({
+	data,
+	setIsExternalModalVisible,
+	originalServes,
+	serves = 1,
+	setServes,
+	displayIngredients = [],
+	setDisplayIngredients,
+}: IProps) => {
 	const [strikedThroughIngredients, setStrikedThroughIngredients] = useState<
 		string[]
 	>([]);
 
-	const originalServes = useRef(data.serves || 1);
-	const [serves, setServes] = useState(data.serves || 1);
+	const handleIngredientPress = (ingredient: DisplayIngredient) => {
+		if (strikedThroughIngredients.includes(ingredient.ingredient)) {
+			setStrikedThroughIngredients((prev) =>
+				prev.filter((i) => i !== ingredient.ingredient)
+			);
+		} else {
+			setStrikedThroughIngredients((prev) => [...prev, ingredient.ingredient]);
+		}
+	};
 
-	const originalCalories = useRef(data.calories || 0);
-	const originalProtein = useRef(data.protein || 0);
-	const originalCarbs = useRef(data.carbohydrates || 0);
-	const originalFat = useRef(data.fat || 0);
+	const originalCalories = useRef(0);
+	const originalProtein = useRef(0);
+	const originalCarbs = useRef(0);
+	const originalFat = useRef(0);
 
-	const [displayCalories, setDisplayCalories] = useState(data.calories || 0);
-	const [displayProtein, setDisplayProtein] = useState(data.protein || 0);
-	const [displayCarbs, setDisplayCarbs] = useState(data.carbohydrates || 0);
-	const [displayFat, setDisplayFat] = useState(data.fat || 0);
+	const [displayCalories, setDisplayCalories] = useState(0);
+	const [displayProtein, setDisplayProtein] = useState(0);
+	const [displayCarbs, setDisplayCarbs] = useState(0);
+	const [displayFat, setDisplayFat] = useState(0);
 
-	const [displayIngredients, setDisplayIngredients] = useState<
-		DisplayIngredient[]
-	>([]);
+	const chartData = [
+		{
+			value: displayProtein || 0,
+			color: getTailwindHexColor('red300') || '#FF0000',
+			name: 'Protein',
+		},
+		{
+			value: displayCarbs || 0,
+			color: getTailwindHexColor('yellow400') || '#FFFF00',
+			name: 'Carbohydrates',
+		},
+		{
+			value: displayFat || 0,
+			color: getTailwindHexColor('blue400') || '#0000FF',
+			name: 'Fat',
+		},
+	].filter((item) => item && typeof item.value === 'number' && item.value > 0);
 
 	useEffect(() => {
-		if (!data.ingredients?.length) return;
-
-		const initialIngredients = data.ingredients.map((ing) => {
-			const numericQuantity = parseQuantityString(ing.quantity);
-
-			return {
-				...ing,
-				displayQuantity: ing.quantity,
-				originalNumericQuantity: numericQuantity,
-			};
-		});
-
-		setDisplayIngredients(initialIngredients);
-
-		setServes(data.serves || 1);
-		originalServes.current = data.serves || 1;
-
 		const currentCalories = data.calories || 0;
 		const currentProtein = data.protein || 0;
 		const currentCarbs = data.carbohydrates || 0;
@@ -87,15 +106,38 @@ const RecipeDisplay = ({ data }: IProps) => {
 	}, [data]);
 
 	useEffect(() => {
-		const scaleFactor = serves / originalServes.current;
+		if (
+			!originalServes ||
+			originalServes.current === 0 ||
+			!setDisplayIngredients ||
+			!data.ingredients
+		) {
+			if (originalServes && serves === originalServes.current) {
+				setDisplayCalories(originalCalories.current);
+				setDisplayProtein(originalProtein.current);
+				setDisplayCarbs(originalCarbs.current);
+				setDisplayFat(originalFat.current);
+			}
+			return;
+		}
 
-		if (displayIngredients.length > 0) {
-			const updatedIngredients = displayIngredients.map((ing) => {
-				if (ing.originalNumericQuantity === null) {
-					return ing;
+		const currentOriginalServes = originalServes.current;
+		if (currentOriginalServes === 0) return;
+
+		const scaleFactor = serves / currentOriginalServes;
+
+		const updatedIngredients: DisplayIngredient[] = data.ingredients.map(
+			(ing) => {
+				const originalNumericQuantity = parseQuantityString(ing.quantity);
+				if (originalNumericQuantity === null) {
+					return {
+						...ing,
+						displayQuantity: ing.quantity,
+						originalNumericQuantity: null,
+					};
 				}
 
-				const scaledValue = ing.originalNumericQuantity * scaleFactor;
+				const scaledValue = originalNumericQuantity * scaleFactor;
 				const newDisplayQuantity = formatQuantityWithUnit(
 					scaledValue,
 					ing.quantity
@@ -104,26 +146,17 @@ const RecipeDisplay = ({ data }: IProps) => {
 				return {
 					...ing,
 					displayQuantity: newDisplayQuantity,
+					originalNumericQuantity: originalNumericQuantity,
 				};
-			});
-			setDisplayIngredients(updatedIngredients);
-		}
+			}
+		);
+		setDisplayIngredients(updatedIngredients);
 
 		setDisplayCalories(Math.round(originalCalories.current * scaleFactor));
 		setDisplayProtein(Math.round(originalProtein.current * scaleFactor));
 		setDisplayCarbs(Math.round(originalCarbs.current * scaleFactor));
 		setDisplayFat(Math.round(originalFat.current * scaleFactor));
-	}, [serves]);
-
-	const handleIngredientPress = (ingredient: DisplayIngredient) => {
-		if (strikedThroughIngredients.includes(ingredient.ingredient)) {
-			setStrikedThroughIngredients((prev) =>
-				prev.filter((i) => i !== ingredient.ingredient)
-			);
-		} else {
-			setStrikedThroughIngredients((prev) => [...prev, ingredient.ingredient]);
-		}
-	};
+	}, [serves, originalServes, data.ingredients, setDisplayIngredients]);
 
 	return (
 		<View className="flex-1 flex-col gap-2">
@@ -192,37 +225,42 @@ const RecipeDisplay = ({ data }: IProps) => {
 				</>
 			)}
 
-			{displayIngredients.length > 0 && (
+			{(displayIngredients.length > 0 || data.ingredients?.length > 0) && (
 				<>
 					<Subtitle>Ingredients</Subtitle>
-					<View className="flex-row items-center gap-2">
-						<Pressable
-							className="flex-row items-center justify-center size-6 bg-orange400 rounded-full p-2"
-							onPress={() => setServes(Math.max(1, serves - 1))}
-							disabled={serves <= 1}
-							style={{ opacity: serves <= 1 ? 0.5 : 1 }}
-						>
-							<MinusIcon width={12} height={12} color="white" />
-						</Pressable>
-						<View className="flex-row items-center">
-							<Text>{serves + ' '}</Text>
-							<Text>serves</Text>
+					{setServes && originalServes && (
+						<View className="flex-row items-center gap-2">
+							<Pressable
+								className="flex-row items-center justify-center size-6 bg-orange400 rounded-full p-2"
+								onPress={() => setServes && setServes(Math.max(1, serves - 1))}
+								disabled={!setServes || serves <= 1}
+								style={{ opacity: !setServes || serves <= 1 ? 0.5 : 1 }}
+							>
+								<MinusIcon width={12} height={12} color="white" />
+							</Pressable>
+							<View className="flex-row items-center">
+								<Text>{serves} serves</Text>
+							</View>
+							<Pressable
+								className="flex-row items-center justify-center size-6 bg-orange400 rounded-full p-2"
+								onPress={() => setServes && setServes(serves + 1)}
+								disabled={!setServes}
+								style={{ opacity: !setServes ? 0.5 : 1 }}
+							>
+								<PlusIcon width={12} height={12} color="white" />
+							</Pressable>
 						</View>
-						<Pressable
-							className="flex-row items-center justify-center size-6 bg-orange400 rounded-full p-2"
-							onPress={() => setServes(serves + 1)}
-						>
-							<PlusIcon width={12} height={12} color="white" />
-						</Pressable>
-					</View>
+					)}
 					<View className="flex-col gap-2 justify-start">
 						{displayIngredients.map((ingredient, index) => (
 							<Pressable
 								className="flex-row gap-2 flex-1 items-center justify-start p-2 bg-gray100 rounded-md w-fit"
 								key={`ingredient-${index}-${ingredient?.ingredient}`}
-								onPress={() => handleIngredientPress(ingredient)}
+								onPress={() =>
+									handleIngredientPress && handleIngredientPress(ingredient)
+								}
 								style={{
-									opacity: strikedThroughIngredients.includes(
+									opacity: strikedThroughIngredients?.includes(
 										ingredient.ingredient
 									)
 										? 0.4
@@ -239,7 +277,7 @@ const RecipeDisplay = ({ data }: IProps) => {
 									<Text
 										className="flex-1"
 										style={{
-											textDecorationLine: strikedThroughIngredients.includes(
+											textDecorationLine: strikedThroughIngredients?.includes(
 												ingredient.ingredient
 											)
 												? 'line-through'
@@ -257,7 +295,22 @@ const RecipeDisplay = ({ data }: IProps) => {
 
 			{data.steps && data.steps.length > 0 && (
 				<>
-					<Subtitle>Steps</Subtitle>
+					<View className="flex-row items-center justify-between">
+						<Subtitle>Steps</Subtitle>
+						<Pressable
+							className="bg-gray100 rounded-md p-2 flex-row items-center gap-2"
+							onPress={() =>
+								setIsExternalModalVisible && setIsExternalModalVisible(true)
+							}
+						>
+							<PlayIcon
+								width={18}
+								height={18}
+								color={getTailwindHexColor('green400')}
+							/>
+							<Text>Start</Text>
+						</Pressable>
+					</View>
 					<View className="flex-col gap-2 justify-start">
 						{data.steps.map((step: any, index: any) => (
 							<View
@@ -265,8 +318,11 @@ const RecipeDisplay = ({ data }: IProps) => {
 								key={`step-${index}-${step?.step?.substring(0, 10)}`}
 							>
 								{step?.emoji && <Text className="mt-0.5">{step.emoji}</Text>}
-								{step?.step &&
-									renderStepIngredients(step.step, displayIngredients)}
+								{step?.step && (
+									<View className="flex-1">
+										{renderStepIngredients(step.step, displayIngredients)}
+									</View>
+								)}
 							</View>
 						))}
 					</View>
@@ -345,8 +401,8 @@ const RecipeDisplay = ({ data }: IProps) => {
 				</View>
 			)}
 
-			{(displayProtein || displayCarbs || displayFat || displayCalories) && (
-				<>
+			{(displayProtein !== 0 || displayCarbs !== 0 || displayFat !== 0) && (
+				<View>
 					<Subtitle>Nutrition Facts</Subtitle>
 					<View className="flex-row justify-center items-center gap-10 px-8 py-3 bg-gray100 rounded-md">
 						<View className="relative">
@@ -356,39 +412,25 @@ const RecipeDisplay = ({ data }: IProps) => {
 								</Text>
 								<Text className="text-center">Calories</Text>
 							</View>
-							<DonutChart
-								data={[
-									{
-										value: displayProtein || 0,
-										color: getTailwindHexColor('red300'),
-										name: 'Protein',
-									},
-									{
-										value: displayCarbs || 0,
-										color: getTailwindHexColor('yellow400'),
-										name: 'Carbohydrates',
-									},
-									{
-										value: displayFat || 0,
-										color: getTailwindHexColor('blue400'),
-										name: 'Fat',
-									},
-								].filter((item) => item.value > 0)}
-								strokeWidth={12}
-								radius={60}
-								containerWidth={135}
-								containerHeight={135}
-								type="round"
-								startAngle={0}
-								endAngle={360}
-								animationType="slide"
-								labelValueStyle={{
-									display: 'none',
-								}}
-								labelTitleStyle={{
-									display: 'none',
-								}}
-							/>
+							{chartData.length > 0 && (
+								<DonutChart
+									data={chartData}
+									strokeWidth={12}
+									radius={60}
+									containerWidth={135}
+									containerHeight={135}
+									type="round"
+									startAngle={0}
+									endAngle={360}
+									animationType="slide"
+									labelValueStyle={{
+										display: 'none',
+									}}
+									labelTitleStyle={{
+										display: 'none',
+									}}
+								/>
+							)}
 						</View>
 						<View className="flex-col justify-between py-6 p-2 rounded-md">
 							{displayProtein > 0 && (
@@ -432,7 +474,7 @@ const RecipeDisplay = ({ data }: IProps) => {
 							)}
 						</View>
 					</View>
-				</>
+				</View>
 			)}
 		</View>
 	);
