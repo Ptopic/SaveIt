@@ -48,11 +48,11 @@ const ImportDetailsScreen = () => {
 
 	const itemDetailsBottomSheetRef = useRef<BottomSheet>(null);
 
-	const itemDetailsSnapPoints = useMemo(() => ['80%'], []);
+	const itemDetailsSnapPoints = useMemo(() => ['30%', '80%'], []);
 
 	const handleItemPress = (item: any) => {
 		setSelectedItem(item);
-		itemDetailsBottomSheetRef.current?.snapToIndex(1);
+		itemDetailsBottomSheetRef.current?.snapToIndex(2);
 	};
 
 	const handleCloseModal = () => {
@@ -238,6 +238,7 @@ const ImportDetailsScreen = () => {
 				ref={itemDetailsBottomSheetRef}
 				index={-1}
 				snapPoints={itemDetailsSnapPoints}
+				enablePanDownToClose={true}
 			>
 				<BottomSheetView className="flex-1 px-[15] h-full pb-[15] flex-col gap-4">
 					{selectedItem &&
