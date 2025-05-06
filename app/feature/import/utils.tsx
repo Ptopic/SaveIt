@@ -1,10 +1,13 @@
 import { IImport } from '@/api/imports/types';
-import React from 'react';
+import { DisplayIngredient } from '@/types/recipe';
+import React, { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { ImportType } from '../home/FilterBadge/types';
 import PlaceDisplay from './ImportTypeDIsplay/Place/PlacesDisplay';
+import RecipesDisplay from './ImportTypeDIsplay/Recipe/RecipesDisplay';
 import RestaurantsDisplay from './ImportTypeDIsplay/Restaurant/RestaurantsDIsplay';
-import PlaceDetailsModal from './ImportTypeModal/Place/PlaceDetailsModal';
-import RestaurantDetailsModal from './ImportTypeModal/Restaurant/RestaurantDetailsModal';
+import PlaceDetails from './ImportTypeModal/Place/PlaceDetails';
+import RecipeDetails from './ImportTypeModal/Recipe/RecipeDetails';
+import RestaurantDetails from './ImportTypeModal/Restaurant/RestaurantDetails';
 export const displayImportType = (
 	importType: ImportType,
 	importData: IImport,
@@ -26,7 +29,12 @@ export const displayImportType = (
 				/>
 			);
 		case ImportType.RECIPE:
-			return 'Recipe';
+			return (
+				<RecipesDisplay
+					recipes={importData.recipes}
+					handleItemPress={handleItemPress}
+				/>
+			);
 		case ImportType.PRODUCT:
 			return 'Product';
 		case ImportType.EVENT:
@@ -49,25 +57,42 @@ export const displayImportType = (
 export const displayImportTypeModal = (
 	importType: ImportType,
 	selectedItem: any,
-	handleCloseModal: () => void
+	handleCloseModal: () => void,
+	setIsExternalModalVisible?: Dispatch<SetStateAction<boolean>>,
+	originalServes?: MutableRefObject<number>,
+	serves?: number,
+	setServes?: (serves: number) => void,
+	displayIngredients?: DisplayIngredient[],
+	setDisplayIngredients?: (displayIngredients: DisplayIngredient[]) => void
 ) => {
 	switch (importType) {
 		case ImportType.RESTAURANT:
 			return (
-				<RestaurantDetailsModal
+				<RestaurantDetails
 					restaurant={selectedItem}
 					handleCloseModal={handleCloseModal}
 				/>
 			);
 		case ImportType.PLACE:
 			return (
-				<PlaceDetailsModal
+				<PlaceDetails
 					place={selectedItem}
 					handleCloseModal={handleCloseModal}
 				/>
 			);
 		case ImportType.RECIPE:
-			return 'Recipe';
+			return (
+				<RecipeDetails
+					recipe={selectedItem}
+					handleCloseModal={handleCloseModal}
+					setIsExternalModalVisible={setIsExternalModalVisible}
+					originalServes={originalServes}
+					serves={serves}
+					setServes={setServes}
+					displayIngredients={displayIngredients}
+					setDisplayIngredients={setDisplayIngredients}
+				/>
+			);
 		case ImportType.PRODUCT:
 			return 'Product';
 		case ImportType.EVENT:

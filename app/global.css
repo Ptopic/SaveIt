@@ -43,6 +43,12 @@
 
 /* Body large */
 
+.body-xlarge-regular {
+   font-size: 22px;
+   font-weight: 400;
+   line-height: 28px;
+}
+
 .body-large-regular {
    font-size: 18px;
    font-weight: 400;

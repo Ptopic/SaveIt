@@ -68,6 +68,7 @@ model Import {
 
   places      Place[]
   restaurants Restaurant[]
+  recipes     Recipe[]
 }
 
 model Place {
@@ -102,6 +103,113 @@ model Restaurant {
 
   importLocationId String?
   importLocation   ImportLocation[]
+}
+
+model Recipe {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name               String
+  description        String?
+  emoji              String?
+  type               String?
+  origin             String?
+  time               String?
+  difficulty         String?
+  spiceLevel         String?
+  diet               String?
+  highlights         RecipeHighlight[]
+  protein            Int?
+  carbohydrates      Int?
+  fat                Int?
+  calories           Int?
+  ingredients        RecipeIngredient[]
+  steps              RecipeStep[]
+  serves             Int?
+  tips               RecipeTip[]
+  creatorInsights    RecipeCreatorInsight[]
+  servingSuggestions RecipeServingSuggestion[]
+  substitutions      RecipeSubstitution[]
+  equipment          RecipeEquipment[]
+  storage            RecipeStorage[]
+  didYouKnow         RecipeDidYouKnow[]
+
+  import   Import @relation(fields: [importId], references: [id])
+  importId String
+}
+
+model RecipeHighlight {
+  id        String  @id @default(uuid())
+  highlight String
+  Recipe    Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId  String?
+}
+
+model RecipeIngredient {
+  id       String  @id @default(uuid())
+  emoji    String?
+  quantity String?
+  ingredient     String
+  Recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String?
+}
+
+model RecipeTip {
+  id       String  @id @default(uuid())
+  tip      String
+  Recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String?
+}
+
+model RecipeServingSuggestion {
+  id                String  @id @default(uuid())
+  servingSuggestion String
+  Recipe            Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId          String?
+}
+
+model RecipeStep {
+  id       String  @id @default(uuid())
+  emoji    String?
+  step     String
+  Recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String?
+}
+
+model RecipeCreatorInsight {
+  id       String  @id @default(uuid())
+  insight String
+  Recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String?
+}
+
+model RecipeSubstitution {
+  id       String  @id @default(uuid())
+  substitution String
+  Recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String?
+}
+
+model RecipeEquipment {
+  id       String  @id @default(uuid())
+  equipment String
+  Recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String?
+}
+
+model RecipeStorage {
+  id       String  @id @default(uuid())
+  storage String
+  Recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String?
+}
+
+model RecipeDidYouKnow {
+  id       String  @id @default(uuid())
+  didYouKnow String
+  Recipe   Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String?
 }
 
 model Location {

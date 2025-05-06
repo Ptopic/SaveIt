@@ -11,7 +11,7 @@ export async function getAdditionalInfoByContentType(
 ) {
 	switch (result.type) {
 		case 'Recipe':
-			return getRecipeAdditionalInfo(result);
+			return getRecipeAdditionalInfo(result, importId);
 		case 'Place':
 			return getPlaceAdditionalInfo(result, userId, importId);
 		case 'Restaurant':
@@ -33,8 +33,125 @@ export async function getAdditionalInfoByContentType(
 	}
 }
 
-function getRecipeAdditionalInfo(result: any) {
-	return result;
+async function getRecipeAdditionalInfo(result: any, importId: string) {
+	const recipes = result.summary;
+
+	const recipesArray = Array.isArray(recipes) ? recipes : [recipes];
+
+	for (const recipe of recipesArray) {
+		const createdRecipe = await prisma.recipe.create({
+			data: {
+				name: recipe.Name,
+				description: recipe['Main description'],
+				emoji: recipe.Name.match(/[^\p{L}\p{N}\s]/gu)?.[0] || '',
+				type: recipe.Type,
+				origin: recipe.Origin,
+				time: recipe.Time,
+				difficulty: recipe.Difficulty,
+				spiceLevel: recipe.SpiceLevel,
+				diet: recipe.Diet,
+				protein: recipe['Nutrition Facts']?.['Protein'] || null,
+				carbohydrates: recipe['Nutrition Facts']?.['Carbohydrates'] || null,
+				fat: recipe['Nutrition Facts']?.['Fat'] || null,
+				calories: recipe['Nutrition Facts']?.['Calories'] || null,
+				serves: parseInt(recipe.Serves),
+				importId: importId,
+			},
+		});
+
+		if (recipe.Highlights) {
+			await prisma.recipeHighlight.createMany({
+				data: recipe.Highlights.map((highlight) => ({
+					highlight: highlight,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+
+		if (recipe.Ingredients) {
+			await prisma.recipeIngredient.createMany({
+				data: recipe.Ingredients.map((ingredient) => ({
+					emoji: ingredient.emoji,
+					quantity: ingredient.quantity,
+					ingredient: ingredient.ingredient,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+
+		if (recipe.Steps) {
+			await prisma.recipeStep.createMany({
+				data: recipe.Steps.map((step) => ({
+					emoji: step.emoji,
+					step: step.step,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+
+		if (recipe.Tips) {
+			await prisma.recipeTip.createMany({
+				data: recipe.Tips.map((tip) => ({
+					tip: tip,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+
+		if (recipe['Serving Suggestions']) {
+			await prisma.recipeServingSuggestion.createMany({
+				data: recipe['Serving Suggestions'].map((servingSuggestion) => ({
+					servingSuggestion: servingSuggestion,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+
+		if (recipe.CreatorInsights) {
+			await prisma.recipeCreatorInsight.createMany({
+				data: recipe.CreatorInsights.map((insight) => ({
+					insight: insight,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+
+		if (recipe.Substitutions) {
+			await prisma.recipeSubstitution.createMany({
+				data: recipe.Substitutions.map((substitution) => ({
+					substitution: substitution,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+
+		if (recipe.Equipment) {
+			await prisma.recipeEquipment.createMany({
+				data: recipe.Equipment.map((equipment) => ({
+					equipment: equipment,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+
+		if (recipe.Storage) {
+			await prisma.recipeStorage.createMany({
+				data: recipe.Storage.map((storage) => ({
+					storage: storage,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+
+		if (recipe['Did you know']) {
+			await prisma.recipeDidYouKnow.createMany({
+				data: recipe['Did you know'].map((didYouKnow) => ({
+					didYouKnow: didYouKnow,
+					recipeId: createdRecipe.id,
+				})),
+			});
+		}
+	}
 }
 
 async function getPlaceAdditionalInfo(
@@ -51,7 +168,8 @@ async function getPlaceAdditionalInfo(
 	const placeDetails = [];
 
 	for (const place of placesArray) {
-		const name = removeEmojiFromText(place?.Name) || '';
+		const emoji = place?.Name?.match(/[^\p{L}\p{N}\s]/gu)?.[0] || '';
+		const name = emoji ? removeEmojiFromText(place?.Name) : place?.Name;
 		const city = place?.City || '';
 		const country = place?.Country || '';
 
@@ -222,7 +340,10 @@ async function getRestaurantAdditionalInfo(
 	const restaurantDetails = [];
 
 	for (const restaurant of restaurantsArray) {
-		const name = removeEmojiFromText(restaurant?.Name) || '';
+		const emoji = restaurant?.Name?.match(/[^\p{L}\p{N}\s]/gu)?.[0] || '';
+		const name = emoji
+			? removeEmojiFromText(restaurant?.Name)
+			: restaurant?.Name;
 		const city = restaurant?.City || '';
 		const country = restaurant?.Country || '';
 

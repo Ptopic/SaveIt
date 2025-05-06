@@ -11,10 +11,10 @@ import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import { router } from 'expo-router';
 import React from 'react';
 import { Linking, ScrollView, TouchableOpacity, View } from 'react-native';
-import Button from './Button';
-import Subtitle from './Subtitle';
-import Text from './Text';
-import Title from './Title';
+import Button from '../Button';
+import Subtitle from '../Subtitle';
+import Text from '../Text';
+import Title from '../Title';
 
 interface IProps {
 	data: any;

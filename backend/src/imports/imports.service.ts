@@ -227,6 +227,20 @@ export class ImportsService {
 						},
 					},
 				},
+				recipes: {
+					include: {
+						highlights: true,
+						ingredients: true,
+						steps: true,
+						tips: true,
+						servingSuggestions: true,
+						creatorInsights: true,
+						substitutions: true,
+						equipment: true,
+						storage: true,
+						didYouKnow: true,
+					},
+				},
 			},
 		});
 
@@ -298,6 +312,12 @@ export class ImportsService {
 		});
 
 		await this.prisma.restaurant.deleteMany({
+			where: {
+				importId: id,
+			},
+		});
+
+		await this.prisma.recipe.deleteMany({
 			where: {
 				importId: id,
 			},
