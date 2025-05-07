@@ -224,7 +224,7 @@ const PlaceOrRestaurantDisplay = ({ data }: IProps) => {
 						text="View on Map"
 						onPress={() => {
 							router.push(
-								`/map?latitude=${
+								`/map-details?latitude=${
 									data.location?.coordinates.split(',')[0]
 								}&longitude=${
 									data.location?.coordinates.split(',')[1]

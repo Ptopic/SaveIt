@@ -1,4 +1,5 @@
 import useGetAllLocationsOnScroll from '@/api/locations/hooks/useGetAllLocations';
+import useGetLocationByImportIdAndCoordinates from '@/api/locations/hooks/useGetLocationByImportIdAndCoordinates';
 import { ILocation } from '@/api/locations/types';
 import ErrorText from '@/components/ErrorText';
 import Search from '@/components/Search';
@@ -8,9 +9,12 @@ import LocationDisplayModal from '@/feature/map/LocationDisplayModal';
 import LocationsList from '@/feature/map/LocationsList';
 import useDebounce from '@/hooks/useDebounce';
 import { LOCATIONS_PAGE_SIZE } from '@/shared/pagination';
+import { ArrowLeftIcon } from '@/shared/svgs';
 import { getTailwindHexColor } from '@/utils/getTailwindColor';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import * as Location from 'expo-location';
+import { router } from 'expo-router';
 import React, {
 	useCallback,
 	useEffect,
@@ -26,9 +30,27 @@ import {
 } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
-export default function TabMapScreen() {
+type MapRouteParams = RouteProp<
+	{ params: { latitude?: string; longitude?: string; importId?: string } },
+	'params'
+>;
+
+export default function MapDetailsScreen() {
+	const route = useRoute<MapRouteParams>();
+	const {
+		latitude: latitudeParam,
+		longitude: longitudeParam,
+		importId,
+	} = route.params || {};
+
+	const [latitude, setLatitude] = useState<string | null>(
+		latitudeParam || null
+	);
+	const [longitude, setLongitude] = useState<string | null>(
+		longitudeParam || null
+	);
+
 	const snapPoints = useMemo(() => ['25%', '50%', '70%'], []);
 	const locationSnapPoints = useMemo(() => ['25%', '70%'], []);
 	const insets = useSafeAreaInsets();
@@ -61,6 +83,13 @@ export default function TabMapScreen() {
 		searchQuery: debouncedSearchValue,
 	});
 
+	const { data: locationByImportIdAndCoordinates } =
+		useGetLocationByImportIdAndCoordinates(
+			importId as string,
+			latitude as string,
+			longitude as string
+		);
+
 	const handleEndReached = useCallback(() => {
 		if (hasNextPage && !isFetchingNextPage) {
 			fetchNextPage();
@@ -76,7 +105,14 @@ export default function TabMapScreen() {
 			}
 
 			let currentLocation = await Location.getCurrentPositionAsync({});
-			if (currentLocation) {
+			if (latitude && longitude) {
+				setLocation({
+					latitude: parseFloat(latitude),
+					longitude: parseFloat(longitude),
+					latitudeDelta: 0.025,
+					longitudeDelta: 0.025,
+				});
+			} else if (currentLocation) {
 				setLocation({
 					latitude: currentLocation.coords.latitude,
 					longitude: currentLocation.coords.longitude,
@@ -87,7 +123,7 @@ export default function TabMapScreen() {
 		}
 
 		getCurrentLocation();
-	}, []);
+	}, [latitude, longitude]);
 
 	const recenterMap = () => {
 		if (location && mapRef.current) {
@@ -111,6 +147,18 @@ export default function TabMapScreen() {
 			}
 		}
 	}, [locations, debouncedSearchValue]);
+
+	useEffect(() => {
+		if (locationByImportIdAndCoordinates) {
+			bottomSheetRef.current?.close();
+			locationDetailsBottomSheetRef.current?.snapToIndex(1);
+
+			setLatitude(null);
+			setLongitude(null);
+
+			setSelectedLocation(locationByImportIdAndCoordinates || null);
+		}
+	}, [locationByImportIdAndCoordinates]);
 
 	const onLocationPress = (location: ILocation) => {
 		bottomSheetRef.current?.close();
@@ -188,15 +236,23 @@ export default function TabMapScreen() {
 			)}
 			{errorMsg && <ErrorText error={errorMsg} />}
 
-			<View className="absolute right-[20]" style={{ top: insets.top + 15 }}>
-				<TouchableOpacity
-					onPress={recenterMap}
-					className="bg-black p-3 rounded-md"
-					activeOpacity={1}
-				>
-					<Icon name="location-arrow" size={24} color="white" />
-				</TouchableOpacity>
-			</View>
+			{importId && (
+				<View className="absolute left-[20]" style={{ top: insets.top + 15 }}>
+					<TouchableOpacity
+						onPress={() => {
+							router.push(`/import/${importId}` as any);
+						}}
+						className="bg-white p-3 rounded-full"
+						activeOpacity={1}
+					>
+						<ArrowLeftIcon
+							height={24}
+							width={24}
+							color={getTailwindHexColor('black')}
+						/>
+					</TouchableOpacity>
+				</View>
+			)}
 
 			<BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
 				<BottomSheetView className="flex-1 px-[15] pb-[15]">
