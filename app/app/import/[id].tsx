@@ -102,8 +102,8 @@ const ImportDetailsScreen = () => {
 	useEffect(() => {
 		if (selectedItem === null || !importData?.recipes) return;
 
-		originalServes.current = selectedItem.serves;
-		setServes(selectedItem.serves);
+		originalServes.current = selectedItem.serves || 1;
+		setServes(selectedItem.serves || 1);
 	}, [selectedItem]);
 
 	return (

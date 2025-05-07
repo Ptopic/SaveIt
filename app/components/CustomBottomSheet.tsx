@@ -1,12 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Dimensions, Modal, ScrollView, View, ViewStyle } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-	PanGestureHandler,
-	PanGestureHandlerGestureEvent,
+	Dimensions,
+	Modal,
+	NativeScrollEvent,
+	NativeSyntheticEvent,
+	ScrollView,
+	StyleSheet,
+	View,
+	ViewStyle,
+} from 'react-native';
+import {
+	Gesture,
+	GestureDetector,
+	GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 import Animated, {
 	runOnJS,
-	useAnimatedGestureHandler,
 	useAnimatedStyle,
 	useSharedValue,
 	withSpring,
@@ -23,6 +32,8 @@ interface BottomSheetComponentProps {
 	snapPoints?: string[];
 }
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
 const BottomSheetComponent: React.FC<BottomSheetComponentProps> = ({
 	isVisible,
 	setIsVisible,
@@ -32,99 +43,210 @@ const BottomSheetComponent: React.FC<BottomSheetComponentProps> = ({
 	customAnimatedOverlayStyle,
 	snapPoints = ['30%', '80%'],
 }) => {
-	const [scrollEnabled, setScrollEnabled] = useState(false);
+	const [internalVisible, setInternalVisible] = useState(false);
+	const [isScrollEnabled, setIsScrollEnabled] = useState(false);
+	const scrollY = useSharedValue(0);
 
-	const { height: screenHeight } = Dimensions.get('window');
+	const snapPointsPixels = snapPoints
+		.map((point) => SCREEN_HEIGHT * (parseFloat(point) / 100))
+		.sort((a, b) => a - b);
+
+	const initialSnapPoint = snapPointsPixels[0];
+	const maxSnapPointIndex = snapPointsPixels.length - 1;
+	const maxSnapPoint = Math.max(...snapPointsPixels);
+
+	const translateY = useSharedValue(SCREEN_HEIGHT);
+	const activeSnapPointIndex = useSharedValue(0);
+	const context = useSharedValue({ y: 0, startY: 0 });
 	const overlayOpacity = useSharedValue(0);
-	const sheetTranslateY = useSharedValue(screenHeight);
-	const sheetOffsetY = useSharedValue(screenHeight);
 
-	const snapPointsValue = snapPoints.map(
-		(point) => (1 - parseFloat(point) / 100) * screenHeight
-	);
+	const scrollRef = useRef<ScrollView>(null);
 
-	const closeThresholdValue =
-		Math.max(...snapPointsValue) + 0.05 * screenHeight;
+	const handleClosing = useCallback(() => {
+		overlayOpacity.value = withTiming(0, { duration: 250 });
 
-	const [internalVisible, setInternalVisible] = React.useState(false);
+		setTimeout(() => {
+			setInternalVisible(false);
+			setIsVisible(false);
+		}, 300);
+	}, [setIsVisible, overlayOpacity]);
 
 	useEffect(() => {
 		if (isVisible) {
 			setInternalVisible(true);
-			overlayOpacity.value = withTiming(1, { duration: 150 });
-			sheetTranslateY.value = withTiming(snapPointsValue[0], { duration: 300 });
-			sheetOffsetY.value = snapPointsValue[0];
+			translateY.value = SCREEN_HEIGHT;
+			overlayOpacity.value = 0;
+			setIsScrollEnabled(false);
+
+			setTimeout(() => {
+				overlayOpacity.value = withTiming(1, { duration: 250 });
+				translateY.value = withSpring(SCREEN_HEIGHT - initialSnapPoint, {
+					damping: 20,
+					stiffness: 200,
+				});
+				activeSnapPointIndex.value = 0;
+			}, 10);
 		} else if (internalVisible) {
-			overlayOpacity.value = withTiming(0, { duration: 150 });
-			sheetTranslateY.value = withTiming(
-				screenHeight,
-				{ duration: 150 },
-				() => {
-					runOnJS(setInternalVisible)(false);
-				}
-			);
-			sheetOffsetY.value = screenHeight;
+			translateY.value = withSpring(SCREEN_HEIGHT, {
+				damping: 20,
+				stiffness: 200,
+			});
+			overlayOpacity.value = withTiming(0, { duration: 250 });
+			setIsScrollEnabled(false);
 		}
-	}, [isVisible]);
+	}, [
+		isVisible,
+		initialSnapPoint,
+		translateY,
+		activeSnapPointIndex,
+		internalVisible,
+		overlayOpacity,
+	]);
 
-	const animatedOverlayStyle = useAnimatedStyle(() => ({
-		opacity: overlayOpacity.value,
-	}));
+	const snapToIndex = useCallback(
+		(index: number) => {
+			'worklet';
+			const snapPoint = snapPointsPixels[index];
+			if (snapPoint !== undefined) {
+				translateY.value = withSpring(SCREEN_HEIGHT - snapPoint, {
+					damping: 40,
+					stiffness: 400,
+				});
+				activeSnapPointIndex.value = index;
 
-	const animatedSheetStyle = useAnimatedStyle(() => ({
-		transform: [{ translateY: sheetTranslateY.value }],
-	}));
-
-	const handleGesture = useAnimatedGestureHandler<
-		PanGestureHandlerGestureEvent,
-		{ startY: number }
-	>({
-		onStart: (_, ctx) => {
-			ctx.startY = sheetTranslateY.value;
-		},
-		onActive: (event, ctx) => {
-			sheetTranslateY.value = Math.max(
-				ctx.startY + event.translationY,
-				snapPointsValue[snapPoints.length - 1]
-			);
-		},
-		onEnd: (event) => {
-			if (sheetTranslateY.value > closeThresholdValue) {
-				runOnJS(setIsVisible)(false);
-				runOnJS(setScrollEnabled)(false);
-			} else {
-				const closestSnapPoint = snapPointsValue.reduce((prev, curr) =>
-					Math.abs(curr - sheetTranslateY.value) <
-					Math.abs(prev - sheetTranslateY.value)
-						? curr
-						: prev
-				);
-
-				if (closestSnapPoint === snapPointsValue[snapPoints.length - 1]) {
-					runOnJS(setScrollEnabled)(true);
+				// Enable scrolling if at max snap point
+				if (index === maxSnapPointIndex) {
+					runOnJS(setIsScrollEnabled)(true);
 				} else {
-					runOnJS(setScrollEnabled)(false);
+					runOnJS(setIsScrollEnabled)(false);
 				}
-
-				if (Math.abs(event.velocityY) > 1000) {
-					sheetTranslateY.value = withTiming(closestSnapPoint, {
-						duration: 100,
-					});
-				} else {
-					sheetTranslateY.value = withSpring(closestSnapPoint, {
-						damping: 20,
-						stiffness: 150,
-					});
-				}
-
-				sheetOffsetY.value = closestSnapPoint;
 			}
 		},
+		[snapPointsPixels, translateY, activeSnapPointIndex, maxSnapPointIndex]
+	);
+
+	const close = useCallback(() => {
+		'worklet';
+		translateY.value = withSpring(SCREEN_HEIGHT, {
+			damping: 20,
+			stiffness: 200,
+		});
+		runOnJS(handleClosing)();
+	}, [translateY, handleClosing]);
+
+	const handleScroll = useCallback(
+		(event: NativeSyntheticEvent<NativeScrollEvent>) => {
+			const offsetY = event.nativeEvent.contentOffset.y;
+			scrollY.value = offsetY;
+
+			if (offsetY < -20) {
+				snapToIndex(maxSnapPointIndex - 1);
+			}
+
+			// if (offsetY < 0 && scrollRef.current) {
+			// 	scrollRef.current.scrollTo({ y: 0, animated: false });
+			// }
+		},
+		[]
+	);
+
+	const gesture = Gesture.Pan()
+		.onStart(() => {
+			'worklet';
+			context.value = { y: translateY.value, startY: translateY.value };
+		})
+		.onUpdate((event) => {
+			'worklet';
+			const atMaxSnap = activeSnapPointIndex.value === maxSnapPointIndex;
+			const isPanningDown = event.translationY > 0;
+
+			if (atMaxSnap) {
+				if (scrollY.value <= 0 && isPanningDown) {
+					// At top of scroll and pulling down - allow sheet to move
+					const posY = Math.max(
+						context.value.y + event.translationY,
+						SCREEN_HEIGHT - maxSnapPoint
+					);
+					translateY.value = posY;
+					runOnJS(setIsScrollEnabled)(false); // disable scroll temporarily
+				}
+			} else {
+				// Not at max snap - always pan
+				const posY = Math.max(
+					context.value.y + event.translationY,
+					SCREEN_HEIGHT - maxSnapPoint
+				);
+				translateY.value = posY;
+				runOnJS(setIsScrollEnabled)(false);
+			}
+		})
+		.onEnd((event) => {
+			'worklet';
+
+			const isDraggingDown = event.velocityY > 0;
+
+			if (
+				event.velocityY < -500 &&
+				activeSnapPointIndex.value < maxSnapPointIndex
+			) {
+				snapToIndex(maxSnapPointIndex);
+				return;
+			}
+
+			if (event.velocityY > 500) {
+				if (activeSnapPointIndex.value === 0) {
+					close();
+				} else {
+					snapToIndex(0);
+				}
+				return;
+			}
+
+			// Decide snap index based on position
+			const currentPositionFromBottom = SCREEN_HEIGHT - translateY.value;
+			const currentSnapIndex = activeSnapPointIndex.value;
+
+			if (isDraggingDown) {
+				if (currentSnapIndex > 0) {
+					snapToIndex(currentSnapIndex - 1);
+				} else {
+					const shouldClose =
+						currentPositionFromBottom < initialSnapPoint * 0.5;
+					if (shouldClose) {
+						close();
+					} else {
+						snapToIndex(0);
+					}
+				}
+			} else {
+				if (currentSnapIndex < maxSnapPointIndex) {
+					snapToIndex(currentSnapIndex + 1);
+				} else {
+					snapToIndex(maxSnapPointIndex);
+				}
+			}
+		});
+
+	const bottomSheetStyle = useAnimatedStyle(() => {
+		return {
+			transform: [{ translateY: translateY.value }],
+		};
 	});
 
-	const handleClose = () => {
-		setIsVisible(false);
-	};
+	const overlayAnimatedStyle = useAnimatedStyle(() => {
+		return {
+			opacity: overlayOpacity.value,
+			backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		};
+	});
+
+	const handleOverlayPress = useCallback(() => {
+		translateY.value = withSpring(SCREEN_HEIGHT, {
+			damping: 20,
+			stiffness: 200,
+		});
+		handleClosing();
+	}, [translateY, handleClosing]);
 
 	if (!internalVisible) return null;
 
@@ -133,38 +255,83 @@ const BottomSheetComponent: React.FC<BottomSheetComponentProps> = ({
 			transparent={true}
 			visible={internalVisible}
 			animationType="none"
-			onRequestClose={handleClose}
+			onRequestClose={() => handleClosing()}
 		>
-			<Animated.View
-				className="absolute inset-0 bg-black/50"
-				style={[animatedOverlayStyle, customAnimatedOverlayStyle]}
-				onTouchEnd={handleClose}
-			/>
+			<View style={styles.container}>
+				<Animated.View
+					style={[
+						styles.overlay,
+						overlayAnimatedStyle,
+						overlayStyle,
+						customAnimatedOverlayStyle,
+					]}
+					onTouchEnd={handleOverlayPress}
+				/>
 
-			<View style={[overlayStyle]} className="flex-1 justify-end items-center">
-				<PanGestureHandler onGestureEvent={handleGesture}>
-					<Animated.View
-						className="bg-white rounded-t-lg h-full w-full p-4"
-						style={[sheetStyle, animatedSheetStyle]}
-					>
-						<View className="flex-1 flex-col gap-4">
-							<View className="flex-row items-center justify-center">
-								<View className="w-[50px] h-[4px] bg-gray400 rounded-full" />
+				<GestureHandlerRootView style={styles.gestureHandlerContainer}>
+					<GestureDetector gesture={gesture}>
+						<Animated.View
+							style={[styles.bottomSheet, bottomSheetStyle, sheetStyle]}
+						>
+							<View style={styles.handleContainer}>
+								<View style={styles.handle} />
 							</View>
+
 							<ScrollView
-								className="flex-1"
+								style={styles.contentContainer}
 								showsVerticalScrollIndicator={false}
-								scrollEnabled={scrollEnabled}
-								bounces={false}
+								scrollEnabled={isScrollEnabled}
+								bounces={true}
+								ref={scrollRef}
+								onScroll={handleScroll}
+								contentContainerStyle={{ paddingBottom: 40 }}
 							>
 								{children}
 							</ScrollView>
-						</View>
-					</Animated.View>
-				</PanGestureHandler>
+						</Animated.View>
+					</GestureDetector>
+				</GestureHandlerRootView>
 			</View>
 		</Modal>
 	);
 };
+
+const styles = StyleSheet.create({
+	container: {
+		...StyleSheet.absoluteFillObject,
+	},
+	overlay: {
+		...StyleSheet.absoluteFillObject,
+	},
+	gestureHandlerContainer: {
+		flex: 1,
+		height: SCREEN_HEIGHT,
+		width: '100%',
+	},
+	bottomSheet: {
+		position: 'absolute',
+		width: '100%',
+		height: SCREEN_HEIGHT,
+		backgroundColor: 'white',
+		borderTopLeftRadius: 16,
+		borderTopRightRadius: 16,
+		elevation: 5,
+	},
+	handleContainer: {
+		paddingVertical: 16,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	handle: {
+		width: 50,
+		height: 4,
+		backgroundColor: '#BDBDBD',
+		borderRadius: 2,
+	},
+	contentContainer: {
+		flex: 1,
+		padding: 16,
+	},
+});
 
 export default BottomSheetComponent;
