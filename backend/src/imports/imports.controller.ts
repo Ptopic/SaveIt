@@ -70,7 +70,6 @@ export class ImportsController {
 	}
 
 	@Post('/transcribe')
-	@JwtAuth()
 	async transcribe(@Body() body: { url: string }, @Req() req: Request) {
 		const { url } = body;
 

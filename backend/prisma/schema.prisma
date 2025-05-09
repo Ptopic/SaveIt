@@ -271,7 +271,7 @@ model ImportLocationTip {
 
   tip String
 
-  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id], onDelete: Cascade)
   importLocationId String
 }
 
@@ -282,7 +282,7 @@ model ImportLocationHighlight {
 
   highlight String
 
-  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id], onDelete: Cascade)
   importLocationId String
 }
 
@@ -293,7 +293,7 @@ model ImportLocationCategory {
 
   category String
 
-  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id], onDelete: Cascade)
   importLocationId String
 }
 
@@ -304,7 +304,7 @@ model ImportLocationMustTryDish {
 
   dish String
 
-  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id])
+  importLocation   ImportLocation @relation(fields: [importLocationId], references: [id], onDelete: Cascade)
   importLocationId String
 }
 
